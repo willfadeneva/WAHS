@@ -95,7 +95,7 @@ export default function Submissions({ year }: { year: number }) {
               <div><strong>Abstract Deadline:</strong> April 15, {year}</div>
               <div><strong>Notification:</strong> April 30, {year}</div>
               <div><strong>Early Registration:</strong> May 15, {year} (20% discount)</div>
-              <div style={{ marginTop: '8px', color: '#CD2E3A', fontWeight: 600 }}>Use discount code WCHS{year}</div>
+{/* removed discount code */}
             </div>
           </div>
           <div>
