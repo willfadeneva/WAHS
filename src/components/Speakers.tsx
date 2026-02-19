@@ -14,7 +14,7 @@ const SPEAKER_PHOTOS: Record<string, string> = {
 
 const PHOTO_POSITION: Record<string, string> = {
   'Marlene Sharp': 'center 25%',
-  'Rob Kutner': 'center 15%',
+  'Rob Kutner': 'center 25%',
 };
 
 const PHOTO_SCALE: Record<string, string> = {
