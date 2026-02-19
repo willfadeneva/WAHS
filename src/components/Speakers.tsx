@@ -54,32 +54,46 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
 
       {plenary.length > 0 && (
         <section className="plenary-section" id="plenary">
-          <div className="plenary-spotlight-bar" />
-          <div className="plenary-header-text">
-            <div className="plenary-badge">✨ Special Plenary Session ✨</div>
-            <div className="plenary-subtitle">From Script to Screen</div>
-            <div className="plenary-subtitle-sub">Pop Culture Production &amp; Storytelling</div>
+          {/* Animated particles */}
+          <div className="plenary-particles">
+            <span /><span /><span /><span /><span /><span /><span /><span />
           </div>
+          {/* Top accent */}
+          <div className="plenary-spotlight-bar" />
+
+          <div className="plenary-header-text">
+            <div className="plenary-star-row">★ ★ ★</div>
+            <div className="plenary-badge">Special Plenary Session</div>
+            <h2 className="plenary-subtitle">From Script to Screen</h2>
+            <div className="plenary-subtitle-sub">Pop Culture Production &amp; Storytelling</div>
+            <div className="plenary-featuring-line"><span /></div>
+          </div>
+
           <div className="plenary-stage">
             {plenary.map((s) => (
               <div className="plenary-card" key={s.id}>
-                <div className="plenary-card-glow" />
-                <div className="plenary-photo">
-                  {getSpeakerImage(s) ? (
-                    <img src={getSpeakerImage(s)!} alt={s.name} />
-                  ) : (
-                    <div className="plenary-img-placeholder-lg">{getInitials(s.name)}</div>
-                  )}
+                <div className="plenary-card-shimmer" />
+                <div className="plenary-photo-wrap">
+                  <div className="plenary-photo-ring" />
+                  <div className="plenary-photo">
+                    {getSpeakerImage(s) ? (
+                      <img src={getSpeakerImage(s)!} alt={s.name} />
+                    ) : (
+                      <div className="plenary-img-placeholder-lg">{getInitials(s.name)}</div>
+                    )}
+                  </div>
                 </div>
                 <div className="plenary-card-body">
                   <div className="plenary-name">{s.name}</div>
-                  <div className="plenary-role">{s.role === 'Panelist' ? '' : s.role}</div>
                   <div className="plenary-affil">{s.affiliation}</div>
                 </div>
               </div>
             ))}
           </div>
-          <div className="plenary-divider-line" />
+
+          <div className="plenary-footer-text">
+            <div className="plenary-star-row small">✦ ✦ ✦ ✦ ✦</div>
+          </div>
         </section>
       )}
     </>
