@@ -6,7 +6,6 @@ export default function Nav({ year }: { year: number }) {
       <div className="sticky-nav-inner">
         <Link href={`/${year}`} className="sticky-nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <img src="/wahs-logo.png" alt="WAHS" style={{ height: '52px', width: 'auto' }} />
-          WAHS {year}
         </Link>
         <ul className="sticky-nav-links">
           <li><a href={`/${year}#overview`}>Overview</a></li>
