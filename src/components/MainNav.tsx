@@ -44,6 +44,7 @@ export default function MainNav() {
               <li><Link href="/2026/board-members" onClick={() => { setIsMenuOpen(false); setAboutOpen(false); }}>Board Members</Link></li>
             </ul>
           </li>
+          <li><Link href="/2026/submissions">Call for Papers</Link></li>
           <li><Link href="/membership">Membership</Link></li>
           <li><Link href="/2026" className="main-nav-congress">2026 Congress</Link></li>
           <li><a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a></li>
