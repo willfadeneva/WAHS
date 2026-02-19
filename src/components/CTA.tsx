@@ -10,7 +10,7 @@ export default function CTA({ congress, year }: { congress: Congress; year: numb
         <a href="#submissions" className="btn-primary">Submit Your Abstract →</a>
         <a href="#registration" className="btn-outline cta-register-btn">Register &amp; Pay →</a>
         <br/>
-        <a href={`https://congress.wahs.org/${year}`} className="cta-email" target="_blank">congress.wahs.org/{year}</a>
+        <a href={`https://congress.iwahs.org/${year}`} className="cta-email" target="_blank">congress.iwahs.org/{year}</a>
         <div className="cta-hashtags">
           <span>#WAHS{year}</span>
           <span>#HallyuStudies</span>

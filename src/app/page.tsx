@@ -7,7 +7,7 @@ export default async function Home() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // Check if we're running as main site (wahs.org) or congress subdomain (congress.wahs.org)
+  // Check if we're running as main site (wahs.org) or congress subdomain (congress.iwahs.org)
   // For now: if there's only congress data, redirect to latest
   // Later when main site content exists, show the landing page
 

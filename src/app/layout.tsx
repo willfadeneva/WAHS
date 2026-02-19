@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'WAHS 2026 — World Congress for Hallyu Studies',
     description: 'Cultural Dynamism in the Digital Age — May 28–30, 2026, Jeju Island',
-    url: 'https://congress.wahs.org/2026',
+    url: 'https://congress.iwahs.org/2026',
   },
 };
 
