@@ -23,6 +23,7 @@ export default function MainFooter() {
         </div>
         
         <div className="main-footer-bottom">
+          <p>WAHS | 세계한류학회</p>
           <p>© 2026 WAHS. All rights reserved.</p>
         </div>
       </div>
