@@ -54,14 +54,16 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
 
       {plenary.length > 0 && (
         <section className="plenary-section" id="plenary">
+          <div className="plenary-spotlight-bar" />
           <div className="plenary-header-text">
-            <div className="plenary-title">✨ Special Plenary Session ✨</div>
-            <div className="plenary-subtitle">From Script to Screen: Pop Culture Production &amp; Storytelling</div>
-            <div className="plenary-featuring">Featuring:</div>
+            <div className="plenary-badge">✨ Special Plenary Session ✨</div>
+            <div className="plenary-subtitle">From Script to Screen</div>
+            <div className="plenary-subtitle-sub">Pop Culture Production &amp; Storytelling</div>
           </div>
-          <div className="plenary-grid">
+          <div className="plenary-stage">
             {plenary.map((s) => (
-              <div className="plenary-person" key={s.id}>
+              <div className="plenary-card" key={s.id}>
+                <div className="plenary-card-glow" />
                 <div className="plenary-photo">
                   {getSpeakerImage(s) ? (
                     <img src={getSpeakerImage(s)!} alt={s.name} />
@@ -69,13 +71,15 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
                     <div className="plenary-img-placeholder-lg">{getInitials(s.name)}</div>
                   )}
                 </div>
-                <div className="plenary-info">
+                <div className="plenary-card-body">
                   <div className="plenary-name">{s.name}</div>
+                  <div className="plenary-role">{s.role === 'Panelist' ? '' : s.role}</div>
                   <div className="plenary-affil">{s.affiliation}</div>
                 </div>
               </div>
             ))}
           </div>
+          <div className="plenary-divider-line" />
         </section>
       )}
     </>
