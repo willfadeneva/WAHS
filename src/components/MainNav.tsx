@@ -7,6 +7,7 @@ import Image from 'next/image';
 export default function MainNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [congressOpen, setCongressOpen] = useState(false);
 
   return (
     <nav className="main-nav">
@@ -44,9 +45,18 @@ export default function MainNav() {
               <li><Link href="/2026/board-members" onClick={() => { setIsMenuOpen(false); setAboutOpen(false); }}>Board Members</Link></li>
             </ul>
           </li>
+          <li className="nav-dropdown-parent"
+              onMouseEnter={() => setCongressOpen(true)}
+              onMouseLeave={() => setCongressOpen(false)}>
+            <button className="nav-dropdown-trigger" onClick={() => setCongressOpen(!congressOpen)}>
+              Congress <span className="nav-dropdown-arrow">▾</span>
+            </button>
+            <ul className={`nav-dropdown${congressOpen ? ' nav-dropdown-open' : ''}`}>
+              <li><Link href="/2026" onClick={() => { setIsMenuOpen(false); setCongressOpen(false); }}>2026 Congress</Link></li>
+            </ul>
+          </li>
           <li><Link href="/2026/submissions">Call for Papers</Link></li>
           <li><Link href="/membership">Membership</Link></li>
-          <li><Link href="/2026" className="main-nav-congress">2026 Congress</Link></li>
           <li><a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a></li>
         </ul>
       </div>
