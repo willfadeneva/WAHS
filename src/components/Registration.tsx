@@ -72,7 +72,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
                     <PayPalIcon /> Pay ${activePrice} with PayPal
                   </a>
                 )}
-                <div className="paypal-subtext">Credit &amp; debit cards accepted</div>
+                {!isFree && <div className="paypal-subtext">Credit &amp; debit cards accepted</div>}
               </div>
             );
           })}
