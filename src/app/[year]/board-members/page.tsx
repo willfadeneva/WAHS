@@ -1,5 +1,6 @@
 import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 const sections = [
   {
@@ -71,6 +72,7 @@ export default async function BoardMembersPage({ params }: { params: Promise<{ y
   return (
     <>
       <MainNav />
+      <div style={{ paddingTop: '80px' }}><Breadcrumbs /></div>
       <section style={{ background: '#fff', padding: '140px 24px 80px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '2.5rem', color: '#000', marginBottom: '48px', textAlign: 'center' }}>Board Members</h1>

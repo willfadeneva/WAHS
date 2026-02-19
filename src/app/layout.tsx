@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import './globals.css';
 
 export const metadata: Metadata = {

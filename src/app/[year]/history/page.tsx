@@ -1,5 +1,6 @@
 import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import ScrollReveal from '@/components/ScrollReveal';
 
 const HISTORY = [
@@ -26,7 +27,8 @@ export default async function HistoryPage({ params }: { params: Promise<{ year: 
   return (
     <>
       <MainNav />
-      <section className="history-section">
+      <div style={{ paddingTop: '80px', background: 'var(--cream)' }}><Breadcrumbs /></div>
+      <section className="history-section" style={{ paddingTop: '40px' }}>
         <div className="section-inner reveal">
           <span className="section-label">About WAHS</span>
           <h2 className="section-title">Our History</h2>

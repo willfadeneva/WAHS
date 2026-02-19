@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
 import Nav from '@/components/Nav';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import Submissions from '@/components/Submissions';
 import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -29,6 +30,7 @@ export default async function SubmissionsPage({ params }: { params: Promise<{ ye
   return (
     <>
       <Nav year={year} />
+      <div style={{ paddingTop: '80px' }}><Breadcrumbs /></div>
       <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
       <Submissions year={year} />
       <Footer />
