@@ -1,103 +1,232 @@
-import { createClient } from '@supabase/supabase-js';
+import MainNav from '@/components/MainNav';
+import MainFooter from '@/components/MainFooter';
 import Link from 'next/link';
 
-export default async function Home() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  // Check if we're running as main site (wahs.org) or congress subdomain (congress.iwahs.org)
-  // For now: if there's only congress data, redirect to latest
-  // Later when main site content exists, show the landing page
-
-  const { data: congresses } = await supabase
-    .from('congresses')
-    .select('year, title, theme, dates, location, is_active, is_archived')
-    .order('year', { ascending: false });
-
-  const active = congresses?.find(c => c.is_active);
-  const archived = congresses?.filter(c => c.is_archived) || [];
-
-  // If running as congress subdomain, redirect to latest active
-  const isCongressSubdomain = process.env.SITE_MODE === 'congress';
-  if (isCongressSubdomain && active) {
-    const { redirect } = await import('next/navigation');
-    redirect(`/${active.year}`);
-  }
-
-  // Main site landing page
+export default function HomePage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--cream, #faf8f4)' }}>
-      <section className="hero" id="top" style={{ minHeight: '60vh' }}>
-        <div className="hero-watermark">한류</div>
-        <div className="hero-content" style={{ paddingTop: '80px', paddingBottom: '60px' }}>
-          <div className="hero-eyebrow">Since 2003</div>
-          <h1 className="hero-title">World Association for<br/><em>Hallyu Studies</em></h1>
-          <p className="hero-subtitle">Advancing the academic study of the Korean Wave and its global impact through research, collaboration, and world congresses.</p>
-          {active && (
-            <div className="hero-cta">
-              <Link href={`/${active.year}`} className="btn-primary">
-                {active.theme || `${active.year} Congress`} — {active.location} →
-              </Link>
-            </div>
-          )}
+    <div className="main-page">
+      <MainNav />
+      
+      {/* Hero Section */}
+      <section className="main-hero">
+        <div className="main-hero-content">
+          <div className="main-hero-korean">세계한류학회</div>
+          <h1 className="main-hero-title">
+            World Association for<br />
+            <em>Hallyu Studies</em>
+          </h1>
+          <p className="main-hero-subtitle">
+            Advancing the academic study of the Korean Wave through international collaboration, 
+            research excellence, and scholarly discourse across diverse disciplines.
+          </p>
         </div>
       </section>
 
-      <nav className="sticky-nav">
-        <div className="sticky-nav-inner">
-          <Link href="/" className="sticky-nav-brand">WAHS</Link>
-          <ul className="sticky-nav-links">
-            <li><a href="#congresses">Congresses</a></li>
-            <li><a href="https://www.iwahs.org" target="_blank">About WAHS</a></li>
-            <li><a href="mailto:wahskorea@gmail.com">Contact</a></li>
-          </ul>
+      {/* Congress CTA Banner */}
+      <section className="main-congress-cta">
+        <div className="main-congress-cta-content">
+          <div className="main-congress-cta-inner">
+            <h2>2026 World Congress</h2>
+            <p>Jeju Island, May 28-30</p>
+            <Link href="/2026" className="main-congress-cta-button">
+              Join Our Congress →
+            </Link>
+          </div>
         </div>
-      </nav>
+      </section>
 
-      <div className="wave-divider" />
-
-      <section className="overview" id="congresses" style={{ padding: '80px 40px' }}>
-        <div className="section-inner">
-          <span className="section-label">World Congresses</span>
-          <h2 className="section-title">Congress History</h2>
-          <p className="section-lead">Browse current and past WAHS World Congresses for Hallyu Studies.</p>
-
-          {active && (
-            <div style={{ marginBottom: '40px' }}>
-              <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', color: 'var(--navy, #0a1628)', marginBottom: '16px' }}>🔴 Current Congress</h3>
-              <Link href={`/${active.year}`} style={{ textDecoration: 'none' }}>
-                <div className="framework-card" style={{ borderColor: 'var(--coral, #e8654a)', borderWidth: '2px' }}>
-                  <h3>{active.title}</h3>
-                  <p>{active.dates} · {active.location}</p>
+      {/* Leadership Section */}
+      <section className="main-leadership">
+        <div className="main-leadership-inner">
+          <h2 className="main-section-title">Our Leadership</h2>
+          
+          <div className="main-leadership-grid">
+            {/* Advisors */}
+            <div className="main-leadership-category">
+              <h3>Advisors</h3>
+              <div className="main-leadership-list">
+                <div className="main-leadership-member">
+                  <strong>Prof. Henry Jenkins</strong>
+                  <span>USC</span>
                 </div>
-              </Link>
-            </div>
-          )}
-
-          {archived.length > 0 && (
-            <div>
-              <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', color: 'var(--navy, #0a1628)', marginBottom: '16px' }}>📚 Past Congresses</h3>
-              <div className="framework-grid">
-                {archived.map(c => (
-                  <Link href={`/${c.year}`} key={c.year} style={{ textDecoration: 'none' }}>
-                    <div className="framework-card">
-                      <h3>{c.title}</h3>
-                      <p>{c.dates} · {c.location}</p>
-                    </div>
-                  </Link>
-                ))}
+                <div className="main-leadership-member">
+                  <strong>Prof. Paul Lopes</strong>
+                  <span>Colgate</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Ingyu Oh</strong>
+                  <span>Kansai Gaidai</span>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* President */}
+            <div className="main-leadership-category">
+              <h3>President</h3>
+              <div className="main-leadership-list">
+                <div className="main-leadership-member">
+                  <strong>Prof. Taeseok Jeong</strong>
+                  <span>Jeonbuk National University</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Vice Presidents & Directors */}
+            <div className="main-leadership-category">
+              <h3>Vice Presidents & Directors</h3>
+              <div className="main-leadership-list">
+                <div className="main-leadership-member">
+                  <strong>Prof. Dong-Hoon Seol</strong>
+                  <span>Academic Affairs</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Iksuk Kim</strong>
+                  <span>Public Relations</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Sang-Myung Lee</strong>
+                  <span>Finance</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Yeuntae Kim</strong>
+                  <span>K-Medicine Affairs</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Hojin Kwon</strong>
+                  <span>Hallyu Affairs</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Hyun Ki Kim</strong>
+                  <span>Media Affairs</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Tiger Kim</strong>
+                  <span>Martial Arts Affairs</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Secretary General & CEO */}
+            <div className="main-leadership-category">
+              <h3>Secretary General & CEO</h3>
+              <div className="main-leadership-list">
+                <div className="main-leadership-member">
+                  <strong>Hyeseon Hwang</strong>
+                  <span>WAHS, Korea</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Auditors */}
+            <div className="main-leadership-category">
+              <h3>Auditors</h3>
+              <div className="main-leadership-list">
+                <div className="main-leadership-member">
+                  <strong>Prof. Yunsung Koh</strong>
+                  <span>Hankuk Univ. of Foreign Studies</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Mr. Giho Seo</strong>
+                  <span>Whawoo Tax Firm</span>
+                </div>
+              </div>
+            </div>
+
+            {/* International Board Members */}
+            <div className="main-leadership-category main-leadership-international">
+              <h3>International Board Members</h3>
+              <div className="main-leadership-list main-leadership-international-grid">
+                <div className="main-leadership-member">
+                  <strong>Prof. Jieun Kiaer</strong>
+                  <span>Oxford</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Rebecca King-O'Riain</strong>
+                  <span>Maynooth</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Roald Maliangkay</strong>
+                  <span>ANU</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Chuyun Oh</strong>
+                  <span>San Diego State</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Nissim Otmazgin</strong>
+                  <span>Hebrew Univ. Jerusalem</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Prof. Danielle Pyun</strong>
+                  <span>Ohio State</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Assoc. Prof. Fabio La Rocca</strong>
+                  <span>Montpellier</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Assoc. Prof. Hye-Sook Wang</strong>
+                  <span>Brown</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Tom Baudinette</strong>
+                  <span>Macquarie</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Gamin Kang</strong>
+                  <span>UCLA</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Sarah Keith</strong>
+                  <span>Macquarie</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Do Own Kim</strong>
+                  <span>UIC</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Olga Lazareva</strong>
+                  <span>European Univ. St. Petersburg</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Irina Lyan</strong>
+                  <span>Hebrew Univ. Jerusalem</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Yun Jung Im Park</strong>
+                  <span>São Paulo</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Meicheng Sun</strong>
+                  <span>Beijing Lang. & Culture Univ.</span>
+                </div>
+                <div className="main-leadership-member">
+                  <strong>Dr. Haekyung Um</strong>
+                  <span>Liverpool</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <footer>
-        <p>World Association for Hallyu Studies (WAHS) · <a href="https://www.iwahs.org" target="_blank">www.iwahs.org</a></p>
-        <p>Contact: <a href="mailto:wahskorea@gmail.com">wahskorea@gmail.com</a></p>
-      </footer>
+      {/* About Preview Section */}
+      <section className="main-about-preview">
+        <div className="main-about-preview-inner">
+          <h2 className="main-section-title">About WAHS</h2>
+          <p className="main-about-preview-text">
+            The World Association for Hallyu Studies (WAHS) is an international academic organization 
+            comprising scholars and practitioners engaged in the study and promotion of Hallyu across 
+            diverse disciplines. Since 2013, we have established 36 overseas branches in 26 countries, 
+            fostering transnational collaboration and cross-cultural communication.
+          </p>
+          <Link href="/about" className="main-about-preview-link">
+            Learn More About WAHS →
+          </Link>
+        </div>
+      </section>
+
+      <MainFooter />
     </div>
   );
 }

@@ -1637,3 +1637,727 @@ footer a:hover { color: #fff; }
   max-height: 90vh;
   overflow-y: auto;
 }
+
+/* ═══ MAIN SITE STYLES ═══ */
+
+.main-page {
+  background: var(--cream);
+  min-height: 100vh;
+}
+
+/* Main Navigation */
+.main-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(15, 40, 71, 0.1);
+  z-index: 100;
+}
+
+.main-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.main-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--navy);
+  font-size: 1.2rem;
+}
+
+.main-nav-logo {
+  border-radius: 50%;
+}
+
+.main-nav-brand-text {
+  font-family: 'DM Serif Display', serif;
+}
+
+.main-nav-links {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+  align-items: center;
+}
+
+.main-nav-links a {
+  text-decoration: none;
+  color: var(--navy);
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.main-nav-links a:hover {
+  color: var(--coral);
+}
+
+.main-nav-congress {
+  background: var(--coral) !important;
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.main-nav-congress:hover {
+  background: var(--warm-coral) !important;
+  color: white !important;
+}
+
+.main-nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.main-nav-toggle span {
+  width: 24px;
+  height: 3px;
+  background: var(--navy);
+  transition: all 0.3s;
+}
+
+.main-nav-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.main-nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.main-nav-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Main Hero */
+.main-hero {
+  padding: 120px 40px 80px;
+  text-align: center;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--deep-ocean) 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-hero::before {
+  content: "한류";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20rem;
+  font-family: 'Noto Serif KR', serif;
+  color: rgba(255, 255, 255, 0.03);
+  z-index: 1;
+  font-weight: 700;
+}
+
+.main-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.main-hero-korean {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.2rem;
+  opacity: 0.8;
+  margin-bottom: 16px;
+}
+
+.main-hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3.5rem;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.main-hero-title em {
+  color: var(--coral);
+}
+
+.main-hero-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Congress CTA */
+.main-congress-cta {
+  padding: 60px 40px;
+  background: linear-gradient(135deg, var(--coral) 0%, var(--warm-coral) 100%);
+  color: white;
+}
+
+.main-congress-cta-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-congress-cta-inner {
+  text-align: center;
+  padding: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+.main-congress-cta h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.main-congress-cta p {
+  font-size: 1.3rem;
+  opacity: 0.9;
+  margin-bottom: 32px;
+}
+
+.main-congress-cta-button {
+  display: inline-block;
+  background: white;
+  color: var(--coral);
+  padding: 16px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.main-congress-cta-button:hover {
+  background: var(--cream);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Leadership */
+.main-leadership {
+  padding: 100px 40px;
+  background: white;
+}
+
+.main-leadership-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2.5rem;
+  color: var(--navy);
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.main-leadership-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+}
+
+.main-leadership-category {
+  background: var(--cream);
+  border-radius: 12px;
+  padding: 32px;
+  border-left: 4px solid var(--teal);
+}
+
+.main-leadership-category h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.4rem;
+  color: var(--navy);
+  margin-bottom: 24px;
+}
+
+.main-leadership-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.main-leadership-member {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.main-leadership-member strong {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.main-leadership-member span {
+  color: var(--slate);
+  font-size: 0.9rem;
+}
+
+.main-leadership-international {
+  grid-column: 1 / -1;
+}
+
+.main-leadership-international-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+/* About Preview */
+.main-about-preview {
+  padding: 100px 40px;
+  background: var(--sand);
+}
+
+.main-about-preview-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.main-about-preview-text {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: var(--slate);
+  margin-bottom: 32px;
+}
+
+.main-about-preview-link {
+  display: inline-block;
+  color: var(--coral);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+
+.main-about-preview-link:hover {
+  color: var(--warm-coral);
+}
+
+/* Main Footer */
+.main-footer {
+  background: var(--navy);
+  color: white;
+  padding: 60px 40px 40px;
+}
+
+.main-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.main-footer-section h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  color: var(--coral);
+}
+
+.main-footer-contact p,
+.main-footer-section address {
+  margin-bottom: 8px;
+  line-height: 1.6;
+  opacity: 0.9;
+  font-style: normal;
+}
+
+.main-footer-contact a,
+.main-footer-section a {
+  color: var(--coral);
+  text-decoration: none;
+}
+
+.main-footer-contact a:hover,
+.main-footer-section a:hover {
+  text-decoration: underline;
+}
+
+.main-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  text-align: center;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+/* Content Pages */
+.main-content {
+  padding-top: 80px;
+}
+
+.main-page-header {
+  padding: 60px 40px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--deep-ocean) 100%);
+  color: white;
+  text-align: center;
+}
+
+.main-page-header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.main-page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.main-page-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  line-height: 1.6;
+}
+
+.main-content-section {
+  padding: 80px 40px;
+}
+
+.main-content-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.main-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 60px;
+}
+
+.main-content-main {
+  line-height: 1.7;
+}
+
+.main-content-main h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+  margin: 40px 0 16px 0;
+}
+
+.main-content-main h2:first-child {
+  margin-top: 0;
+}
+
+.main-content-main p {
+  margin-bottom: 20px;
+  color: var(--slate);
+}
+
+.main-content-lead {
+  font-size: 1.2rem !important;
+  color: var(--navy) !important;
+  font-weight: 500 !important;
+}
+
+.main-content-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.main-content-box {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  border: 1px solid var(--pearl);
+}
+
+.main-content-box h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.main-content-box p {
+  color: var(--slate);
+  line-height: 1.6;
+}
+
+.main-fact-list {
+  list-style: none;
+}
+
+.main-fact-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--pearl);
+  color: var(--slate);
+}
+
+.main-fact-list li:last-child {
+  border-bottom: none;
+}
+
+/* Membership Styles */
+.main-membership-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 40px;
+  margin-bottom: 80px;
+}
+
+.main-membership-tier {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.main-membership-tier:hover {
+  transform: translateY(-4px);
+}
+
+.main-membership-tier-header {
+  padding: 32px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--deep-ocean) 100%);
+  color: white;
+  text-align: center;
+}
+
+.main-membership-tier-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+}
+
+.main-membership-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.main-membership-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--coral);
+}
+
+.main-membership-period {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.main-membership-tier-content {
+  padding: 32px;
+}
+
+.main-membership-tier-content p {
+  color: var(--slate);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.main-membership-benefits {
+  list-style: none;
+  margin-bottom: 32px;
+}
+
+.main-membership-benefits li {
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+  color: var(--slate);
+}
+
+.main-membership-benefits li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--teal);
+  font-weight: 600;
+}
+
+.main-membership-button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.main-membership-button-professional {
+  background: var(--coral);
+  color: white;
+}
+
+.main-membership-button-professional:hover {
+  background: var(--warm-coral);
+}
+
+.main-membership-button-non-professional {
+  background: var(--teal);
+  color: white;
+}
+
+.main-membership-button-non-professional:hover {
+  background: #236b6a;
+}
+
+.main-membership-login {
+  background: var(--sand);
+  padding: 60px 40px;
+  border-radius: 16px;
+  margin-bottom: 60px;
+}
+
+.main-membership-login-inner {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.main-membership-login h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.8rem;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.main-membership-login p {
+  color: var(--slate);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.main-membership-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.main-membership-input {
+  padding: 16px;
+  border: 1px solid var(--pearl);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+}
+
+.main-membership-input:focus {
+  outline: none;
+  border-color: var(--coral);
+}
+
+.main-membership-button-login {
+  background: var(--navy);
+  color: white;
+}
+
+.main-membership-button-login:hover {
+  background: var(--deep-ocean);
+}
+
+.main-membership-forgot {
+  font-size: 0.9rem;
+}
+
+.main-membership-forgot a {
+  color: var(--coral);
+  text-decoration: none;
+}
+
+.main-membership-forgot a:hover {
+  text-decoration: underline;
+}
+
+.main-membership-info {
+  margin-top: 60px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-nav-inner {
+    padding: 0 20px;
+  }
+  
+  .main-nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    gap: 16px;
+  }
+  
+  .main-nav-links.active {
+    display: flex;
+  }
+  
+  .main-nav-toggle {
+    display: flex;
+  }
+  
+  .main-hero {
+    padding: 120px 20px 60px;
+  }
+  
+  .main-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .main-congress-cta,
+  .main-leadership,
+  .main-about-preview,
+  .main-content-section {
+    padding: 60px 20px;
+  }
+  
+  .main-content-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  
+  .main-content-sidebar {
+    order: -1;
+  }
+  
+  .main-membership-tiers {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-leadership-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-leadership-international-grid {
+    grid-template-columns: 1fr;
+  }
+}
