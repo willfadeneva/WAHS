@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function MainNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,13 +18,7 @@ export default function MainNav() {
     <nav className="main-nav">
       <div className="main-nav-inner">
         <Link href="/" className="main-nav-brand">
-          <Image 
-            src="/wahs-logo.png" 
-            alt="WAHS" 
-            width={80} 
-            height={80}
-            className="main-nav-logo"
-          />
+          <img src="/wahs-logo.png" alt="WAHS" style={{ height: '80px', width: 'auto' }} />
         </Link>
         
         <button 
