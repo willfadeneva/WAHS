@@ -32,7 +32,7 @@ export default function HomePage() {
             Call for Papers and Panels
           </h2>
           <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', color: '#0047A0', marginBottom: '12px' }}>
-            World Congress for Hallyu Studies 2026
+            12th World Congress for Hallyu Studies 2026
           </h3>
           <p style={{ fontSize: '1rem', color: '#333', marginBottom: '8px' }}>
             Cheju Halla University, Jeju Island, South Korea
