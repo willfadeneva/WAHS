@@ -13,6 +13,7 @@ import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ScrollReveal from '@/components/ScrollReveal';
+import Congress2022 from '@/components/Congress2022';
 
 type Congress = {
   year: number;
@@ -74,6 +75,18 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
     notFound();
   }
 
+  // 2022: static archive page (no Supabase data needed)
+  if (year === 2022) {
+    return (
+      <>
+        <Nav year={year} />
+        <Congress2022 />
+        <Footer />
+        <ScrollReveal />
+      </>
+    );
+  }
+
   const data = await getCongress(year);
   if (!data) notFound();
 
@@ -117,5 +130,5 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
 export const revalidate = 60; // revalidate every 60 seconds
 
 export async function generateStaticParams() {
-  return [{ year: '2026' }];
+  return [{ year: '2026' }, { year: '2022' }];
 }
