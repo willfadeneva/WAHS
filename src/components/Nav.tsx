@@ -12,7 +12,7 @@ export default function Nav({ year }: { year: number }) {
           <li><a href={`/${year}#overview`}>Overview</a></li>
           <li><a href={`/${year}#speakers`}>Speakers</a></li>
           <li><a href={`/${year}#tracks`}>Tracks</a></li>
-          <li><Link href={`/${year}/submissions`}>Submit</Link></li>
+          <li><Link href={`/${year}/submissions`}>Call for Papers</Link></li>
           <li><a href={`/${year}#dates`}>Dates</a></li>
           <li><a href={`/${year}#venue`}>Venue</a></li>
           <li><Link href={`/${year}/registration`}>Register</Link></li>
