@@ -61,7 +61,7 @@ function MemberCard({ member, detailed = false }: { member: Member; detailed?: b
   return (
     <div className="committee-card">
       <div className="committee-photo-wrap">
-        <img src={member.photo} alt={member.name} />
+        <img src={member.photo} alt={member.name} style={member.name === 'Yun Jung Im Park' ? { objectPosition: 'center 20%' } : undefined} />
       </div>
       <div className="committee-card-body">
         <div className="committee-role">{member.role}</div>
