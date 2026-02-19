@@ -21,6 +21,8 @@ export default function Nav({ year }: { year: number }) {
           <li><a href={`/${year}#overview`} onClick={() => setOpen(false)}>Overview</a></li>
           <li><a href={`/${year}#speakers`} onClick={() => setOpen(false)}>Speakers</a></li>
           <li><a href={`/${year}#plenary`} onClick={() => setOpen(false)}>Plenary Panel</a></li>
+          <li><a href={`/${year}#committee`} onClick={() => setOpen(false)}>Committee</a></li>
+          <li><Link href={`/${year}/history`} onClick={() => setOpen(false)}>History</Link></li>
           <li><a href={`/${year}#tracks`} onClick={() => setOpen(false)}>Tracks</a></li>
           <li><Link href={`/${year}/submissions`} onClick={() => setOpen(false)}>Call for Papers</Link></li>
           <li><a href={`/${year}#dates`} onClick={() => setOpen(false)}>Dates</a></li>

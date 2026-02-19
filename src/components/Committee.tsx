@@ -17,9 +17,9 @@ const PRESIDENT: Member = {
 };
 
 const VPS_DIRECTORS: Member[] = [
-  { name: 'Dong-Hoon Seol', role: 'Academic Affairs', title: 'Prof.', affiliation: '', photo: '/members/dong-hoon-seol.png' },
-  { name: 'Iksuk Kim', role: 'Public Relations', title: 'Prof.', affiliation: '', photo: '/members/iksuk-kim.jpg' },
-  { name: 'Sang-Myung Lee', role: 'Finance', title: 'Prof.', affiliation: '', photo: '/members/sang-myung-lee.jpg' },
+  { name: 'Dong-Hoon Seol', role: 'Academic Affairs', title: 'Prof.', affiliation: 'Jeonbuk National University', photo: '/members/dong-hoon-seol.png' },
+  { name: 'Iksuk Kim', role: 'Public Relations', title: 'Prof.', affiliation: 'Kyung Hee University', photo: '/members/iksuk-kim.jpg' },
+  { name: 'Sang-Myung Lee', role: 'Finance', title: 'Prof.', affiliation: 'Sangmyung University', photo: '/members/sang-myung-lee.jpg' },
   { name: 'Yeuntae Kim', role: 'K-Medicine Affairs', title: 'Dr.', affiliation: '', photo: '/members/yeuntae-kim.jpg' },
   { name: 'Hojin Kwon', role: 'Hallyu Affairs', title: 'Dr.', affiliation: '', photo: '/members/hojin-kwon.jpg' },
   { name: 'Hyun Ki Kim', role: 'Media Affairs', title: 'Dr.', affiliation: '', photo: '/members/hyun-ki-kim.jpg' },
@@ -31,27 +31,27 @@ const SECRETARY: Member = {
 };
 
 const AUDITORS: Member[] = [
-  { name: 'Yunsung Koh', role: 'Auditor', title: 'Prof.', affiliation: 'Hankuk Univ. of Foreign Studies', photo: '/members/yunsung-koh.jpg' },
+  { name: 'Yunsung Koh', role: 'Auditor', title: 'Prof.', affiliation: 'Hankuk University of Foreign Studies', photo: '/members/yunsung-koh.jpg' },
   { name: 'Giho Seo', role: 'Auditor', title: 'Mr.', affiliation: 'Whawoo Tax Firm', photo: '/members/giho-seo.jpg' },
 ];
 
 const BOARD: Member[] = [
   { name: 'Jieun Kiaer', role: 'Board Member', title: 'Prof.', affiliation: 'University of Oxford', photo: '/members/jieun-kiaer.jpeg' },
   { name: 'Rebecca King-O\'Riain', role: 'Board Member', title: 'Prof.', affiliation: 'Maynooth University', photo: '/members/rebecca-king-oriain.jpg' },
-  { name: 'Roald Maliangkay', role: 'Board Member', title: 'Prof.', affiliation: 'Australian National Univ.', photo: '/members/roald-maliangkay.jpeg' },
-  { name: 'Chuyun Oh', role: 'Board Member', title: 'Prof.', affiliation: 'San Diego State Univ.', photo: '/members/chuyun-oh.jpg' },
-  { name: 'Nissim Otmazgin', role: 'Board Member', title: 'Prof.', affiliation: 'Hebrew Univ. Jerusalem', photo: '/members/nissim-otmazgin.jpg' },
+  { name: 'Roald Maliangkay', role: 'Board Member', title: 'Prof.', affiliation: 'Australian National University', photo: '/members/roald-maliangkay.jpeg' },
+  { name: 'Chuyun Oh', role: 'Board Member', title: 'Prof.', affiliation: 'San Diego State University', photo: '/members/chuyun-oh.jpg' },
+  { name: 'Nissim Otmazgin', role: 'Board Member', title: 'Prof.', affiliation: 'Hebrew University of Jerusalem', photo: '/members/nissim-otmazgin.jpg' },
   { name: 'Danielle Pyun', role: 'Board Member', title: 'Prof.', affiliation: 'Ohio State University', photo: '/members/danielle-pyun.jpg' },
-  { name: 'Fabio La Rocca', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'Univ. Montpellier', photo: '/members/fabio-la-rocca.jpeg' },
+  { name: 'Fabio La Rocca', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'University of Montpellier', photo: '/members/fabio-la-rocca.jpeg' },
   { name: 'Hye-Sook Wang', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'Brown University', photo: '/members/hye-sook-wang.jpeg' },
   { name: 'Tom Baudinette', role: 'Board Member', title: 'Dr.', affiliation: 'Macquarie University', photo: '/members/tom-baudinette.jpg' },
   { name: 'Gamin Kang', role: 'Board Member', title: 'Dr.', affiliation: 'University of California, Los Angeles', photo: '/members/gamin-kang.jpeg' },
   { name: 'Sarah Keith', role: 'Board Member', title: 'Dr.', affiliation: 'Macquarie University', photo: '/members/sarah-keith.jpg' },
-  { name: 'Do Own Kim', role: 'Board Member', title: 'Dr.', affiliation: 'Univ. of Illinois Chicago', photo: '/members/do-own-kim.jpg' },
-  { name: 'Olga Lazareva', role: 'Board Member', title: 'Dr.', affiliation: 'European Univ. at St. Petersburg', photo: '/members/olga-lazareva.jpeg' },
-  { name: 'Irina Lyan', role: 'Board Member', title: 'Dr.', affiliation: 'Hebrew Univ. Jerusalem', photo: '/members/irina-lyan.jpg' },
-  { name: 'Yun Jung Im Park', role: 'Board Member', title: 'Dr.', affiliation: 'Univ. of São Paulo', photo: '/members/yun-jung-im-park.jpg' },
-  { name: 'Meicheng Sun', role: 'Board Member', title: 'Dr.', affiliation: 'Beijing Lang. & Culture Univ.', photo: '/members/meicheng-sun.png' },
+  { name: 'Do Own Kim', role: 'Board Member', title: 'Dr.', affiliation: 'University of Illinois Chicago', photo: '/members/do-own-kim.jpg' },
+  { name: 'Olga Lazareva', role: 'Board Member', title: 'Dr.', affiliation: 'European University at St. Petersburg', photo: '/members/olga-lazareva.jpeg' },
+  { name: 'Irina Lyan', role: 'Board Member', title: 'Dr.', affiliation: 'Hebrew University of Jerusalem', photo: '/members/irina-lyan.jpg' },
+  { name: 'Yun Jung Im Park', role: 'Board Member', title: 'Dr.', affiliation: 'University of São Paulo', photo: '/members/yun-jung-im-park.jpg' },
+  { name: 'Meicheng Sun', role: 'Board Member', title: 'Dr.', affiliation: 'Beijing Language and Culture University', photo: '/members/meicheng-sun.png' },
   { name: 'Haekyung Um', role: 'Board Member', title: 'Dr.', affiliation: 'University of Liverpool', photo: '/members/haekyung-um.jpg' },
 ];
 
