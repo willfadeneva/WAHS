@@ -509,7 +509,6 @@ section { padding: 100px 40px; }
 
 /* Plenary */
 .plenary-card {
-  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
