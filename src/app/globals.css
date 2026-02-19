@@ -555,9 +555,11 @@ section { padding: 100px 40px; }
   margin-top: 0;
   padding: 120px 40px 100px;
   text-align: center;
-  background: #020203;
+  background: #0a0a12 !important;
+  color: #fff !important;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 /* Deep radial spotlight from top center */
@@ -701,7 +703,7 @@ section { padding: 100px 40px; }
 
 .plenary-card {
   flex: 0 1 420px;
-  background: linear-gradient(170deg, rgba(200,164,85,0.04) 0%, rgba(255,255,255,0.01) 40%, rgba(0,0,0,0.5) 100%);
+  background: linear-gradient(170deg, rgba(200,164,85,0.06) 0%, rgba(20,20,30,0.95) 40%, rgba(5,5,10,0.98) 100%);
   border: 1px solid rgba(200,164,85,0.12);
   border-radius: 28px;
   padding: 56px 40px 48px;
@@ -820,7 +822,7 @@ section { padding: 100px 40px; }
 .plenary-affil {
   font-size: 0.92rem;
   line-height: 1.8;
-  color: rgba(255,255,255,0.75);
+  color: #d4d4d4;
   max-width: 320px;
   margin: 0 auto;
 }
