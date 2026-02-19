@@ -473,10 +473,14 @@ section { padding: 100px 40px; }
 }
 
 .speaker-img-wrap {
-  width: 100%;
-  aspect-ratio: 3/4;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
   overflow: hidden;
+  margin: 0 auto 16px;
   position: relative;
+  border: 3px solid rgba(200,164,85,0.4);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
   background: linear-gradient(160deg, rgba(26,107,106,0.3) 0%, rgba(15,40,71,0.6) 50%, rgba(200,164,85,0.15) 100%);
 }
 
