@@ -26,8 +26,12 @@ export default function Nav({ year }: { year: number }) {
           <li><a href={`/${year}#dates`} onClick={() => setOpen(false)}>Dates</a></li>
           <li><a href={`/${year}#venue`} onClick={() => setOpen(false)}>Venue</a></li>
           <li><Link href={`/${year}/registration`} onClick={() => setOpen(false)}>Register</Link></li>
-          <li className="nav-dropdown-parent">
-            <Link href={`/${year}/past-congresses`} onClick={() => setOpen(false)}>Past Congresses</Link>
+          <li className="nav-dropdown-parent congress-archive-dropdown">
+            <span className="nav-dropdown-trigger">Archive</span>
+            <ul className="nav-dropdown congress-archive-menu">
+              <li><Link href="/2022" onClick={() => setOpen(false)}>9th Congress (2022)</Link></li>
+              <li><Link href={`/${year}/past-congresses`} onClick={() => setOpen(false)}>All Past Congresses</Link></li>
+            </ul>
           </li>
         </ul>
       </div>

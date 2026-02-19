@@ -351,6 +351,7 @@ body {
   text-decoration: none; letter-spacing: 0.5px;
 }
 .nav-dropdown a:hover { background: #f5f5f5; color: var(--kr-blue); }
+.congress-archive-dropdown:hover .congress-archive-menu { display: block; }
 
 .nav-hamburger {
   display: none;
