@@ -929,16 +929,18 @@ section { padding: 100px 40px; }
 .committee-card {
   text-align: center;
   padding: 28px 16px 24px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: 12px;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
 .committee-card:hover {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(205,46,58,0.25);
-  transform: translateY(-3px);
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(205,46,58,0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(205,46,58,0.2);
 }
 
 .committee-photo-wrap {
