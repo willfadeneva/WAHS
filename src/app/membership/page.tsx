@@ -1,7 +1,50 @@
+'use client';
+import { useState, FormEvent } from 'react';
 import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
 
+const PAYPAL_LINKS: Record<string, string> = {
+  professional: 'https://www.paypal.com/ncp/payment/9K9JC2CZ6N7S2',
+  non_professional: 'https://www.paypal.com/ncp/payment/Y2V33KK92X5SU',
+};
+
 export default function MembershipPage() {
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const form = new FormData(e.currentTarget);
+    const membership_type = form.get('membership_type') as string;
+    const body = {
+      name: form.get('name') as string,
+      email: (form.get('email') as string).toLowerCase(),
+      affiliation: form.get('affiliation') as string,
+      country: form.get('country') as string,
+      membership_type,
+      year: new Date().getFullYear(),
+    };
+
+    try {
+      const res = await fetch('/api/members', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error('Failed to submit');
+      setSelectedType(membership_type);
+      setSubmitted(true);
+    } catch {
+      setError('Submission failed. Please try again or contact wahskorea@gmail.com.');
+    }
+    setLoading(false);
+  }
+
   return (
     <div className="main-page">
       <MainNav />
@@ -43,9 +86,6 @@ export default function MembershipPage() {
                     <li>Access to member-only research resources</li>
                     <li>Discounts on WAHS events and workshops</li>
                   </ul>
-                  <a href="#" className="main-membership-button main-membership-button-professional">
-                    Join as Professional Member
-                  </a>
                 </div>
               </div>
 
@@ -71,41 +111,75 @@ export default function MembershipPage() {
                     <li>Member directory access</li>
                     <li>Quarterly newsletter subscription</li>
                   </ul>
-                  <a href="#" className="main-membership-button main-membership-button-non-professional">
-                    Join as Non-Professional Member
-                  </a>
                 </div>
               </div>
             </div>
 
-            {/* Existing Members Login */}
-            <section className="main-membership-login">
-              <div className="main-membership-login-inner">
-                <h2>Existing Members</h2>
-                <p>
-                  Already a WAHS member? Access your member portal to manage your 
-                  subscription, update your profile, and connect with other members.
+            {/* Registration Form */}
+            {!submitted ? (
+              <section style={{ maxWidth: 600, margin: '48px auto 0' }}>
+                <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.5rem', textAlign: 'center', marginBottom: 8 }}>
+                  Apply for Membership
+                </h2>
+                <p style={{ textAlign: 'center', color: '#555', marginBottom: 32, fontSize: '0.95rem' }}>
+                  Fill out the form below, then complete payment via PayPal.
                 </p>
-                <div className="main-membership-login-form">
-                  <input 
-                    type="email" 
-                    placeholder="Email address" 
-                    className="main-membership-input"
-                  />
-                  <input 
-                    type="password" 
-                    placeholder="Password" 
-                    className="main-membership-input"
-                  />
-                  <button className="main-membership-button main-membership-button-login">
-                    Sign In
+                <form onSubmit={handleSubmit}>
+                  <div className="form-group">
+                    <label className="form-label">Full Name <span className="required">*</span></label>
+                    <input type="text" name="name" className="form-input" required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email <span className="required">*</span></label>
+                    <input type="email" name="email" className="form-input" required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Affiliation</label>
+                    <input type="text" name="affiliation" className="form-input" placeholder="University or institution" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Country</label>
+                    <input type="text" name="country" className="form-input" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Membership Type <span className="required">*</span></label>
+                    <select name="membership_type" className="form-select" required>
+                      <option value="">Select type...</option>
+                      <option value="professional">Professional — $250/year</option>
+                      <option value="non_professional">Non-Professional — $150/year</option>
+                    </select>
+                  </div>
+                  {error && <p className="form-error" style={{ marginBottom: 16 }}>{error}</p>}
+                  <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.6 : 1 }}>
+                    {loading ? 'Submitting...' : 'Continue to Payment →'}
                   </button>
+                </form>
+              </section>
+            ) : (
+              <section style={{ maxWidth: 600, margin: '48px auto 0', textAlign: 'center' }}>
+                <div className="form-success">
+                  <div className="form-success-icon">✅</div>
+                  <h3>Application Received!</h3>
+                  <p style={{ marginBottom: 24 }}>
+                    Please complete your payment via PayPal to activate your membership.
+                    Your membership will be confirmed once payment is verified.
+                  </p>
+                  <a
+                    href={PAYPAL_LINKS[selectedType]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-paypal"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '1.05rem' }}
+                  >
+                    Pay {selectedType === 'professional' ? '$250' : '$150'} with PayPal
+                  </a>
+                  <p style={{ marginTop: 16, fontSize: '0.85rem', color: '#777' }}>
+                    Credit &amp; debit cards accepted. Questions? Contact{' '}
+                    <a href="mailto:wahskorea@gmail.com">wahskorea@gmail.com</a>
+                  </p>
                 </div>
-                <p className="main-membership-forgot">
-                  <a href="#">Forgot your password?</a>
-                </p>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* Additional Information */}
             <section className="main-membership-info">
@@ -120,7 +194,7 @@ export default function MembershipPage() {
                 </div>
                 
                 <div className="main-content-box">
-                  <h3>Payment & Billing</h3>
+                  <h3>Payment &amp; Billing</h3>
                   <p>
                     Membership fees are billed annually. All payments are processed 
                     securely through PayPal. Membership benefits begin immediately 

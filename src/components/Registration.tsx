@@ -1,4 +1,5 @@
 'use client';
+import { useState, FormEvent } from 'react';
 
 type Pricing = { tier: string; amount: string; early_bird: string; features: string[]; featured: boolean };
 
@@ -39,6 +40,41 @@ function getPayPalLink(tier: string, earlyBird: boolean): string {
 
 export default function Registration({ pricing }: { pricing: Pricing[] }) {
   const earlyBird = isEarlyBird();
+  const [registered, setRegistered] = useState(false);
+  const [regType, setRegType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    const form = new FormData(e.currentTarget);
+    const registration_type = form.get('registration_type') as string;
+    const body = {
+      name: form.get('name') as string,
+      email: (form.get('email') as string).toLowerCase(),
+      affiliation: form.get('affiliation') as string,
+      country: form.get('country') as string,
+      registration_type,
+      congress_year: 2026,
+    };
+
+    try {
+      const res = await fetch('/api/registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setRegType(registration_type === 'regular' ? 'Regular' : 'Student');
+      setRegistered(true);
+    } catch {
+      setError('Registration failed. Please try again or contact wahskorea@gmail.com.');
+    }
+    setLoading(false);
+  }
 
   return (
     <section className="registration" id="registration">
@@ -51,46 +87,107 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
             : <>Payments are securely processed via PayPal — credit and debit cards accepted.</>
           }
         </p>
-        <div className="pricing-grid">
-          {pricing.map((p, i) => {
-            const fullPrice = parseAmount(p.amount);
-            const earlyPrice = parseAmount(p.early_bird);
-            const activePrice = earlyBird ? earlyPrice : fullPrice;
-            const isFree = p.amount === 'Free';
 
-            return (
-              <div className={`pricing-card${p.featured ? ' featured' : ''}`} key={i}>
-                <div className="pricing-tier">{p.tier}</div>
-                {isFree ? (
-                  <div className="pricing-amount">Free</div>
-                ) : earlyBird ? (
-                  <>
-                    <div className="pricing-amount">${earlyPrice}</div>
-                    <div className="pricing-note"><s>${fullPrice}</s> — 20% discount · By May 15, 2026</div>
-                  </>
-                ) : (
-                  <div className="pricing-amount">${fullPrice}</div>
-                )}
-                <ul className="pricing-features">
-                  {p.features.map((f, j) => <li key={j}>{f}</li>)}
-                </ul>
-                {isFree ? (
-                  <a href="mailto:wahskorea@gmail.com?subject=WAHS%20Member%20Registration" className="btn-paypal btn-member">
-                    Register via Email
-                  </a>
-                ) : (
-                  <a href={getPayPalLink(p.tier, earlyBird)} className="btn-paypal" target="_blank" rel="noopener noreferrer">
-                    <PayPalIcon /> Pay ${activePrice} with PayPal
-                  </a>
-                )}
-                {!isFree && <div className="paypal-subtext">Credit &amp; debit cards accepted</div>}
-              </div>
-            );
-          })}
-        </div>
-        <div className="payment-security-note">
-          <span>🔒</span> All payments are securely processed through PayPal. You do not need a PayPal account — credit and debit cards are accepted directly.
-        </div>
+        {!registered ? (
+          <>
+            {/* Registration Form */}
+            <div style={{ maxWidth: 560, margin: '0 auto 48px', padding: '32px', background: '#fafafa', border: '1px solid #e5e5e5' }}>
+              <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.25rem', marginBottom: 4, textAlign: 'center' }}>
+                Step 1: Register Your Details
+              </h3>
+              <p style={{ textAlign: 'center', color: '#666', fontSize: '0.9rem', marginBottom: 24 }}>
+                Fill out the form below, then proceed to payment.
+              </p>
+              <form onSubmit={handleRegister}>
+                <div className="form-group">
+                  <label className="form-label">Full Name <span className="required">*</span></label>
+                  <input type="text" name="name" className="form-input" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Email <span className="required">*</span></label>
+                  <input type="email" name="email" className="form-input" required />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Affiliation</label>
+                  <input type="text" name="affiliation" className="form-input" placeholder="University or institution" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Country</label>
+                  <input type="text" name="country" className="form-input" />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Registration Type <span className="required">*</span></label>
+                  <select name="registration_type" className="form-select" required>
+                    <option value="">Select type...</option>
+                    <option value="regular">Regular {earlyBird ? '— $240 (early bird)' : '— $300'}</option>
+                    <option value="student">Student {earlyBird ? '— $120 (early bird)' : '— $150'}</option>
+                  </select>
+                </div>
+                {error && <p className="form-error" style={{ marginBottom: 16 }}>{error}</p>}
+                <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.6 : 1 }}>
+                  {loading ? 'Registering...' : 'Continue to Payment →'}
+                </button>
+              </form>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Post-registration: show confirmation + PayPal */}
+            <div style={{ maxWidth: 560, margin: '0 auto 32px', padding: '24px', background: '#f0fdf4', border: '1px solid #86efac', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: 8 }}>✅</div>
+              <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.2rem', marginBottom: 8 }}>Registration Received!</h3>
+              <p style={{ color: '#444', fontSize: '0.95rem', marginBottom: 20 }}>
+                Please complete your payment below to confirm your registration.
+              </p>
+              <a
+                href={getPayPalLink(regType, earlyBird)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-paypal"
+                style={{ display: 'inline-flex', fontSize: '1.05rem' }}
+              >
+                <PayPalIcon /> Pay with PayPal
+              </a>
+              <p style={{ marginTop: 12, fontSize: '0.8rem', color: '#777' }}>
+                Credit &amp; debit cards accepted. Your registration will be confirmed once payment is verified.
+              </p>
+            </div>
+
+            {/* Still show pricing cards for reference */}
+            <div className="pricing-grid">
+              {pricing.map((p, i) => {
+                const fullPrice = parseAmount(p.amount);
+                const earlyPrice = parseAmount(p.early_bird);
+                const isFree = p.amount === 'Free';
+
+                return (
+                  <div className={`pricing-card${p.featured ? ' featured' : ''}`} key={i}>
+                    <div className="pricing-tier">{p.tier}</div>
+                    {isFree ? (
+                      <div className="pricing-amount">Free</div>
+                    ) : earlyBird ? (
+                      <>
+                        <div className="pricing-amount">${earlyPrice}</div>
+                        <div className="pricing-note"><s>${fullPrice}</s> — 20% discount · By May 15, 2026</div>
+                      </>
+                    ) : (
+                      <div className="pricing-amount">${fullPrice}</div>
+                    )}
+                    <ul className="pricing-features">
+                      {p.features.map((f, j) => <li key={j}>{f}</li>)}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {!registered && (
+          <div className="payment-security-note">
+            <span>🔒</span> All payments are securely processed through PayPal. You do not need a PayPal account — credit and debit cards are accepted directly.
+          </div>
+        )}
       </div>
     </section>
   );

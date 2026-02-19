@@ -13,18 +13,36 @@ type Speaker = {
   id: string; name: string; role: string; affiliation: string; image_url: string; bio: string; sort_order: number; is_plenary: boolean;
 };
 
+type Registration = {
+  id: string; name: string; email: string; affiliation: string; country: string;
+  registration_type: string; payment_status: string; payment_date: string | null;
+  congress_year: number; created_at: string; notes: string;
+};
+
+type Member = {
+  id: string; name: string; email: string; affiliation: string; country: string;
+  membership_type: string; payment_status: string; payment_date: string | null;
+  year: number; created_at: string; notes: string;
+};
+
 export default function AdminPage() {
   const [user, setUser] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [tab, setTab] = useState<'dashboard' | 'submissions' | 'speakers'>('dashboard');
+  const [tab, setTab] = useState<'dashboard' | 'submissions' | 'speakers' | 'registrations' | 'members'>('dashboard');
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [filterStatus, setFilterStatus] = useState('');
   const [filterTrack, setFilterTrack] = useState('');
   const [filterType, setFilterType] = useState('');
+  const [filterRegYear, setFilterRegYear] = useState('');
+  const [filterRegStatus, setFilterRegStatus] = useState('');
+  const [filterMemYear, setFilterMemYear] = useState('');
+  const [filterMemStatus, setFilterMemStatus] = useState('');
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [reviewerNotes, setReviewerNotes] = useState('');
   const [showSpeakerModal, setShowSpeakerModal] = useState(false);
@@ -57,7 +75,25 @@ export default function AdminPage() {
     setSpeakers(await res.json());
   };
 
+  const fetchRegistrations = useCallback(async () => {
+    const params = new URLSearchParams();
+    if (filterRegYear) params.set('year', filterRegYear);
+    if (filterRegStatus) params.set('status', filterRegStatus);
+    const res = await fetch(`/api/registrations?${params}`);
+    setRegistrations(await res.json());
+  }, [filterRegYear, filterRegStatus]);
+
+  const fetchMembers = useCallback(async () => {
+    const params = new URLSearchParams();
+    if (filterMemYear) params.set('year', filterMemYear);
+    if (filterMemStatus) params.set('status', filterMemStatus);
+    const res = await fetch(`/api/members?${params}`);
+    setMembers(await res.json());
+  }, [filterMemYear, filterMemStatus]);
+
   useEffect(() => { if (user) { fetchSubmissions(); fetchSpeakers(); } }, [user, fetchSubmissions]);
+  useEffect(() => { if (user && tab === 'registrations') fetchRegistrations(); }, [user, tab, fetchRegistrations]);
+  useEffect(() => { if (user && tab === 'members') fetchMembers(); }, [user, tab, fetchMembers]);
 
   const login = async () => {
     setLoginError('');
@@ -78,6 +114,24 @@ export default function AdminPage() {
     });
     fetchSubmissions();
     setSelectedSubmission(null);
+  };
+
+  const updateRegStatus = async (id: string, payment_status: string) => {
+    await fetch(`/api/registrations/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment_status }),
+    });
+    fetchRegistrations();
+  };
+
+  const updateMemStatus = async (id: string, payment_status: string) => {
+    await fetch(`/api/members/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment_status }),
+    });
+    fetchMembers();
   };
 
   const saveSpeaker = async (formData: FormData) => {
@@ -118,7 +172,7 @@ export default function AdminPage() {
       <div className="admin-login">
         <div className="admin-login-card">
           <h2>WAHS 2026 Admin</h2>
-          <p>Sign in to manage submissions and speakers.</p>
+          <p>Sign in to manage submissions, registrations, and members.</p>
           {loginError && <p className="form-error" style={{ marginBottom: 16 }}>{loginError}</p>}
           <div className="form-group">
             <label className="form-label">Email</label>
@@ -142,7 +196,33 @@ export default function AdminPage() {
     revision: submissions.filter(s => s.status === 'revision').length,
   };
 
+  const regStats = {
+    total: registrations.length,
+    pending: registrations.filter(r => r.payment_status === 'pending').length,
+    confirmed: registrations.filter(r => r.payment_status === 'confirmed').length,
+  };
+
+  const memStats = {
+    total: members.length,
+    pending: members.filter(m => m.payment_status === 'pending').length,
+    confirmed: members.filter(m => m.payment_status === 'confirmed').length,
+  };
+
   const typeLabel = (t: string) => t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+  const statusBadge = (status: string) => {
+    const colors: Record<string, { bg: string; color: string }> = {
+      pending: { bg: '#fef3c7', color: '#92400e' },
+      confirmed: { bg: '#d1fae5', color: '#065f46' },
+      rejected: { bg: '#fee2e2', color: '#991b1b' },
+    };
+    const s = colors[status] || { bg: '#f3f4f6', color: '#374151' };
+    return (
+      <span style={{ padding: '2px 10px', borderRadius: 12, fontSize: '0.8rem', fontWeight: 600, background: s.bg, color: s.color }}>
+        {status}
+      </span>
+    );
+  };
 
   return (
     <div className="admin-layout">
@@ -154,11 +234,14 @@ export default function AdminPage() {
         <div className="admin-tabs">
           <button className={`admin-tab ${tab === 'dashboard' ? 'active' : ''}`} onClick={() => setTab('dashboard')}>Dashboard</button>
           <button className={`admin-tab ${tab === 'submissions' ? 'active' : ''}`} onClick={() => { setTab('submissions'); fetchSubmissions(); }}>Submissions</button>
+          <button className={`admin-tab ${tab === 'registrations' ? 'active' : ''}`} onClick={() => setTab('registrations')}>Registrations</button>
+          <button className={`admin-tab ${tab === 'members' ? 'active' : ''}`} onClick={() => setTab('members')}>Members</button>
           <button className={`admin-tab ${tab === 'speakers' ? 'active' : ''}`} onClick={() => { setTab('speakers'); fetchSpeakers(); }}>Speakers</button>
         </div>
 
         {tab === 'dashboard' && (
           <>
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#666' }}>Submissions</h3>
             <div className="admin-stats">
               <div className="admin-stat-card"><div className="admin-stat-label">Total</div><div className="admin-stat-value">{stats.total}</div></div>
               <div className="admin-stat-card"><div className="admin-stat-label">Pending</div><div className="admin-stat-value">{stats.pending}</div></div>
@@ -166,7 +249,117 @@ export default function AdminPage() {
               <div className="admin-stat-card"><div className="admin-stat-label">Revision</div><div className="admin-stat-value">{stats.revision}</div></div>
               <div className="admin-stat-card"><div className="admin-stat-label">Rejected</div><div className="admin-stat-value">{stats.rejected}</div></div>
             </div>
+            <h3 style={{ margin: '24px 0 12px', fontSize: '1rem', color: '#666' }}>Registrations</h3>
+            <div className="admin-stats">
+              <div className="admin-stat-card"><div className="admin-stat-label">Total</div><div className="admin-stat-value">{regStats.total}</div></div>
+              <div className="admin-stat-card"><div className="admin-stat-label">Pending</div><div className="admin-stat-value">{regStats.pending}</div></div>
+              <div className="admin-stat-card"><div className="admin-stat-label">Confirmed</div><div className="admin-stat-value">{regStats.confirmed}</div></div>
+            </div>
+            <h3 style={{ margin: '24px 0 12px', fontSize: '1rem', color: '#666' }}>Members</h3>
+            <div className="admin-stats">
+              <div className="admin-stat-card"><div className="admin-stat-label">Total</div><div className="admin-stat-value">{memStats.total}</div></div>
+              <div className="admin-stat-card"><div className="admin-stat-label">Pending</div><div className="admin-stat-value">{memStats.pending}</div></div>
+              <div className="admin-stat-card"><div className="admin-stat-label">Confirmed</div><div className="admin-stat-value">{memStats.confirmed}</div></div>
+            </div>
           </>
+        )}
+
+        {tab === 'registrations' && (
+          <div className="admin-table-wrap">
+            <div className="admin-filters">
+              <select className="admin-filter-select" value={filterRegYear} onChange={e => setFilterRegYear(e.target.value)}>
+                <option value="">All Years</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+              </select>
+              <select className="admin-filter-select" value={filterRegStatus} onChange={e => setFilterRegStatus(e.target.value)}>
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <button className="admin-btn admin-btn-primary" onClick={fetchRegistrations}>Filter</button>
+            </div>
+            <div style={{ marginBottom: 16, fontSize: '0.9rem', color: '#666' }}>
+              Total: {regStats.total} · Pending: {regStats.pending} · Confirmed: {regStats.confirmed}
+            </div>
+            <table className="admin-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Country</th><th>Year</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+              <tbody>
+                {registrations.map(r => (
+                  <tr key={r.id}>
+                    <td>{r.name}</td>
+                    <td>{r.email}</td>
+                    <td>{typeLabel(r.registration_type)}</td>
+                    <td>{r.country || '—'}</td>
+                    <td>{r.congress_year}</td>
+                    <td>{statusBadge(r.payment_status)}</td>
+                    <td>{new Date(r.created_at).toLocaleDateString()}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {r.payment_status !== 'confirmed' && (
+                          <button className="admin-btn admin-btn-teal" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => updateRegStatus(r.id, 'confirmed')}>Confirm</button>
+                        )}
+                        {r.payment_status !== 'rejected' && (
+                          <button className="admin-btn" style={{ background: '#ef4444', color: '#fff', fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => updateRegStatus(r.id, 'rejected')}>Reject</button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {registrations.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40 }}>No registrations found.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {tab === 'members' && (
+          <div className="admin-table-wrap">
+            <div className="admin-filters">
+              <select className="admin-filter-select" value={filterMemYear} onChange={e => setFilterMemYear(e.target.value)}>
+                <option value="">All Years</option>
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+              </select>
+              <select className="admin-filter-select" value={filterMemStatus} onChange={e => setFilterMemStatus(e.target.value)}>
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <button className="admin-btn admin-btn-primary" onClick={fetchMembers}>Filter</button>
+            </div>
+            <div style={{ marginBottom: 16, fontSize: '0.9rem', color: '#666' }}>
+              Total: {memStats.total} · Pending: {memStats.pending} · Confirmed: {memStats.confirmed}
+            </div>
+            <table className="admin-table">
+              <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Affiliation</th><th>Country</th><th>Year</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                {members.map(m => (
+                  <tr key={m.id}>
+                    <td>{m.name}</td>
+                    <td>{m.email}</td>
+                    <td>{typeLabel(m.membership_type)}</td>
+                    <td>{m.affiliation || '—'}</td>
+                    <td>{m.country || '—'}</td>
+                    <td>{m.year}</td>
+                    <td>{statusBadge(m.payment_status)}</td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {m.payment_status !== 'confirmed' && (
+                          <button className="admin-btn admin-btn-teal" style={{ fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => updateMemStatus(m.id, 'confirmed')}>Confirm</button>
+                        )}
+                        {m.payment_status !== 'rejected' && (
+                          <button className="admin-btn" style={{ background: '#ef4444', color: '#fff', fontSize: '0.75rem', padding: '4px 10px' }} onClick={() => updateMemStatus(m.id, 'rejected')}>Reject</button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {members.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40 }}>No members found.</td></tr>}
+              </tbody>
+            </table>
+          </div>
         )}
 
         {tab === 'submissions' && !selectedSubmission && (
