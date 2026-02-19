@@ -17,6 +17,19 @@ export default function Hero({ congress }: { congress: Congress }) {
         </svg>
       </div>
       <div className="hero-content">
+        {congress.video_url && (
+          <div className="hero-video">
+            <div className="hero-video-wrapper">
+              <iframe
+                src={congress.video_url}
+                title={`WAHS ${congress.year} Congress`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        )}
         <div className="hero-eyebrow">World Association for Hallyu Studies</div>
         <h1 className="hero-title">World Congress for<br/><em>Hallyu Studies</em> {congress.year}</h1>
         <p className="hero-subtitle">{congress.subtitle}</p>
@@ -42,19 +55,6 @@ export default function Hero({ congress }: { congress: Congress }) {
           <a href="#submissions" className="btn-primary">Submit Abstract →</a>
           <a href="#tracks" className="btn-outline">Explore Tracks</a>
         </div>
-        {congress.video_url && (
-          <div className="hero-video">
-            <div className="hero-video-wrapper">
-              <iframe
-                src={congress.video_url}
-                title={`WAHS ${congress.year} Congress`}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
