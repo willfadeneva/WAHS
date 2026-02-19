@@ -1956,28 +1956,34 @@ footer a:hover { color: #fff; }
   align-items: center;
 }
 
-.main-nav-links a {
+.main-nav-links a,
+.main-nav-links .nav-dropdown-trigger {
   text-decoration: none;
   color: var(--navy);
+  font-size: 14px;
   font-weight: 500;
   transition: color 0.2s;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
-.main-nav-links a:hover {
-  color: var(--coral);
+.main-nav-links a:hover,
+.main-nav-links .nav-dropdown-trigger:hover {
+  color: var(--kr-red);
+}
+
+.main-nav-links a.active,
+.main-nav-links .nav-dropdown-trigger.active {
+  color: var(--kr-red);
+  font-weight: 600;
 }
 
 .main-nav-congress {
-  background: var(--coral) !important;
-  color: white !important;
-  padding: 8px 16px;
-  border-radius: 6px;
   font-weight: 600;
 }
 
 .main-nav-congress:hover {
-  background: var(--warm-coral) !important;
-  color: white !important;
+  color: var(--kr-red) !important;
 }
 
 .main-nav-toggle {
