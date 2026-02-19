@@ -24,6 +24,41 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Call for Papers Announcement */}
+      <section style={{ background: '#fff', padding: '80px 24px' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' as const, color: '#CD2E3A', marginBottom: '16px' }}>Announcement</div>
+          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', color: '#000', marginBottom: '16px', lineHeight: 1.2 }}>
+            Call for Papers and Panels
+          </h2>
+          <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', color: '#0047A0', marginBottom: '12px' }}>
+            World Congress for Hallyu Studies 2026
+          </h3>
+          <p style={{ fontSize: '1rem', color: '#333', marginBottom: '8px' }}>
+            Cheju Halla University, Jeju Island, South Korea
+          </p>
+          <p style={{ fontSize: '1rem', color: '#333', marginBottom: '20px', fontWeight: 600 }}>
+            May 28–30, 2026
+          </p>
+          <p style={{ fontSize: '1.05rem', color: '#555', lineHeight: 1.7, fontStyle: 'italic', marginBottom: '32px', maxWidth: '700px', margin: '0 auto 32px' }}>
+            Theme: Cultural Dynamism in the Digital Age—Toward a Universal Theory of Pop Culture Globalization
+          </p>
+          <Link href="/2026/submissions" style={{
+            display: 'inline-block',
+            padding: '16px 40px',
+            background: '#CD2E3A',
+            color: '#fff',
+            fontWeight: 600,
+            fontSize: '15px',
+            letterSpacing: '0.5px',
+            textDecoration: 'none',
+            transition: 'all 0.3s ease',
+          }}>
+            Submit Your Abstract →
+          </Link>
+        </div>
+      </section>
+
       {/* Congress CTA Banner */}
       <section className="main-congress-cta">
         <div className="main-congress-cta-content">
