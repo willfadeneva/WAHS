@@ -1,3 +1,5 @@
+'use client';
+
 type Pricing = { tier: string; amount: string; early_bird: string; features: string[]; featured: boolean };
 
 const PayPalIcon = () => (
@@ -6,34 +8,74 @@ const PayPalIcon = () => (
   </svg>
 );
 
+// Early bird deadline: May 15, 2026 23:59:59 KST (UTC+9)
+const EARLY_BIRD_DEADLINE = new Date('2026-05-15T23:59:59+09:00');
+
+function parseAmount(s: string): number {
+  const m = s.match(/\$(\d+)/);
+  return m ? parseInt(m[1]) : 0;
+}
+
+function isEarlyBird(): boolean {
+  return new Date() <= EARLY_BIRD_DEADLINE;
+}
+
+function getPayPalLink(amount: number, tier: string): string {
+  // PayPal payment link - update with actual PayPal business email
+  const desc = encodeURIComponent(`WAHS 2026 Congress Registration - ${tier}`);
+  return `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=wahskorea@gmail.com&amount=${amount}&currency_code=USD&item_name=${desc}`;
+}
+
 export default function Registration({ pricing }: { pricing: Pricing[] }) {
+  const earlyBird = isEarlyBird();
+
   return (
     <section className="registration" id="registration">
       <div className="section-inner reveal">
         <span className="section-label">Registration</span>
         <h2 className="section-title">Register &amp; Pay</h2>
-        <p className="section-lead">Early bird registration receives a 20% discount. Payments are securely processed via PayPal — credit and debit cards accepted.</p>
+        <p className="section-lead">
+          {earlyBird
+            ? <>🎉 <strong>Early bird pricing active!</strong> Register by May 15, 2026 (KST) to save 20%. Payments are securely processed via PayPal.</>
+            : <>Payments are securely processed via PayPal — credit and debit cards accepted.</>
+          }
+        </p>
         <div className="pricing-grid">
-          {pricing.map((p, i) => (
-            <div className={`pricing-card${p.featured ? ' featured' : ''}`} key={i}>
-              <div className="pricing-tier">{p.tier}</div>
-              <div className="pricing-amount">{p.amount}</div>
-              <div className="pricing-note">Early bird: {p.early_bird}</div>
-              <ul className="pricing-features">
-                {p.features.map((f, j) => <li key={j}>{f}</li>)}
-              </ul>
-              {p.amount === 'Free' ? (
-                <a href="mailto:wahskorea@gmail.com?subject=WAHS%20Member%20Registration" className="btn-paypal btn-member">
-                  Register via Email
-                </a>
-              ) : (
-                <a href="#" className="btn-paypal">
-                  <PayPalIcon /> Pay with PayPal
-                </a>
-              )}
-              <div className="paypal-subtext">Credit &amp; debit cards accepted</div>
-            </div>
-          ))}
+          {pricing.map((p, i) => {
+            const fullPrice = parseAmount(p.amount);
+            const earlyPrice = parseAmount(p.early_bird);
+            const activePrice = earlyBird ? earlyPrice : fullPrice;
+            const isFree = p.amount === 'Free';
+
+            return (
+              <div className={`pricing-card${p.featured ? ' featured' : ''}`} key={i}>
+                <div className="pricing-tier">{p.tier}</div>
+                {isFree ? (
+                  <div className="pricing-amount">Free</div>
+                ) : earlyBird ? (
+                  <>
+                    <div className="pricing-amount">${earlyPrice}</div>
+                    <div className="pricing-note"><s>${fullPrice}</s> — 20% early bird discount</div>
+                  </>
+                ) : (
+                  <div className="pricing-amount">${fullPrice}</div>
+                )}
+                <ul className="pricing-features">
+                  {p.features.map((f, j) => <li key={j}>{f}</li>)}
+                </ul>
+                {isFree ? (
+                  <a href="mailto:wahskorea@gmail.com?subject=WAHS%20Member%20Registration" className="btn-paypal btn-member">
+                    Register via Email
+                  </a>
+                ) : (
+                  <a href={getPayPalLink(activePrice, p.tier)} className="btn-paypal" target="_blank" rel="noopener noreferrer">
+                    <PayPalIcon /> Pay ${activePrice} with PayPal
+                  </a>
+                )}
+                <div className="paypal-subtext">Credit &amp; debit cards accepted</div>
+              </div>
+            );
+          })}
         </div>
         <div className="payment-security-note">
           <span>🔒</span> All payments are securely processed through PayPal. You do not need a PayPal account — credit and debit cards are accepted directly.
