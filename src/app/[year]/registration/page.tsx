@@ -34,6 +34,7 @@ export default async function RegistrationPage({ params }: { params: Promise<{ y
     <>
       <div style={{ height: '80px' }} />
       <Nav year={year} />
+      <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
       <Registration pricing={(congress as Congress).pricing} />
       <Footer />
       <ScrollReveal />
