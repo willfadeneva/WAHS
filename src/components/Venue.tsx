@@ -9,7 +9,7 @@ export default function Venue({ congress }: { congress: Congress }) {
         <div className="venue-layout">
           <div className="venue-visual" style={{ backgroundImage: 'url(/venue/jeju-coast.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="venue-visual-text">
-              <h3>{congress.venue}</h3>
+              <h3><a href="https://hcc.chu.ac.kr/page/main/index.php" target="_blank" rel="noopener noreferrer" style={{ color: '#fff', textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.4)' }}>{congress.venue}</a></h3>
               <p>UNESCO World Heritage Site</p>
             </div>
           </div>
