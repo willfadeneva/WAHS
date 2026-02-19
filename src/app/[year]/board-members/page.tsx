@@ -1,5 +1,5 @@
-import Nav from '@/components/Nav';
-import Footer from '@/components/Footer';
+import MainNav from '@/components/MainNav';
+import MainFooter from '@/components/MainFooter';
 import ScrollReveal from '@/components/ScrollReveal';
 import Committee from '@/components/Committee';
 
@@ -9,11 +9,11 @@ export default async function BoardMembersPage({ params }: { params: Promise<{ y
 
   return (
     <>
-      <Nav year={year} />
+      <MainNav />
       <div style={{ paddingTop: '80px' }}>
         <Committee detailed />
       </div>
-      <Footer />
+      <MainFooter />
       <ScrollReveal />
     </>
   );
