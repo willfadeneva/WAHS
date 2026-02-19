@@ -886,6 +886,10 @@ section { padding: 100px 40px; }
   padding: 100px 0;
 }
 
+.committee-section .section-title { color: #fff; }
+.committee-section .section-lead { color: rgba(255,255,255,0.6); }
+.committee-section .section-label { color: var(--kr-red); }
+
 .committee-group {
   margin-top: 56px;
 }
