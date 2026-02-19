@@ -13,12 +13,11 @@ export default function MainNav() {
         <Link href="/" className="main-nav-brand">
           <Image 
             src="/wahs-logo.png" 
-            alt="WAHS Logo" 
-            width={40} 
-            height={40}
+            alt="WAHS" 
+            width={52} 
+            height={52}
             className="main-nav-logo"
           />
-          <span className="main-nav-brand-text">WAHS</span>
         </Link>
         
         <button 
