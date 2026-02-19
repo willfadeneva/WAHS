@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 export default function Nav({ year }: { year: number }) {
   const [open, setOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
     <nav className="sticky-nav">
@@ -19,17 +18,6 @@ export default function Nav({ year }: { year: number }) {
         </button>
         <ul className={`sticky-nav-links${open ? ' mobile-open' : ''}`}>
           <li><Link href="/" onClick={() => setOpen(false)}>Home</Link></li>
-          <li className="nav-dropdown-parent"
-              onMouseEnter={() => setAboutOpen(true)}
-              onMouseLeave={() => setAboutOpen(false)}>
-            <button className="nav-dropdown-trigger" onClick={() => setAboutOpen(!aboutOpen)}>
-              About <span className="nav-dropdown-arrow">▾</span>
-            </button>
-            <ul className={`nav-dropdown${aboutOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><Link href={`/${year}/history`} onClick={() => { setOpen(false); setAboutOpen(false); }}>History</Link></li>
-              <li><Link href={`/${year}/board-members`} onClick={() => { setOpen(false); setAboutOpen(false); }}>Board Members</Link></li>
-            </ul>
-          </li>
           <li><a href={`/${year}#overview`} onClick={() => setOpen(false)}>Overview</a></li>
           <li><a href={`/${year}#speakers`} onClick={() => setOpen(false)}>Speakers</a></li>
           <li><a href={`/${year}#plenary`} onClick={() => setOpen(false)}>Plenary Panel</a></li>
