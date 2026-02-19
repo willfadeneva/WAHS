@@ -55,7 +55,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
                 ) : earlyBird ? (
                   <>
                     <div className="pricing-amount">${earlyPrice}</div>
-                    <div className="pricing-note"><s>${fullPrice}</s> — 20% early bird discount</div>
+                    <div className="pricing-note"><s>${fullPrice}</s> — 20% discount · By May 15, 2026</div>
                   </>
                 ) : (
                   <div className="pricing-amount">${fullPrice}</div>
