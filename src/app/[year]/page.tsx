@@ -80,8 +80,8 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
 
   return (
     <>
-      <Hero congress={congress} />
       <Nav year={year} />
+      <Hero congress={congress} />
       <div className="wave-divider" />
       <Overview congress={congress} />
       <Speakers speakers={speakers} />
