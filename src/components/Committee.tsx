@@ -86,10 +86,10 @@ function CommitteeGroup({ title, members, featured = false, detailed = false }: 
 
 export { ADVISORS, PRESIDENT, VPS_DIRECTORS, SECRETARY, AUDITORS, BOARD, CommitteeGroup, MemberCard };
 
-export default function Committee({ detailed = false }: { detailed?: boolean } = {}) {
+export default function Committee({ detailed = false, noReveal = false }: { detailed?: boolean; noReveal?: boolean } = {}) {
   return (
     <section className="committee-section" id="committee">
-      <div className="section-inner reveal">
+      <div className={`section-inner${noReveal ? '' : ' reveal'}`}>
         <span className="section-label">Our Team</span>
         <h2 className="section-title">Executive Committee</h2>
         <p className="section-lead">The scholars and practitioners leading WAHS and shaping Hallyu studies globally.</p>

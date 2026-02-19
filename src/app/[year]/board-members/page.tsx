@@ -11,7 +11,7 @@ export default async function BoardMembersPage({ params }: { params: Promise<{ y
     <>
       <MainNav />
       <div style={{ paddingTop: '80px' }}>
-        <Committee detailed />
+        <Committee detailed noReveal />
       </div>
       <MainFooter />
       <ScrollReveal />
