@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Nav from '@/components/Nav';
 import Registration from '@/components/Registration';
 import Footer from '@/components/Footer';
+import ScrollReveal from '@/components/ScrollReveal';
 
 type Congress = {
   year: number;
@@ -35,6 +36,7 @@ export default async function RegistrationPage({ params }: { params: Promise<{ y
       <Nav year={year} />
       <Registration pricing={(congress as Congress).pricing} />
       <Footer />
+      <ScrollReveal />
     </>
   );
 }

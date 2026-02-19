@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Nav from '@/components/Nav';
 import Submissions from '@/components/Submissions';
 import Footer from '@/components/Footer';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default async function SubmissionsPage({ params }: { params: Promise<{ year: string }> }) {
   const { year: yearStr } = await params;
@@ -31,6 +32,7 @@ export default async function SubmissionsPage({ params }: { params: Promise<{ ye
       <Nav year={year} />
       <Submissions year={year} />
       <Footer />
+      <ScrollReveal />
     </>
   );
 }
