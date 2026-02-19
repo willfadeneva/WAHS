@@ -794,7 +794,7 @@ section { padding: 100px 40px; }
 }
 
 .plenary-card:hover .plenary-photo img {
-  transform: scale(1.1);
+  transform: scale(1.03);
   filter: contrast(1.12) saturate(1.1) brightness(1.05);
 }
 
