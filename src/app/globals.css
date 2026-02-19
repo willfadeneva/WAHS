@@ -1144,6 +1144,23 @@ section { padding: 100px 40px; }
   margin-bottom: 8px;
 }
 
+.venue-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 14px 32px;
+  background: var(--teal);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+.venue-btn:hover {
+  background: var(--navy);
+  transform: translateY(-2px);
+}
+
 /* ═══ REGISTRATION ═══ */
 .registration { background: var(--cream); }
 

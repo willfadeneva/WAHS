@@ -23,6 +23,9 @@ export default function Venue({ congress }: { congress: Congress }) {
               <span className="venue-highlight">Island Culture</span>
               <span className="venue-highlight">Resort Accommodation</span>
             </div>
+            <a href="https://hcc.chu.ac.kr/page/main/index.php" target="_blank" rel="noopener noreferrer" className="venue-btn">
+              Visit Venue Website →
+            </a>
           </div>
         </div>
       </div>
