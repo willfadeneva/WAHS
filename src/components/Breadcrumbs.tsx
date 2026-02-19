@@ -15,7 +15,7 @@ const LABELS: Record<string, string> = {
   'admin': 'Admin',
 };
 
-export default function Breadcrumbs() {
+export default function Breadcrumbs({ dark = false }: { dark?: boolean }) {
   const pathname = usePathname();
   if (!pathname || pathname === '/') return null;
 
@@ -32,7 +32,6 @@ export default function Breadcrumbs() {
     <nav aria-label="Breadcrumb" style={{
       padding: '28px 24px 8px',
       fontSize: '13px',
-      color: '#888',
       maxWidth: '1200px',
       margin: '0 auto',
       position: 'relative',
@@ -40,11 +39,11 @@ export default function Breadcrumbs() {
     }}>
       {crumbs.map((c, i) => (
         <span key={c.href}>
-          {i > 0 && <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>}
+          {i > 0 && <span style={{ margin: '0 8px', color: dark ? 'rgba(255,255,255,0.3)' : '#ccc' }}>/</span>}
           {i === crumbs.length - 1 ? (
-            <span style={{ color: '#000', fontWeight: 500 }}>{c.label}</span>
+            <span style={{ color: dark ? '#fff' : '#000', fontWeight: 500 }}>{c.label}</span>
           ) : (
-            <Link href={c.href} style={{ color: '#666', textDecoration: 'none' }}>{c.label}</Link>
+            <Link href={c.href} style={{ color: dark ? 'rgba(255,255,255,0.5)' : '#666', textDecoration: 'none' }}>{c.label}</Link>
           )}
         </span>
       ))}

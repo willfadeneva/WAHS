@@ -11,6 +11,7 @@ import Venue from '@/components/Venue';
 import Publications from '@/components/Publications';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Congress = {
@@ -81,6 +82,7 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
   return (
     <>
       <Nav year={year} />
+      <div style={{ paddingTop: '20px', background: 'var(--navy)' }}><Breadcrumbs dark /></div>
       <Hero congress={congress} />
       <div className="wave-divider" />
       <Overview congress={congress} />
