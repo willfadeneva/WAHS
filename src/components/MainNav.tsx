@@ -15,8 +15,8 @@ export default function MainNav() {
           <Image 
             src="/wahs-logo.png" 
             alt="WAHS" 
-            width={52} 
-            height={52}
+            width={80} 
+            height={80}
             className="main-nav-logo"
           />
         </Link>

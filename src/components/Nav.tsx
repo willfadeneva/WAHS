@@ -9,7 +9,7 @@ export default function Nav({ year }: { year: number }) {
     <nav className="sticky-nav">
       <div className="sticky-nav-inner">
         <Link href={`/${year}`} className="sticky-nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/wahs-logo.png" alt="WAHS" style={{ height: '52px', width: 'auto' }} />
+          <img src="/wahs-logo.png" alt="WAHS" style={{ height: '80px', width: 'auto' }} />
         </Link>
         <button className="nav-hamburger" onClick={() => setOpen(!open)} aria-label="Menu">
           <span className={`nav-hamburger-line${open ? ' open' : ''}`} />
