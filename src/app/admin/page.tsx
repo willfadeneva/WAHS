@@ -30,9 +30,15 @@ export default function AdminPage() {
   const [showSpeakerModal, setShowSpeakerModal] = useState(false);
   const [editingSpeaker, setEditingSpeaker] = useState<Speaker | null>(null);
 
+  const ALLOWED_ADMINS = ['oingyu@gmail.com', 'charanjotsingh@gmail.com'];
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user);
+      if (data.user && ALLOWED_ADMINS.includes(data.user.email || '')) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
   }, []);
@@ -55,6 +61,7 @@ export default function AdminPage() {
 
   const login = async () => {
     setLoginError('');
+    if (!ALLOWED_ADMINS.includes(email.toLowerCase())) { setLoginError('Access denied'); return; }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { setLoginError(error.message); return; }
     const { data } = await supabase.auth.getUser();
