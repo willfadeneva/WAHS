@@ -3,6 +3,19 @@ type Speaker = {
   image_url: string; is_plenary: boolean;
 };
 
+const SPEAKER_PHOTOS: Record<string, string> = {
+  'Henry Jenkins': '/speakers/henry-jenkins.jpg',
+  'Jieun Kiaer': '/speakers/jieun-kiaer.jpeg',
+  'Roald Maliangkay': '/speakers/roald-maliangkay.jpeg',
+  'Ingyu Oh': '/speakers/ingyu-oh.jpeg',
+  'Rob Kutner': '/speakers/rob-kutner.jpg',
+  'Marlene Sharp': '/speakers/marlene-sharp.jpg',
+};
+
+function getSpeakerImage(s: Speaker): string | null {
+  return s.image_url || SPEAKER_PHOTOS[s.name] || null;
+}
+
 function getInitials(name: string) {
   return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 }
@@ -21,8 +34,8 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
           {keynotes.map((s) => (
             <div className="speaker-card" key={s.id}>
               <div className="speaker-img-wrap">
-                {s.image_url ? (
-                  <img src={s.image_url} alt={s.name} />
+                {getSpeakerImage(s) ? (
+                  <img src={getSpeakerImage(s)!} alt={s.name} />
                 ) : (
                   <div className="speaker-img-placeholder-lg">{getInitials(s.name)}</div>
                 )}
@@ -44,8 +57,8 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
             {plenary.map((s) => (
               <div className="plenary-speaker" key={s.id}>
                 <div className="plenary-img-wrap">
-                  {s.image_url ? (
-                    <img src={s.image_url} alt={s.name} />
+                  {getSpeakerImage(s) ? (
+                    <img src={getSpeakerImage(s)!} alt={s.name} />
                   ) : (
                     <div className="plenary-img-placeholder-lg">{getInitials(s.name)}</div>
                   )}

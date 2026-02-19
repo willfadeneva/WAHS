@@ -1,14 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import Hero from '@/components/Hero';
 import Nav from '@/components/Nav';
 import Overview from '@/components/Overview';
 import Speakers from '@/components/Speakers';
 import Tracks from '@/components/Tracks';
-import Submissions from '@/components/Submissions';
 import Timeline from '@/components/Timeline';
 import Venue from '@/components/Venue';
-import Registration from '@/components/Registration';
 import Publications from '@/components/Publications';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
@@ -87,10 +86,24 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
       <Overview congress={congress} />
       <Speakers speakers={speakers} />
       <Tracks tracks={congress.tracks} />
-      <Submissions year={year} />
+      <section className="submissions" id="submissions">
+        <div className="section-inner reveal" style={{ textAlign: 'center' }}>
+          <span className="section-label">Call for Papers</span>
+          <h2 className="section-title">Submit Your Abstract</h2>
+          <p className="section-lead">We welcome individual papers, full panels, roundtables, and workshops. Submit your proposal for WAHS {year}.</p>
+          <Link href={`/${year}/submissions`} className="btn-primary">Submit Abstract →</Link>
+        </div>
+      </section>
       <Timeline congress={congress} />
       <Venue congress={congress} />
-      <Registration pricing={congress.pricing} />
+      <section className="registration" id="registration">
+        <div className="section-inner reveal" style={{ textAlign: 'center' }}>
+          <span className="section-label">Registration</span>
+          <h2 className="section-title">Register &amp; Pay</h2>
+          <p className="section-lead">Early bird registration receives a 20% discount. Secure your spot at WAHS {year}.</p>
+          <Link href={`/${year}/registration`} className="btn-primary">Register Now →</Link>
+        </div>
+      </section>
       <Publications publications={congress.publications} />
       <CTA congress={congress} year={year} />
       <Footer />

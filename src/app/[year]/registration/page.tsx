@@ -1,0 +1,46 @@
+import { createClient } from '@supabase/supabase-js';
+import { notFound } from 'next/navigation';
+import Nav from '@/components/Nav';
+import Registration from '@/components/Registration';
+import Footer from '@/components/Footer';
+
+type Congress = {
+  year: number;
+  pricing: { tier: string; amount: string; early_bird: string; features: string[]; featured: boolean }[];
+};
+
+export default async function RegistrationPage({ params }: { params: Promise<{ year: string }> }) {
+  const { year: yearStr } = await params;
+  const year = parseInt(yearStr);
+
+  if (isNaN(year) || year < 2000 || year > 2100) {
+    notFound();
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  const { data: congress } = await supabase
+    .from('congresses')
+    .select('year, pricing')
+    .eq('year', year)
+    .single();
+
+  if (!congress) notFound();
+
+  return (
+    <>
+      <div style={{ height: '80px' }} />
+      <Nav year={year} />
+      <Registration pricing={(congress as Congress).pricing} />
+      <Footer />
+    </>
+  );
+}
+
+export function generateMetadata() {
+  return {
+    title: 'Registration — WAHS 2026',
+  };
+}

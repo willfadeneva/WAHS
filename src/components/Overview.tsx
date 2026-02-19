@@ -15,7 +15,7 @@ export default function Overview({ congress }: { congress: Congress }) {
       <div className="section-inner reveal">
         <span className="section-label">Conference Overview</span>
         <h2 className="section-title">Mapping the Forces Behind<br/>Global Pop Culture</h2>
-        <p className="section-lead">The Korean Wave presents the paradigmatic case for a universal theory of pop culture success: the first postcolonial pop culture to achieve sustained global dominance in the platform capitalism age. This congress proposes <strong>Cultural Dynamism</strong> as a unifying framework.</p>
+        <p className="section-lead">The World Association for Hallyu Studies (WAHS) invites submissions for its 2026 World Congress, which seeks to develop a universal theory of pop culture success in the digital platform era. The Korean Wave presents the paradigmatic case for this theoretical project: the first postcolonial pop culture to achieve sustained global dominance in the platform capitalism age. This congress proposes <strong>CULTURAL DYNAMISM</strong> as a framework operating at the intersection of institutional-rational mechanisms, historical-structural conditions, affective-cultural dynamics, geopolitical-discursive formations, transnational/transmedia culturalism, and gender politics.</p>
         <div className="framework-grid">
           {frameworks.map((f, i) => (
             <div className="framework-card" key={i}>
