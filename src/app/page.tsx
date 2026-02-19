@@ -1,6 +1,7 @@
 import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
 import Committee from '@/components/Committee';
+import ScrollReveal from '@/components/ScrollReveal';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -56,6 +57,7 @@ export default function HomePage() {
       </section>
 
       <MainFooter />
+      <ScrollReveal />
     </div>
   );
 }
