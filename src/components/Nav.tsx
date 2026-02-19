@@ -26,6 +26,9 @@ export default function Nav({ year }: { year: number }) {
           <li><a href={`/${year}#dates`} onClick={() => setOpen(false)}>Dates</a></li>
           <li><a href={`/${year}#venue`} onClick={() => setOpen(false)}>Venue</a></li>
           <li><Link href={`/${year}/registration`} onClick={() => setOpen(false)}>Register</Link></li>
+          <li className="nav-dropdown-parent">
+            <Link href={`/${year}/past-congresses`} onClick={() => setOpen(false)}>Past Congresses</Link>
+          </li>
         </ul>
       </div>
     </nav>
