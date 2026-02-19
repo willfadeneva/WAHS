@@ -11,7 +11,6 @@ import Venue from '@/components/Venue';
 import Publications from '@/components/Publications';
 import CTA from '@/components/CTA';
 import Footer from '@/components/Footer';
-import Committee from '@/components/Committee';
 import ScrollReveal from '@/components/ScrollReveal';
 
 type Congress = {
@@ -86,7 +85,6 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
       <div className="wave-divider" />
       <Overview congress={congress} />
       <Speakers speakers={speakers} />
-      <Committee />
       <Tracks tracks={congress.tracks} />
       <section className="submissions" id="submissions">
         <div className="section-inner reveal" style={{ textAlign: 'center' }}>
