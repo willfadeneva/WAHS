@@ -19,6 +19,7 @@ export default function Nav({ year }: { year: number }) {
         <ul className={`sticky-nav-links${open ? ' mobile-open' : ''}`}>
           <li><a href={`/${year}#overview`} onClick={() => setOpen(false)}>Overview</a></li>
           <li><a href={`/${year}#speakers`} onClick={() => setOpen(false)}>Speakers</a></li>
+          <li><a href={`/${year}#plenary`} onClick={() => setOpen(false)}>Plenary Panel</a></li>
           <li><a href={`/${year}#tracks`} onClick={() => setOpen(false)}>Tracks</a></li>
           <li><Link href={`/${year}/submissions`} onClick={() => setOpen(false)}>Call for Papers</Link></li>
           <li><a href={`/${year}#dates`} onClick={() => setOpen(false)}>Dates</a></li>

@@ -51,7 +51,7 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
         </div>
 
         {plenary.length > 0 && (
-          <div className="plenary-section">
+          <div className="plenary-section" id="plenary">
             <div className="plenary-header-text">
               <div className="plenary-title">✨ Special Plenary Session ✨</div>
               <div className="plenary-subtitle">From Script to Screen: Pop Culture Production &amp; Storytelling</div>
