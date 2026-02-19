@@ -508,19 +508,15 @@ section { padding: 100px 40px; }
 }
 
 /* Plenary */
-.plenary-card {
+.plenary-header-row {
   grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  padding: 0;
-  background: linear-gradient(135deg, rgba(232,101,74,0.08) 0%, rgba(26,107,106,0.08) 100%);
-  border: 1px solid rgba(232,101,74,0.15);
-  margin-top: 24px;
-  overflow: hidden;
+  text-align: center;
+  padding: 40px 0 0;
 }
 
-.plenary-card .plenary-header { grid-column: 1 / -1; padding: 40px 40px 24px; }
+.plenary-speaker-card {
+  grid-column: span 2;
+}
 
 .plenary-speaker {
   display: flex;
@@ -1090,7 +1086,7 @@ footer a:hover { color: #fff; }
   .track-container { grid-template-columns: 1fr; }
   .venue-layout { grid-template-columns: 1fr; gap: 32px; }
   .speaker-grid { grid-template-columns: repeat(2, 1fr); }
-  .plenary-card { grid-template-columns: 1fr; gap: 24px; }
+  .plenary-speaker-card { grid-column: span 1; }
   .hero-watermark { display: none; }
   .sticky-nav-links { display: none; }
   .form-row { grid-template-columns: 1fr; }
