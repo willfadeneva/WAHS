@@ -1,74 +1,68 @@
 import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
-import { ADVISORS, PRESIDENT, VPS_DIRECTORS, SECRETARY, AUDITORS, BOARD } from '@/components/Committee';
 
-function Card({ member }: { member: { name: string; role: string; title: string; affiliation: string; department?: string; country?: string; photo: string } }) {
-  return (
-    <div style={{
-      textAlign: 'center',
-      padding: '28px 16px 24px',
-      background: 'rgba(255,255,255,0.03)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: '12px',
-    }}>
-      <div style={{
-        width: '150px',
-        height: '150px',
-        borderRadius: '50%',
-        overflow: 'hidden',
-        margin: '0 auto 14px',
-        border: '2px solid rgba(205,46,58,0.3)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-      }}>
-        <img src={member.photo} alt={member.name} style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: 'top',
-          display: 'block',
-        }} />
-      </div>
-      <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase' as const, color: '#CD2E3A', marginBottom: '6px', opacity: 0.8 }}>
-        {member.role}
-      </div>
-      <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.15rem', color: '#fff', marginBottom: '6px', lineHeight: 1.2 }}>
-        {member.title ? `${member.title} ` : ''}{member.name}
-      </div>
-      <div style={{ fontSize: '0.78rem', lineHeight: 1.4, color: 'rgba(255,255,255,0.4)' }}>
-        {member.affiliation}{member.country ? `, ${member.country}` : ''}
-      </div>
-      {member.department && (
-        <div style={{ fontSize: '0.72rem', lineHeight: 1.4, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', marginTop: '4px' }}>
-          {member.department}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Group({ title, members, featured = false }: { title: string; members: any[]; featured?: boolean }) {
-  return (
-    <div style={{ marginTop: '56px' }}>
-      <h3 style={{
-        fontFamily: "'DM Serif Display', serif",
-        fontSize: '1.25rem',
-        color: '#CD2E3A',
-        textAlign: 'center',
-        marginBottom: '28px',
-        letterSpacing: '1px',
-      }}>{title}</h3>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: featured ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: '24px',
-        maxWidth: featured ? '320px' : '1200px',
-        margin: '0 auto',
-      }}>
-        {members.map((m) => <Card key={m.name} member={m} />)}
-      </div>
-    </div>
-  );
-}
+const sections = [
+  {
+    title: 'Advisors',
+    members: [
+      { title: 'Provost Prof.', name: 'Henry Jenkins', lines: ['Anneberg School for Communication', 'School of Cinematic Arts', 'University of Southern California'] },
+      { title: 'Prof.', name: 'Paul Lopes', lines: ['Sociology and Anthropology', 'Africana and Latin American Studies', 'Colgate University'] },
+    ],
+  },
+  {
+    title: 'President',
+    members: [
+      { title: 'Prof.', name: 'Taeseok Jeong', lines: ['Jeonbuk National University, Korea'] },
+    ],
+  },
+  {
+    title: 'Vice Presidents and Directors',
+    members: [
+      { title: 'Prof.', name: 'Dong-Hoon Seol', role: 'Director of Academic Affairs', lines: ['Jeonbuk National University, Korea'] },
+      { title: 'Prof.', name: 'Iksuk Kim', role: 'Director of Public Relations', lines: ['California State University, Los Angeles, USA'] },
+      { title: 'Prof.', name: 'Sang-Myung Lee', role: 'Director of Finance', lines: ['Hanyang University, Korea'] },
+      { title: 'Dr.', name: 'Yeuntae Kim', role: 'Director of K-Medicine Affairs', lines: ['B-Star Global, Korea'] },
+      { title: 'Dr.', name: 'Hojin Kwon', role: 'Director of Hallyu Affairs', lines: ['Seoul Broadcasting System Medianet, Korea'] },
+      { title: 'Dr.', name: 'Hyun Ki Kim', role: 'Director of Media Affairs', lines: ['Korean Broadcasting System, Korea'] },
+      { title: 'Dr.', name: 'Tiger Kim', role: 'Director of Martial Arts Affairs', lines: ['Korean American Association of the U.S.A.'] },
+    ],
+  },
+  {
+    title: 'Secretary General & CEO',
+    members: [
+      { title: '', name: 'Hyeseon Hwang', lines: ['World Association for Hallyu Studies, Korea'] },
+    ],
+  },
+  {
+    title: 'Auditors',
+    members: [
+      { title: 'Prof.', name: 'Yunsung Koh', lines: ['Hankuk University of Foreign Studies, Korea'] },
+      { title: 'Mr.', name: 'Giho Seo', lines: ['Whawoo Tax Firm, Korea'] },
+    ],
+  },
+  {
+    title: 'International Board Members',
+    members: [
+      { title: 'Prof.', name: 'Jieun Kiaer', lines: ['University of Oxford (Editor, Hallyu), UK'] },
+      { title: 'Professor', name: 'Rebecca Chiyoko King-O\'Riain', lines: ['Maynooth University, Ireland'] },
+      { title: 'Prof.', name: 'Roald Maliangkay', lines: ['The Australian National University, Australia'] },
+      { title: 'Prof.', name: 'Chuyun Oh', lines: ['San Diego State University; CEO, Oniz Lab, USA'] },
+      { title: 'Prof.', name: 'Nissim Otmazgin', lines: ['The Hebrew University of Jerusalem, Israel'] },
+      { title: 'Prof.', name: 'Danielle O. Pyun', lines: ['Ohio State University (Assoc Editor, Hallyu), USA'] },
+      { title: 'Assoc. Prof.', name: 'Fabio La Rocca', lines: ['Université Paul-Valéry Montpellier (Editor, Sociétés), France'] },
+      { title: 'Assoc. Prof.', name: 'Hye-Sook Wang', lines: ['Brown University, USA'] },
+      { title: 'Dr.', name: 'Tom Baudinette', lines: ['Macquarie University, Australia'] },
+      { title: 'Dr.', name: 'Gamin Kang', lines: ['University of California, Los Angeles, USA'] },
+      { title: 'Dr.', name: 'Sarah Keith', lines: ['Macquarie University, Australia'] },
+      { title: 'Dr.', name: 'Do Own (Donna) Kim', lines: ['University of Illinois, Chicago, USA'] },
+      { title: 'Dr.', name: 'Olga Lazareva', lines: ['European University at St. Petersburg, Russia'] },
+      { title: 'Dr.', name: 'Irina Lyan', lines: ['The Hebrew University of Jerusalem, Israel'] },
+      { title: 'Dr.', name: 'Yun Jung Im Park', lines: ['University of São Paulo, Brazil'] },
+      { title: 'Dr.', name: 'Meicheng Sun', lines: ['Beijing Language and Culture University, China'] },
+      { title: 'Dr.', name: 'Haekyung Um', lines: ['University of Liverpool, UK'] },
+    ],
+  },
+];
 
 export default async function BoardMembersPage({ params }: { params: Promise<{ year: string }> }) {
   const { year: yearStr } = await params;
@@ -77,23 +71,24 @@ export default async function BoardMembersPage({ params }: { params: Promise<{ y
   return (
     <>
       <MainNav />
-      <section style={{
-        background: 'linear-gradient(180deg, #000 0%, #0a0a0a 50%, #000 100%)',
-        padding: '160px 24px 100px',
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-          <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '3px', textTransform: 'uppercase' as const, color: '#CD2E3A' }}>Our Team</span>
-          <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 'clamp(2rem, 4vw, 3rem)', color: '#fff', margin: '12px 0 20px' }}>Board Members</h2>
-          <p style={{ fontSize: '1.1rem', lineHeight: 1.7, color: 'rgba(255,255,255,0.6)', maxWidth: '720px', margin: '0 auto 48px' }}>
-            The scholars and practitioners leading WAHS and shaping Hallyu studies globally.
-          </p>
+      <section style={{ background: '#fff', padding: '140px 24px 80px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '2.5rem', color: '#000', marginBottom: '48px', textAlign: 'center' }}>Board Members</h1>
 
-          <Group title="President" members={[PRESIDENT]} featured />
-          <Group title="Advisors" members={ADVISORS} />
-          <Group title="Vice Presidents & Directors" members={VPS_DIRECTORS} />
-          <Group title="Secretary General" members={[SECRETARY]} featured />
-          <Group title="Auditors" members={AUDITORS} />
-          <Group title="International Board Members" members={BOARD} />
+          {sections.map((s) => (
+            <div key={s.title} style={{ marginBottom: '40px' }}>
+              <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', color: '#000', borderBottom: '2px solid #CD2E3A', paddingBottom: '8px', marginBottom: '24px' }}>{s.title}</h3>
+              {s.members.map((m) => (
+                <div key={m.name} style={{ marginBottom: '20px' }}>
+                  {(m as any).role && <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '4px' }}>{(m as any).role}</div>}
+                  <div style={{ fontSize: '1.05rem', fontWeight: 600, color: '#000' }}>{m.title ? `${m.title} ` : ''}{m.name}</div>
+                  {m.lines.map((line, i) => (
+                    <div key={i} style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.6 }}>{line}</div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
       <MainFooter />
