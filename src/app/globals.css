@@ -830,12 +830,11 @@ section { padding: 100px 40px; }
 }
 
 .venue-visual::after {
-  content: '🏝️';
+  content: '';
   position: absolute;
-  bottom: 20%;
-  right: 15%;
-  font-size: 5rem;
-  opacity: 0.3;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,22,40,0.7) 0%, rgba(10,22,40,0.1) 60%);
+  z-index: 1;
 }
 
 .venue-visual-text { position: absolute; bottom: 32px; left: 32px; z-index: 2; }

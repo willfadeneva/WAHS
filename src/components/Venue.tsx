@@ -7,7 +7,7 @@ export default function Venue({ congress }: { congress: Congress }) {
         <span className="section-label">Conference Venue</span>
         <h2 className="section-title">{congress.location}</h2>
         <div className="venue-layout">
-          <div className="venue-visual">
+          <div className="venue-visual" style={{ backgroundImage: 'url(/venue/jeju-coast.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className="venue-visual-text">
               <h3>{congress.venue}</h3>
               <p>UNESCO World Heritage Site</p>
