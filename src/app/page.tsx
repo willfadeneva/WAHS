@@ -1,34 +1,21 @@
-import Hero from '@/components/Hero';
-import Nav from '@/components/Nav';
-import Overview from '@/components/Overview';
-import Speakers from '@/components/Speakers';
-import Tracks from '@/components/Tracks';
-import Submissions from '@/components/Submissions';
-import Timeline from '@/components/Timeline';
-import Venue from '@/components/Venue';
-import Registration from '@/components/Registration';
-import Publications from '@/components/Publications';
-import CTA from '@/components/CTA';
-import Footer from '@/components/Footer';
-import ScrollReveal from '@/components/ScrollReveal';
+import { redirect } from 'next/navigation';
+import { createClient } from '@supabase/supabase-js';
 
-export default function Home() {
-  return (
-    <>
-      <Hero />
-      <Nav />
-      <div className="wave-divider" />
-      <Overview />
-      <Speakers />
-      <Tracks />
-      <Submissions />
-      <Timeline />
-      <Venue />
-      <Registration />
-      <Publications />
-      <CTA />
-      <Footer />
-      <ScrollReveal />
-    </>
+export default async function Home() {
+  // Find the latest active congress year
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
+  
+  const { data } = await supabase
+    .from('congresses')
+    .select('year')
+    .eq('is_active', true)
+    .order('year', { ascending: false })
+    .limit(1)
+    .single();
+
+  const year = data?.year || 2026;
+  redirect(`/${year}`);
 }

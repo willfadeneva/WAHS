@@ -7,7 +7,9 @@ const frameworks = [
   { icon: '🗺️', title: 'Geopolitical Discourse', desc: 'Soft power formations, cultural diplomacy, and the discursive framing of cultural globalization.' },
 ];
 
-export default function Overview() {
+type Congress = { subtitle: string };
+
+export default function Overview({ congress }: { congress: Congress }) {
   return (
     <section className="overview" id="overview">
       <div className="section-inner reveal">

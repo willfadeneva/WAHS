@@ -8,7 +8,7 @@ interface CoAuthor {
   affiliation: string;
 }
 
-export default function SubmissionForm() {
+export default function SubmissionForm({ year }: { year: number }) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -52,7 +52,7 @@ export default function SubmissionForm() {
       }
     }
 
-    const { error: dbError } = await supabase.from('submissions').insert([data]);
+    const { error: dbError } = await supabase.from('submissions').insert([{ ...data, congress_year: year }]);
 
     if (dbError) {
       setError('Submission failed. Please try again or email wahskorea@gmail.com.');

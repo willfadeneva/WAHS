@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
   const track = searchParams.get('track');
   const type = searchParams.get('type');
   
+  const year = searchParams.get('year');
+  if (year) query = query.eq('congress_year', parseInt(year));
   if (status) query = query.eq('status', status);
   if (track) query = query.eq('track', track);
   if (type) query = query.eq('type', type);

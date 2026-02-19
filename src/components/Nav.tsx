@@ -1,8 +1,8 @@
-export default function Nav() {
+export default function Nav({ year }: { year: number }) {
   return (
     <nav className="sticky-nav">
       <div className="sticky-nav-inner">
-        <a href="#top" className="sticky-nav-brand">WAHS 2026</a>
+        <a href="#top" className="sticky-nav-brand">WAHS {year}</a>
         <ul className="sticky-nav-links">
           <li><a href="#overview">Overview</a></li>
           <li><a href="#speakers">Speakers</a></li>

@@ -7,7 +7,7 @@ const types = [
   { type: 'Workshop', words: '500–700 words', desc: 'Hands-on methodology' },
 ];
 
-export default function Submissions() {
+export default function Submissions({ year }: { year: number }) {
   return (
     <section className="submissions" id="submissions">
       <div className="section-inner reveal">
@@ -29,7 +29,7 @@ export default function Submissions() {
             All submissions must include: author name(s), affiliation(s), and email; presentation or panel title; track selection (1 or 2); 5–7 keywords; brief bio (100 words per presenter); and any special requirements. Submit in English using Chicago or APA citation style.
           </p>
         </div>
-        <SubmissionForm />
+        <SubmissionForm year={year} />
       </div>
     </section>
   );
