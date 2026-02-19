@@ -120,7 +120,7 @@ export default async function PastCongressesPage({ params }: { params: Promise<{
           </div>
         </div>
       </section>
-      <Footer year={year} />
+      <Footer />
     </>
   );
 }
