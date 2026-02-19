@@ -6,9 +6,6 @@ type Congress = {
 export default function Hero({ congress }: { congress: Congress }) {
   return (
     <section className="hero" id="top">
-      <div className="hero-logo">
-        <img src="/wahs-logo.png" alt="WAHS" />
-      </div>
       <div className="hero-watermark">한류</div>
       <div className="wave-bg">
         <svg viewBox="0 0 1440 300" preserveAspectRatio="none">
