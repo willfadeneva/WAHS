@@ -28,7 +28,6 @@ export default async function SubmissionsPage({ params }: { params: Promise<{ ye
 
   return (
     <>
-      <div style={{ height: '80px' }} />
       <Nav year={year} />
       <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
       <Submissions year={year} />

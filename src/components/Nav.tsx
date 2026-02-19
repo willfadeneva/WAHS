@@ -8,13 +8,13 @@ export default function Nav({ year }: { year: number }) {
           <img src="/wahs-logo.png" alt="WAHS" style={{ height: '52px', width: 'auto' }} />
         </Link>
         <ul className="sticky-nav-links">
-          <li><Link href={`/${year}/submissions`}>Call for Papers</Link></li>
-          <li><Link href={`/${year}/registration`}>Register</Link></li>
           <li><a href={`/${year}#overview`}>Overview</a></li>
           <li><a href={`/${year}#speakers`}>Speakers</a></li>
           <li><a href={`/${year}#tracks`}>Tracks</a></li>
+          <li><Link href={`/${year}/submissions`}>Call for Papers</Link></li>
           <li><a href={`/${year}#dates`}>Dates</a></li>
           <li><a href={`/${year}#venue`}>Venue</a></li>
+          <li><Link href={`/${year}/registration`}>Register</Link></li>
         </ul>
       </div>
     </nav>
