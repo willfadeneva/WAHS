@@ -48,28 +48,28 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
             </div>
           ))}
           {plenary.length > 0 && (
-            <>
-              <div className="plenary-header-row">
+            <div className="plenary-card">
+              <div className="plenary-header">
                 <div className="plenary-title">✨ Special Plenary Session</div>
                 <div className="plenary-subtitle">From Script to Screen: Pop Culture Production &amp; Storytelling</div>
               </div>
               {plenary.map((s) => (
-                <div className="speaker-card plenary-speaker-card" key={s.id}>
-                  <div className="speaker-img-wrap">
+                <div className="plenary-speaker" key={s.id}>
+                  <div className="plenary-img-wrap">
                     {getSpeakerImage(s) ? (
                       <img src={getSpeakerImage(s)!} alt={s.name} />
                     ) : (
-                      <div className="speaker-img-placeholder-lg">{getInitials(s.name)}</div>
+                      <div className="plenary-img-placeholder-lg">{getInitials(s.name)}</div>
                     )}
                   </div>
-                  <div className="speaker-card-body">
+                  <div className="plenary-speaker-body">
                     <div className="speaker-role">{s.role}</div>
                     <div className="speaker-name">{s.name}</div>
                     <div className="speaker-affil">{s.affiliation}</div>
                   </div>
                 </div>
               ))}
-            </>
+            </div>
           )}
         </div>
       </div>
