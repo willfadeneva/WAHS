@@ -2,7 +2,10 @@ export default function Nav({ year }: { year: number }) {
   return (
     <nav className="sticky-nav">
       <div className="sticky-nav-inner">
-        <a href="#top" className="sticky-nav-brand">WAHS {year}</a>
+        <a href="#top" className="sticky-nav-brand" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <img src="/wahs-logo.png" alt="WAHS" style={{ height: '32px', width: 'auto' }} />
+          WAHS {year}
+        </a>
         <ul className="sticky-nav-links">
           <li><a href="#overview">Overview</a></li>
           <li><a href="#speakers">Speakers</a></li>
