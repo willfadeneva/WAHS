@@ -431,7 +431,7 @@ section { padding: 100px 40px; }
 
 .speaker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
   margin-top: 48px;
   position: relative;
@@ -1089,6 +1089,7 @@ footer a:hover { color: #fff; }
   .hero-content { padding: 100px 24px 60px; }
   .track-container { grid-template-columns: 1fr; }
   .venue-layout { grid-template-columns: 1fr; gap: 32px; }
+  .speaker-grid { grid-template-columns: repeat(2, 1fr); }
   .plenary-card { grid-template-columns: 1fr; gap: 24px; }
   .hero-watermark { display: none; }
   .sticky-nav-links { display: none; }
