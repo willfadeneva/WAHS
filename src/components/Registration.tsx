@@ -20,10 +20,21 @@ function isEarlyBird(): boolean {
   return new Date() <= EARLY_BIRD_DEADLINE;
 }
 
-function getPayPalLink(amount: number, tier: string): string {
-  // PayPal payment link - update with actual PayPal business email
-  const desc = encodeURIComponent(`WAHS 2026 Congress Registration - ${tier}`);
-  return `https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=wahskorea@gmail.com&amount=${amount}&currency_code=USD&item_name=${desc}`;
+const PAYPAL_LINKS: Record<string, Record<string, string>> = {
+  'Regular': {
+    early: 'https://www.paypal.com/ncp/payment/5HCS2HYEPSTSG',
+    full:  'https://www.paypal.com/ncp/payment/GWYKZDB2TBXRC',
+  },
+  'Student': {
+    early: 'https://www.paypal.com/ncp/payment/69333BMBXNTUE',
+    full:  'https://www.paypal.com/ncp/payment/FCVG73FR3RELG',
+  },
+};
+
+function getPayPalLink(tier: string, earlyBird: boolean): string {
+  const links = PAYPAL_LINKS[tier];
+  if (links) return earlyBird ? links.early : links.full;
+  return `mailto:wahskorea@gmail.com?subject=WAHS%202026%20Registration%20-%20${encodeURIComponent(tier)}`;
 }
 
 export default function Registration({ pricing }: { pricing: Pricing[] }) {
@@ -68,7 +79,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
                     Register via Email
                   </a>
                 ) : (
-                  <a href={getPayPalLink(activePrice, p.tier)} className="btn-paypal" target="_blank" rel="noopener noreferrer">
+                  <a href={getPayPalLink(p.tier, earlyBird)} className="btn-paypal" target="_blank" rel="noopener noreferrer">
                     <PayPalIcon /> Pay ${activePrice} with PayPal
                   </a>
                 )}
