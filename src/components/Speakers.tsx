@@ -5,9 +5,9 @@ type Speaker = {
 
 const SPEAKER_PHOTOS: Record<string, string> = {
   'Henry Jenkins': '/speakers/henry-jenkins.jpg',
-  'Jieun Kiaer': '/speakers/jieun-kiaer.jpeg',
-  'Roald Maliangkay': '/speakers/roald-maliangkay.jpeg',
-  'Ingyu Oh': '/speakers/ingyu-oh.jpeg',
+  'Jieun Kiaer': '/speakers/jieun-kiaer.jpg',
+  'Roald Maliangkay': '/speakers/roald-maliangkay.jpg',
+  'Ingyu Oh': '/speakers/ingyu-oh.jpg',
   'Rob Kutner': '/speakers/rob-kutner.jpg',
   'Marlene Sharp': '/speakers/marlene-sharp.jpg',
 };
