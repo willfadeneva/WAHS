@@ -17,6 +17,7 @@ export default function Nav({ year }: { year: number }) {
           <span className={`nav-hamburger-line${open ? ' open' : ''}`} />
         </button>
         <ul className={`sticky-nav-links${open ? ' mobile-open' : ''}`}>
+          <li><a href="https://www.iwahs.org/" target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>Home</a></li>
           <li><a href={`/${year}#overview`} onClick={() => setOpen(false)}>Overview</a></li>
           <li><a href={`/${year}#speakers`} onClick={() => setOpen(false)}>Speakers</a></li>
           <li><a href={`/${year}#plenary`} onClick={() => setOpen(false)}>Plenary Panel</a></li>
