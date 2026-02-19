@@ -12,6 +12,11 @@ const SPEAKER_PHOTOS: Record<string, string> = {
   'Marlene Sharp': '/speakers/marlene-sharp.jpg',
 };
 
+const PHOTO_POSITION: Record<string, string> = {
+  'Marlene Sharp': 'center center',
+  'Rob Kutner': 'center 15%',
+};
+
 function getSpeakerImage(s: Speaker): string | null {
   return s.image_url || SPEAKER_PHOTOS[s.name] || null;
 }
@@ -77,7 +82,7 @@ export default function Speakers({ speakers }: { speakers: Speaker[] }) {
                   <div className="plenary-photo-ring" />
                   <div className="plenary-photo">
                     {getSpeakerImage(s) ? (
-                      <img src={getSpeakerImage(s)!} alt={s.name} />
+                      <img src={getSpeakerImage(s)!} alt={s.name} style={PHOTO_POSITION[s.name] ? { objectPosition: PHOTO_POSITION[s.name] } : undefined} />
                     ) : (
                       <div className="plenary-img-placeholder-lg">{getInitials(s.name)}</div>
                     )}

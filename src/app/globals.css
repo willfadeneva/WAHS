@@ -811,10 +811,10 @@ section { padding: 100px 40px; }
 .plenary-name {
   font-family: 'DM Serif Display', serif;
   font-size: 1.75rem;
-  color: #fff;
+  color: var(--gold);
   margin-bottom: 14px;
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 15px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 15px rgba(0,0,0,0.6);
 }
 
 .plenary-affil {
