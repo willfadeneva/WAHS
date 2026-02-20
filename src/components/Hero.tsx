@@ -15,7 +15,7 @@ export default function Hero({ congress }: { congress: Congress }) {
       </div>
       <div className="hero-content">
         <div className="hero-eyebrow">World Association for Hallyu Studies</div>
-        <h1 className="hero-title">World Congress for<br/><em>Hallyu Studies</em> {congress.year}</h1>
+        <h1 className="hero-title">12th World Congress for<br/><em>Hallyu Studies</em> {congress.year}</h1>
         <p className="hero-subtitle">{congress.subtitle}</p>
         <div className="hero-meta">
           <div className="hero-meta-item">
