@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const congresses = [
   { num: 1, year: 2013, location: 'Seoul, South Korea', venue: 'Korea University', note: 'First inaugural congress after WAHS founding.', flag: '🇰🇷' },
-  { num: 2, year: 2014, location: 'Buenos Aires, Argentina', flag: '🇦🇷' },
+  { num: 2, year: 2014, location: 'Buenos Aires, Argentina', venue: 'National Library', flag: '🇦🇷' },
   { num: 3, year: 2015, location: 'Dubai, United Arab Emirates', venue: 'International Convention Center', flag: '🇦🇪' },
   { num: 4, year: 2016, location: 'Oxford, United Kingdom', venue: 'Oriel College, University of Oxford', flag: '🇬🇧' },
   { num: 5, year: 2017, location: 'Seoul, South Korea', venue: 'University of Seoul', flag: '🇰🇷' },
