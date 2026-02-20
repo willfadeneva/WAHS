@@ -1014,15 +1014,28 @@ section { padding: 100px 40px; }
 
 @media (max-width: 600px) {
   .committee-grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
+  }
+  .committee-grid .committee-card {
+    width: auto;
+  }
+  .committee-grid-featured {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 100%;
   }
   .committee-photo-wrap {
     width: 100px;
     height: 100px;
   }
+  .committee-card {
+    padding: 16px 10px 16px;
+  }
   .committee-name { font-size: 0.9rem; }
   .committee-affil { font-size: 0.72rem; }
+  .committee-dept { font-size: 0.65rem; }
 }
 
 /* ═══ HISTORY ═══ */
