@@ -15,7 +15,7 @@ const congresses = [
   { num: 0, year: 2020, location: 'Cancelled', note: '⚠️ COVID-19 pandemic disruption worldwide.', flag: '🚫', cancelled: true },
   { num: 8, year: 2021, location: 'Oxford, United Kingdom (Online)', venue: 'Kellogg College, University of Oxford', note: 'Theme: Coronavirus and Pop Culture — Examined pandemic media consumption, digital fandom, and streaming growth.', flag: '🇬🇧' },
   { num: 9, year: 2022, location: 'Seoul, South Korea', venue: 'National Library of Korea', flag: '🇰🇷', link: '/2022' },
-  { num: 10, year: 2023, location: 'Paris, France', flag: '🇫🇷' },
+  { num: 10, year: 2023, location: 'Paris, France', venue: 'M Social Hotel Paris', flag: '🇫🇷' },
   { num: 11, year: 2024, location: 'Seoul, South Korea', flag: '🇰🇷' },
 ];
 
