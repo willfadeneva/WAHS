@@ -9,16 +9,16 @@ const congresses = [
   { num: 2, year: 2014, location: 'Buenos Aires, Argentina', flag: '🇦🇷' },
   { num: 3, year: 2015, location: 'Dubai, United Arab Emirates', venue: 'International Convention Center', flag: '🇦🇪' },
   { num: 4, year: 2016, location: 'Oxford, United Kingdom', venue: 'Oriel College, University of Oxford', flag: '🇬🇧' },
-  { num: 5, year: 2017, location: 'Seoul, South Korea', flag: '🇰🇷' },
-  { num: 6, year: 2018, location: 'Osaka, Japan', flag: '🇯🇵' },
-  { num: 7, year: 2019, location: 'Jerusalem, Israel', flag: '🇮🇱' },
+  { num: 5, year: 2017, location: 'Seoul, South Korea', venue: 'University of Seoul', flag: '🇰🇷' },
+  { num: 6, year: 2018, location: 'Osaka, Japan', venue: 'Kansai Gaidai University', flag: '🇯🇵' },
+  { num: 7, year: 2019, location: 'Jerusalem, Israel', venue: 'Hebrew University of Jerusalem', flag: '🇮🇱' },
   { num: 8, year: 2021, location: 'Oxford, United Kingdom (Online)', venue: 'Kellogg College', note: 'Held online due to COVID-19. 2020 congress was cancelled due to the pandemic.', flag: '🇬🇧' },
   { num: 9, year: 2022, location: 'Seoul, South Korea', venue: 'National Library of Korea', flag: '🇰🇷', link: '/2022' },
   { num: 10, year: 2023, location: 'Paris, France', flag: '🇫🇷' },
   { num: 11, year: 2024, location: 'Seoul, South Korea', flag: '🇰🇷' },
 ];
 
-const upcoming = { num: 12, year: 2026, location: 'Jeju Island, South Korea', dates: 'May 28–30, 2026', flag: '🇰🇷', link: '/2026' };
+const upcoming = { num: 12, year: 2026, location: 'Jeju Island, South Korea', venue: 'Cheju Halla University', dates: 'May 28–30, 2026', flag: '🇰🇷', link: '/2026' };
 
 export default async function PastCongressesPage({ params }: { params: Promise<{ year: string }> }) {
   const { year: yearStr } = await params;
@@ -113,6 +113,7 @@ export default async function PastCongressesPage({ params }: { params: Promise<{
                 </div>
                 <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', margin: 0, lineHeight: 1.6 }}>
                   📍 {upcoming.location}<br />
+                  🏫 {upcoming.venue}<br />
                   📅 {upcoming.dates}
                 </p>
               </div>
