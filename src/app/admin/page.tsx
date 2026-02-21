@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-// Simple admin auth check (original design)
-const checkAdminAuth = () => {
+// Check admin auth with Supabase
+const checkAdminAuth = async () => {
   if (typeof window === 'undefined') return false;
   
+  // Check localStorage first
   const authenticated = localStorage.getItem('admin_authenticated');
   const timestamp = localStorage.getItem('admin_timestamp');
   
@@ -24,7 +25,18 @@ const checkAdminAuth = () => {
     return false;
   }
   
-  return true;
+  // Verify with Supabase Auth
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return false;
+  
+  // Check if user is in admin_users table
+  const { data: adminData } = await supabase
+    .from('admin_users')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .single();
+    
+  return !!adminData;
 };
 
 export default function AdminPage() {
@@ -37,15 +49,18 @@ export default function AdminPage() {
   const [loadingData, setLoadingData] = useState(false);
 
   useEffect(() => {
-    // Check simple admin auth (original design)
-    const isAuthenticated = checkAdminAuth();
+    const verifyAdmin = async () => {
+      const isAuthenticated = await checkAdminAuth();
+      
+      if (!isAuthenticated) {
+        router.push('/admin/login');
+      } else {
+        setAuthenticated(true);
+        setAdminEmail(localStorage.getItem('admin_email') || '');
+      }
+    };
     
-    if (!isAuthenticated) {
-      router.push('/admin/login');
-    } else {
-      setAuthenticated(true);
-      setAdminEmail(localStorage.getItem('admin_email') || '');
-    }
+    verifyAdmin();
   }, [router]);
 
   useEffect(() => {
@@ -118,7 +133,8 @@ export default function AdminPage() {
               <p className="text-xs text-gray-500">Original design: Hardcoded email/password auth</p>
             </div>
             <button
-              onClick={() => {
+              onClick={async () => {
+                await supabase.auth.signOut();
                 localStorage.removeItem('admin_authenticated');
                 localStorage.removeItem('admin_email');
                 localStorage.removeItem('admin_timestamp');

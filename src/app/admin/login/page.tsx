@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
-// Hardcoded admin credentials (original design)
-const ADMIN_CREDENTIALS = [
-  { email: 'oingyu@gmail.com', password: 'admin123' }, // Default password, should be changed
-  { email: 'charanjotsingh@gmail.com', password: 'admin456' }, // Default password, should be changed
+// Admin emails (passwords stored in Supabase users table)
+const ADMIN_EMAILS = [
+  'oingyu@gmail.com',
+  'charanjotsingh@gmail.com',
 ];
 
 export default function AdminLoginPage() {
@@ -21,21 +22,49 @@ export default function AdminLoginPage() {
     setError('');
     setLoading(true);
 
-    // Simple hardcoded check (original design)
-    const isValid = ADMIN_CREDENTIALS.some(
-      cred => cred.email === email && cred.password === password
-    );
+    try {
+      // Check if email is an admin email
+      if (!ADMIN_EMAILS.includes(email)) {
+        setError('Invalid admin email');
+        setLoading(false);
+        return;
+      }
 
-    if (isValid) {
-      // Store admin session in localStorage (simple approach)
+      // Sign in with Supabase Auth (email/password)
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) {
+        setError('Invalid email or password');
+        setLoading(false);
+        return;
+      }
+
+      // Check if user is in admin_users table
+      const { data: adminData } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', data.user.id)
+        .single();
+
+      if (!adminData) {
+        setError('Not authorized as admin');
+        await supabase.auth.signOut();
+        setLoading(false);
+        return;
+      }
+
+      // Store admin session
       localStorage.setItem('admin_authenticated', 'true');
       localStorage.setItem('admin_email', email);
       localStorage.setItem('admin_timestamp', Date.now().toString());
       
       // Redirect to admin dashboard
       router.push('/admin');
-    } else {
-      setError('Invalid email or password');
+    } catch (err) {
+      setError('Login failed. Please try again.');
     }
 
     setLoading(false);

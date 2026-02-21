@@ -22,7 +22,7 @@ export default function WahsRegisterPage() {
     } else {
       setMessage({ 
         type: 'success', 
-        text: 'Check your email for a magic link! After logging in, you\'ll need to complete your profile and wait for admin approval.' 
+        text: 'Check your email for a magic link! After logging in, you\'ll complete your profile and payment to activate your membership.' 
       });
       setEmail('');
     }
@@ -46,10 +46,15 @@ export default function WahsRegisterPage() {
           <div className="mb-6 p-4 bg-blue-50 rounded-md">
             <h3 className="text-sm font-medium text-blue-800">Membership Information</h3>
             <ul className="mt-2 text-sm text-blue-700 space-y-1">
-              <li>• Free membership requires admin approval</li>
-              <li>• Paid membership auto-approved after payment</li>
-              <li>• All members get access to member directory and resources</li>
+              <li>• <strong>Professional Membership:</strong> $250/year</li>
+              <li>• <strong>Non-Professional Membership:</strong> $150/year</li>
+              <li>• All members get access to member dashboard</li>
+              <li>• Professional members get free congress registration</li>
+              <li>• Non-Professional members get discounted congress registration</li>
             </ul>
+            <p className="mt-2 text-xs text-blue-600">
+              After logging in, you'll complete your profile and payment.
+            </p>
           </div>
           
           {message && (
