@@ -342,6 +342,18 @@ export default function WahsDashboardPage() {
                   Submit to Congress 2026
                 </button>
                 <button
+                  onClick={() => router.push('/wahs/profile')}
+                  className="w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Edit Member Profile
+                </button>
+                <button
+                  onClick={() => router.push('/wahs/members')}
+                  className="w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Member Directory
+                </button>
+                <button
                   onClick={() => alert('Contact form coming soon!')}
                   className="w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                 >
