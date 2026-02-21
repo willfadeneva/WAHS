@@ -91,8 +91,4 @@ export default function ProtectedSubmissionsPage({ params }: { params: { year: s
   );
 }
 
-export function generateMetadata() {
-  return {
-    title: 'Submit Your Abstract — WAHS 2026',
-  };
-}
+// Metadata moved to layout or removed since this is a client component
