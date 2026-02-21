@@ -21,28 +21,66 @@ function PaymentSuccessContent() {
         const payerId = searchParams.get('PayerID');
         const token = searchParams.get('token');
         const membershipType = searchParams.get('membership') as 'professional' | 'non_professional';
+        const email = searchParams.get('email');
 
         console.log('Payment success params:', { paymentId, payerId, token, membershipType });
-
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          throw new Error('You must be logged in');
-        }
 
         if (!membershipType || !['professional', 'non_professional'].includes(membershipType)) {
           throw new Error('Invalid membership type');
         }
 
-        // Get member info
-        const { data: member, error: memberError } = await supabase
-          .from('wahs_members')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        let member;
+        
+        if (user) {
+          // User is logged in, get member info
+          const { data: memberData, error: memberError } = await supabase
+            .from('wahs_members')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
 
-        if (memberError) throw memberError;
+          if (memberError) throw memberError;
+          member = memberData;
+        } else if (email) {
+          // User not logged in but we have email from PayPal
+          // Check if member exists with this email
+          const { data: memberData, error: memberError } = await supabase
+            .from('wahs_members')
+            .select('*')
+            .eq('email', email.toLowerCase())
+            .single();
+
+          if (memberError && memberError.code !== 'PGRST116') { // PGRST116 = no rows returned
+            throw memberError;
+          }
+          
+          if (memberData) {
+            member = memberData;
+          } else {
+            // Create new member record
+            const { data: newMember, error: createError } = await supabase
+              .from('wahs_members')
+              .insert({
+                email: email.toLowerCase(),
+                membership_type: membershipType,
+                payment_id: paymentId || `paypal_${Date.now()}`,
+                payment_date: new Date().toISOString(),
+                membership_status: 'active',
+                approved_at: new Date().toISOString(),
+                membership_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
+              })
+              .select()
+              .single();
+
+            if (createError) throw createError;
+            member = newMember;
+          }
+        } else {
+          throw new Error('Please login to complete your membership activation');
+        }
 
         setMemberInfo(member);
 
@@ -57,20 +95,22 @@ function PaymentSuccessContent() {
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Activate membership
-        const { error: updateError } = await supabase
-          .from('wahs_members')
-          .update({
-            membership_type: membershipType,
-            payment_id: paymentId || `manual_${Date.now()}`,
-            payment_date: new Date().toISOString(),
-            membership_status: 'active',
-            approved_at: new Date().toISOString(),
-            membership_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
-          })
-          .eq('id', member.id);
+        // Activate membership (only if not already activated)
+        if (member.membership_status !== 'active') {
+          const { error: updateError } = await supabase
+            .from('wahs_members')
+            .update({
+              membership_type: membershipType,
+              payment_id: paymentId || `paypal_${Date.now()}`,
+              payment_date: new Date().toISOString(),
+              membership_status: 'active',
+              approved_at: new Date().toISOString(),
+              membership_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
+            })
+            .eq('id', member.id);
 
-        if (updateError) throw updateError;
+          if (updateError) throw updateError;
+        }
 
         setStatus('success');
         setMessage(`Your ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership is now active!`);

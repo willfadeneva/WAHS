@@ -78,7 +78,7 @@ export default function MainNav() {
               
               <li className="nav-dropdown-header">WAHS Membership</li>
               <li>
-                <Link href="/wahs/register" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/membership" onClick={() => setIsMenuOpen(false)}>
                   Join WAHS
                 </Link>
               </li>

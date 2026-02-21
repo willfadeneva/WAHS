@@ -91,7 +91,25 @@ function MagicLinkContent() {
           if (wahsProfile) {
             router.push('/wahs/dashboard');
           } else {
-            router.push('/wahs/register/profile');
+            // Get current user from Supabase
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            if (user) {
+              // Check if user has completed profile
+              const { data: member } = await supabase
+                .from('wahs_members')
+                .select('full_name')
+                .eq('user_id', user.id)
+                .single();
+              
+              if (!member?.full_name) {
+                router.push('/wahs/profile');
+              } else {
+                router.push('/wahs/dashboard');
+              }
+            } else {
+              router.push('/wahs/profile');
+            }
           }
         } else if (userType === 'admin') {
           // Store admin session

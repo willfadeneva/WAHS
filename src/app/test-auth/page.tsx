@@ -21,16 +21,16 @@ export default function TestAuthPage() {
       results.push('❌ Congress Register page error: ' + error);
     }
 
-    // Test 2: Check WAHS register
+    // Test 2: Check WAHS payment
     try {
-      const response = await fetch('/wahs/register');
+      const response = await fetch('/wahs/payment');
       if (response.ok) {
-        results.push('✅ WAHS Register page loads');
+        results.push('✅ WAHS Payment page loads');
       } else {
-        results.push('❌ WAHS Register page failed');
+        results.push('❌ WAHS Payment page failed');
       }
     } catch (error) {
-      results.push('❌ WAHS Register page error: ' + error);
+      results.push('❌ WAHS Payment page error: ' + error);
     }
 
     // Test 3: Check admin page
@@ -110,9 +110,9 @@ export default function TestAuthPage() {
               <div className="font-medium text-gray-900">Congress Login</div>
               <div className="text-sm text-gray-600">Login for submitters</div>
             </Link>
-            <Link href="/wahs/register" className="p-4 border border-gray-200 rounded-md hover:bg-gray-50">
-              <div className="font-medium text-gray-900">WAHS Register</div>
-              <div className="text-sm text-gray-600">Apply for membership</div>
+            <Link href="/wahs/payment" className="p-4 border border-gray-200 rounded-md hover:bg-gray-50">
+              <div className="font-medium text-gray-900">WAHS Payment</div>
+              <div className="text-sm text-gray-600">Pay for membership</div>
             </Link>
             <Link href="/wahs/login" className="p-4 border border-gray-200 rounded-md hover:bg-gray-50">
               <div className="font-medium text-gray-900">WAHS Login</div>

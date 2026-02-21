@@ -14,9 +14,14 @@ const PAYPAL_CODES = {
 };
 
 // Generate PayPal link with return URL
-const getPayPalLink = (membershipType: 'professional' | 'non_professional') => {
+const getPayPalLink = (membershipType: 'professional' | 'non_professional', email?: string) => {
   const baseUrl = `${PAYPAL_BASE_URL}/${PAYPAL_CODES[membershipType]}`;
-  const returnUrl = `https://congress.iwahs.org/wahs/payment/success?membership=${membershipType}`;
+  let returnUrl = `https://congress.iwahs.org/wahs/payment/success?membership=${membershipType}`;
+  
+  if (email) {
+    returnUrl += `&email=${encodeURIComponent(email)}`;
+  }
+  
   return `${baseUrl}?return=${encodeURIComponent(returnUrl)}`;
 };
 
@@ -46,20 +51,19 @@ function WahsPaymentContent() {
         // Get current user
         const { data: { user } } = await supabase.auth.getUser();
         
-        if (!user) {
-          throw new Error('You must be logged in to make a payment');
+        if (user) {
+          // User is logged in, get member info
+          const { data: member, error: memberError } = await supabase
+            .from('wahs_members')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+          if (!memberError) {
+            setMemberInfo(member);
+          }
         }
-
-        // Get member info
-        const { data: member, error: memberError } = await supabase
-          .from('wahs_members')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (memberError) throw memberError;
         
-        setMemberInfo(member);
         setLoading(false);
 
       } catch (err) {
@@ -71,8 +75,37 @@ function WahsPaymentContent() {
     loadData();
   }, [router, searchParams]);
 
-  const handlePayPalRedirect = (membershipType: 'professional' | 'non_professional') => {
-    const paypalLink = getPayPalLink(membershipType);
+  const handlePayPalRedirect = async (membershipType: 'professional' | 'non_professional') => {
+    // If user is not logged in, ask for email
+    if (!memberInfo) {
+      const email = prompt('Please enter your email address to create an account and receive your membership confirmation:');
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      // Send magic link for this email
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.toLowerCase(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?membership=${membershipType}&email=${encodeURIComponent(email)}`,
+          data: {
+            membership_type: membershipType,
+            payment_pending: true
+          }
+        }
+      });
+      
+      if (error) {
+        alert(`Failed to send magic link: ${error.message}`);
+        return;
+      }
+      
+      alert(`Magic link sent to ${email}! Please check your email and click the link to continue with payment.`);
+      return;
+    }
+    
+    const paypalLink = getPayPalLink(membershipType, memberInfo.email);
     
     // Store selected membership type for verification
     setSelectedMembershipType(membershipType);

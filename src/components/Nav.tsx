@@ -79,7 +79,7 @@ export default function Nav({ year }: { year: number }) {
                   
                   <li className="nav-dropdown-header">WAHS Membership</li>
                   <li>
-                    <Link href="/wahs/register" onClick={() => setOpen(false)}>
+                    <Link href="/membership" onClick={() => setOpen(false)}>
                       Join WAHS
                     </Link>
                   </li>

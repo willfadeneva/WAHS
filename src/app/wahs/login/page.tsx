@@ -92,10 +92,10 @@ export default function WahsLoginPage() {
 
             <div className="mt-6 text-center">
               <Link 
-                href="/wahs/register" 
+                href="/membership" 
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                Apply for membership
+                Learn about WAHS membership
               </Link>
             </div>
             

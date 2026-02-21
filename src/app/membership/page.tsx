@@ -209,7 +209,7 @@ export default function MembershipPage() {
                   </p>
                   <div style={{ marginTop: '20px', textAlign: 'center' }}>
                     <a 
-                      href="/wahs/register" 
+                      href="/wahs/payment" 
                       className="auth-link-button"
                       style={{
                         display: 'inline-block',
