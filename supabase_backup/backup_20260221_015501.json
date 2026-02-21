@@ -1,0 +1,248 @@
+{
+  "timestamp": "20260221_015501",
+  "project_id": "gqroifralqsvrcuywfcr",
+  "tables": {
+    "congresses": {
+      "table": "congresses",
+      "schema_info": "application/vnd.pgrst.object+json; charset=utf-8",
+      "row_count": 1,
+      "data": [
+        {
+          "year": 2026,
+          "title": "World Congress for Hallyu Studies 2026",
+          "subtitle": "Cultural Dynamism in the Digital Age \u2014 Toward a Universal Theory of Pop Culture Globalization",
+          "theme": "12th Congress",
+          "dates": "May 28\u201330, 2026",
+          "venue": "Cheju Halla University",
+          "location": "Jeju Island, South Korea",
+          "submission_deadline": "April 15, 2026",
+          "early_bird_deadline": "May 15, 2026",
+          "video_url": "https://www.youtube.com/embed/72-GBLfTxEQ?rel=0&modestbranding=1",
+          "is_active": true,
+          "is_archived": false,
+          "tracks": [
+            {
+              "title": "Cultural Dynamism",
+              "number": "01",
+              "topics": [
+                "Platform capitalism",
+                "Digital circulation",
+                "Gender politics",
+                "Female universalism",
+                "Production systems",
+                "Business models",
+                "Fandom practices",
+                "Participatory culture",
+                "Postcolonial positioning",
+                "Transmedia storytelling",
+                "IP management",
+                "Comparative cases",
+                "Methodological innovations"
+              ],
+              "subtitle": "Annual Theme"
+            },
+            {
+              "title": "Open Topics",
+              "number": "02",
+              "topics": [
+                "K-pop",
+                "K-drama",
+                "Film",
+                "Webtoons",
+                "Gaming",
+                "Regional reception",
+                "Language learning",
+                "Cultural policy",
+                "Soft power",
+                "Tourism",
+                "Place branding",
+                "Consumption practices",
+                "Authenticity",
+                "Cultural translation"
+              ],
+              "subtitle": "Hallyu Studies"
+            }
+          ],
+          "pricing": [
+            {
+              "tier": "Regular",
+              "amount": "$300",
+              "featured": false,
+              "features": [
+                "Full conference access",
+                "All keynote sessions",
+                "Conference materials",
+                "Networking events"
+              ],
+              "early_bird": "$240"
+            },
+            {
+              "tier": "Student",
+              "amount": "$150",
+              "featured": true,
+              "features": [
+                "Full conference access",
+                "All keynote sessions",
+                "Conference materials",
+                "Student networking"
+              ],
+              "early_bird": "$120"
+            },
+            {
+              "tier": "WAHS Members",
+              "amount": "Free",
+              "featured": false,
+              "features": [
+                "Full conference access",
+                "All keynote sessions",
+                "Conference materials",
+                "Member events"
+              ],
+              "early_bird": "Membership benefits"
+            }
+          ],
+          "publications": [
+            {
+              "desc": "Special issue in this peer-reviewed, Arts & Humanities Citation Index journal.",
+              "badge": "A&HCI Indexed",
+              "title": "SOCI\u00c9T\u00c9S",
+              "badge_class": "indexed"
+            },
+            {
+              "desc": "Special issue in the WAHS flagship journal dedicated to Korean Wave scholarship.",
+              "badge": "Flagship Journal",
+              "title": "HALLYU",
+              "badge_class": "flagship"
+            },
+            {
+              "desc": "Edited volume with Brill, a leading international academic publisher.",
+              "badge": "Academic Press",
+              "title": "BRILL Volume",
+              "badge_class": "press"
+            },
+            {
+              "desc": "WAHS Congress Proceedings \u2014 open access publication for all accepted papers.",
+              "badge": "Open Access",
+              "title": "Congress Proceedings",
+              "badge_class": "open"
+            }
+          ],
+          "created_at": "2026-02-19T08:21:41.456406+00:00"
+        }
+      ]
+    },
+    "submissions": {
+      "table": "submissions",
+      "schema_info": "application/vnd.pgrst.object+json; charset=utf-8",
+      "row_count": 1,
+      "data": [
+        {
+          "id": "fd663e33-db46-4c5c-a001-08df0fc44439",
+          "type": "individual_paper",
+          "title": "Ingyu Oh will definitely kill CJ",
+          "track": "cultural_dynamism",
+          "abstract": "Ingyu Oh and CJ will fight each other.",
+          "keywords": "ingyu cj oh charanjot singh",
+          "author_name": "Ingyu Oh",
+          "author_email": "oingyu@gmail.com",
+          "author_affiliation": "University of Elizabeth",
+          "author_bio": "I don't know",
+          "co_authors": [],
+          "special_requirements": "",
+          "status": "rejected",
+          "submitted_at": "2026-02-19T12:29:54.6341+00:00",
+          "reviewed_at": "2026-02-19T12:31:21.28+00:00",
+          "reviewer_notes": "",
+          "created_at": "2026-02-19T12:29:54.6341+00:00",
+          "updated_at": "2026-02-19T12:31:21.28+00:00",
+          "congress_year": 2026
+        }
+      ]
+    },
+    "speakers": {
+      "table": "speakers",
+      "schema_info": "application/json; charset=utf-8",
+      "row_count": 6,
+      "data": [
+        {
+          "id": "f3b1b065-72e7-4a80-9a47-171898fda0e9",
+          "name": "Henry Jenkins",
+          "role": "Keynote",
+          "affiliation": "Provost Professor of Communication, Journalism, Cinematic Arts and Education \u2014 University of Southern California",
+          "image_url": "/speakers/henry-jenkins.jpg",
+          "bio": "",
+          "sort_order": 1,
+          "is_plenary": false,
+          "created_at": "2026-02-19T07:48:13.147533+00:00",
+          "updated_at": "2026-02-19T07:48:13.147533+00:00",
+          "congress_year": 2026
+        },
+        {
+          "id": "b0151eae-cad3-4a67-83d8-5b01e4354822",
+          "name": "Jieun Kiaer",
+          "role": "Keynote",
+          "affiliation": "Young Bin Min-KF Professor of Korean Linguistics \u2014 University of Oxford",
+          "image_url": "/speakers/jieun-kiaer.jpg",
+          "bio": "",
+          "sort_order": 2,
+          "is_plenary": false,
+          "created_at": "2026-02-19T07:48:13.147533+00:00",
+          "updated_at": "2026-02-19T07:48:13.147533+00:00",
+          "congress_year": 2026
+        },
+        {
+          "id": "cc01d3dd-3c4a-4d69-843d-8f2ffdf74286",
+          "name": "Roald Maliangkay",
+          "role": "Keynote",
+          "affiliation": "Professor, School of Culture, History and Language \u2014 Australian National University",
+          "image_url": "/speakers/roald-maliangkay.jpg",
+          "bio": "",
+          "sort_order": 3,
+          "is_plenary": false,
+          "created_at": "2026-02-19T07:48:13.147533+00:00",
+          "updated_at": "2026-02-19T07:48:13.147533+00:00",
+          "congress_year": 2026
+        },
+        {
+          "id": "85bafd8b-12bd-468d-96f9-4dc09c70b877",
+          "name": "Ingyu Oh",
+          "role": "Keynote",
+          "affiliation": "Professor, Kansai Gaidai University & Ex-President, World Association for Hallyu Studies",
+          "image_url": "/speakers/ingyu-oh.jpg",
+          "bio": "",
+          "sort_order": 4,
+          "is_plenary": false,
+          "created_at": "2026-02-19T07:48:13.147533+00:00",
+          "updated_at": "2026-02-19T07:48:13.147533+00:00",
+          "congress_year": 2026
+        },
+        {
+          "id": "2e38a196-0967-4e1d-8805-c8fe446f5b4b",
+          "name": "Rob Kutner",
+          "role": "Panelist",
+          "affiliation": "5-time Emmy Award Winner \u2014 Comedy writer-producer (The Daily Show, Conan, Teen Titans Go!)",
+          "image_url": "/speakers/rob-kutner.jpg",
+          "bio": "",
+          "sort_order": 5,
+          "is_plenary": true,
+          "created_at": "2026-02-19T07:48:13.147533+00:00",
+          "updated_at": "2026-02-19T07:48:13.147533+00:00",
+          "congress_year": 2026
+        },
+        {
+          "id": "37bb11c9-d3e6-4d4b-96a6-4788d8a2ada4",
+          "name": "Marlene Sharp",
+          "role": "Panelist",
+          "affiliation": "Producer \u2014 Sonic Boom, Z-Squad, Pink Poodle Productions",
+          "image_url": "/speakers/marlene-sharp.jpg",
+          "bio": "",
+          "sort_order": 6,
+          "is_plenary": true,
+          "created_at": "2026-02-19T07:48:13.147533+00:00",
+          "updated_at": "2026-02-19T07:48:13.147533+00:00",
+          "congress_year": 2026
+        }
+      ]
+    }
+  }
+}
