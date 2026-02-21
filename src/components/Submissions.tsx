@@ -128,6 +128,69 @@ export default function Submissions({ year }: { year: number }) {
           </p>
         </div>
 
+        {/* New Auth System Notice */}
+        <div style={{ 
+          maxWidth: '800px', 
+          margin: '0 auto 48px', 
+          padding: '24px', 
+          background: 'linear-gradient(135deg, rgba(0,71,160,0.05) 0%, rgba(205,46,58,0.05) 100%)',
+          border: '1px solid rgba(0,71,160,0.2)',
+          borderRadius: '8px'
+        }}>
+          <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', color: '#0047A0', marginBottom: '12px' }}>
+            🚀 New Submission System
+          </h3>
+          <p style={{ fontSize: '0.95rem', lineHeight: 1.7, color: '#444', marginBottom: '16px' }}>
+            We now have an improved submission system with user accounts! Benefits include:
+          </p>
+          <ul style={{ fontSize: '0.9rem', lineHeight: 1.8, color: '#555', paddingLeft: '20px', marginBottom: '20px' }}>
+            <li>Track your submission status</li>
+            <li>Upload supporting files (PDF/Word)</li>
+            <li>Edit your submission before review</li>
+            <li>Receive email notifications</li>
+            <li>Access your submission history</li>
+          </ul>
+          <div style={{ textAlign: 'center' }}>
+            <a 
+              href="/congress/register" 
+              className="auth-link-button"
+              style={{
+                display: 'inline-block',
+                background: 'linear-gradient(135deg, rgba(205,46,58,0.9) 0%, rgba(205,46,58,0.7) 100%)',
+                color: 'white',
+                padding: '12px 24px',
+                borderRadius: '4px',
+                fontWeight: '500',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                marginRight: '10px'
+              }}
+            >
+              Register & Submit Abstract
+            </a>
+            <a 
+              href="/congress/login" 
+              className="auth-secondary-button"
+              style={{
+                display: 'inline-block',
+                background: 'transparent',
+                color: '#0047A0',
+                padding: '12px 24px',
+                borderRadius: '4px',
+                fontWeight: '500',
+                textDecoration: 'none',
+                border: '1px solid #0047A0',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Existing User Login
+            </a>
+          </div>
+          <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '16px', textAlign: 'center' }}>
+            You can still use the form below, but we recommend the new system for better experience.
+          </p>
+        </div>
+
         {/* Submission Form */}
         <SubmissionForm year={year} />
       </div>

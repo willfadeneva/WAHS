@@ -14,11 +14,12 @@ const SPEAKER_PHOTOS: Record<string, string> = {
 
 const PHOTO_POSITION: Record<string, string> = {
   'Marlene Sharp': 'center 25%',
-  'Rob Kutner': 'center 25%',
+  'Rob Kutner': 'center 35%',
 };
 
 const PHOTO_SCALE: Record<string, string> = {
   'Marlene Sharp': '0.85',
+  'Rob Kutner': '1.1',
 };
 
 function getSpeakerImage(s: Speaker): string | null {

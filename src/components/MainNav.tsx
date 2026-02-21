@@ -60,34 +60,42 @@ export default function MainNav() {
           <li><Link href="/membership" className={isActive('/membership') ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Membership</Link></li>
           <li><a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a></li>
           
-          {/* Auth Links */}
-          {user ? (
-            <li className="nav-auth-item">
-              <Link 
-                href={userType === 'congress' ? '/congress/dashboard' : 
-                      userType === 'wahs' ? '/wahs/dashboard' : 
-                      '/admin'}
-                className="nav-auth-link"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span style={{ marginRight: '5px' }}>👤</span>
-                Dashboard
-              </Link>
-            </li>
-          ) : (
-            <>
-              <li className="nav-auth-item">
-                <Link href="/congress/register" className="nav-auth-link" onClick={() => setIsMenuOpen(false)}>
+          {/* Auth Submenu - Public site only shows auth options, not dashboards */}
+          <li className="nav-dropdown">
+            <span className="nav-dropdown-toggle">Account</span>
+            <ul className="nav-dropdown-menu">
+              <li className="nav-dropdown-header">Congress 2026</li>
+              <li>
+                <Link href="/congress/register" onClick={() => setIsMenuOpen(false)}>
                   Submit Abstract
                 </Link>
               </li>
-              <li className="nav-auth-item">
-                <Link href="/wahs/register" className="nav-auth-link" onClick={() => setIsMenuOpen(false)}>
+              <li>
+                <Link href="/congress/login" onClick={() => setIsMenuOpen(false)}>
+                  Congress Login
+                </Link>
+              </li>
+              
+              <li className="nav-dropdown-header">WAHS Membership</li>
+              <li>
+                <Link href="/wahs/register" onClick={() => setIsMenuOpen(false)}>
                   Join WAHS
                 </Link>
               </li>
-            </>
-          )}
+              <li>
+                <Link href="/wahs/login" onClick={() => setIsMenuOpen(false)}>
+                  Member Login
+                </Link>
+              </li>
+              
+              <li className="nav-dropdown-header">Admin</li>
+              <li>
+                <Link href="/admin/login" onClick={() => setIsMenuOpen(false)}>
+                  Admin Login
+                </Link>
+              </li>
+            </ul>
+          </li>
         </ul>
       </div>
     </nav>

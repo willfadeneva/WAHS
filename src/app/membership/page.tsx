@@ -203,10 +203,34 @@ export default function MembershipPage() {
                 </div>
                 
                 <div className="main-content-box">
-                  <h3>Questions?</h3>
+                  <h3>Ready to Join?</h3>
                   <p>
-                    Need help choosing the right membership tier or have questions 
-                    about benefits? Contact us at{' '}
+                    <strong>New members:</strong> Please use our new registration system:
+                  </p>
+                  <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <a 
+                      href="/wahs/register" 
+                      className="auth-link-button"
+                      style={{
+                        display: 'inline-block',
+                        background: 'linear-gradient(135deg, rgba(205,46,58,0.9) 0%, rgba(205,46,58,0.7) 100%)',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '4px',
+                        fontWeight: '500',
+                        textDecoration: 'none',
+                        transition: 'all 0.3s ease'
+                      }}
+                    >
+                      Join WAHS - New Registration System
+                    </a>
+                  </div>
+                  <p style={{ marginTop: '20px' }}>
+                    <strong>Existing members:</strong> Login to your dashboard at{' '}
+                    <a href="/wahs/login">/wahs/login</a>
+                  </p>
+                  <p style={{ marginTop: '20px' }}>
+                    <strong>Questions?</strong> Contact us at{' '}
                     <a href="mailto:wahskorea@gmail.com">wahskorea@gmail.com</a>
                   </p>
                 </div>

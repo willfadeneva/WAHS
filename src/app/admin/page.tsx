@@ -1,29 +1,58 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
+// Simple admin auth check (original design)
+const checkAdminAuth = () => {
+  if (typeof window === 'undefined') return false;
+  
+  const authenticated = localStorage.getItem('admin_authenticated');
+  const timestamp = localStorage.getItem('admin_timestamp');
+  
+  if (!authenticated || !timestamp) return false;
+  
+  // Check if session is older than 8 hours
+  const sessionAge = Date.now() - parseInt(timestamp);
+  const eightHours = 8 * 60 * 60 * 1000;
+  
+  if (sessionAge > eightHours) {
+    localStorage.removeItem('admin_authenticated');
+    localStorage.removeItem('admin_email');
+    localStorage.removeItem('admin_timestamp');
+    return false;
+  }
+  
+  return true;
+};
+
 export default function AdminPage() {
-  const { user, userType, loading, signOut } = useAuth();
   const router = useRouter();
+  const [authenticated, setAuthenticated] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
   const [activeTab, setActiveTab] = useState<'wahs' | 'congress'>('wahs');
   const [wahsMembers, setWahsMembers] = useState<any[]>([]);
   const [congressSubmissions, setCongressSubmissions] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(false);
 
   useEffect(() => {
-    if (!loading && userType !== 'admin') {
-      router.push('/');
+    // Check simple admin auth (original design)
+    const isAuthenticated = checkAdminAuth();
+    
+    if (!isAuthenticated) {
+      router.push('/admin/login');
+    } else {
+      setAuthenticated(true);
+      setAdminEmail(localStorage.getItem('admin_email') || '');
     }
-  }, [user, userType, loading, router]);
+  }, [router]);
 
   useEffect(() => {
-    if (userType === 'admin') {
+    if (authenticated) {
       loadData();
     }
-  }, [activeTab, userType]);
+  }, [activeTab, authenticated]);
 
   const loadData = async () => {
     setLoadingData(true);
@@ -69,16 +98,12 @@ export default function AdminPage() {
     loadData();
   };
 
-  if (loading) {
+  if (!authenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+        <div className="text-lg">Checking authentication...</div>
       </div>
     );
-  }
-
-  if (userType !== 'admin') {
-    return null;
   }
 
   return (
@@ -89,10 +114,16 @@ export default function AdminPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">WAHS Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome, Admin</p>
+              <p className="text-gray-600">Welcome, {adminEmail} (Admin)</p>
+              <p className="text-xs text-gray-500">Original design: Hardcoded email/password auth</p>
             </div>
             <button
-              onClick={() => signOut()}
+              onClick={() => {
+                localStorage.removeItem('admin_authenticated');
+                localStorage.removeItem('admin_email');
+                localStorage.removeItem('admin_timestamp');
+                router.push('/admin/login');
+              }}
               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700"
             >
               Sign Out
