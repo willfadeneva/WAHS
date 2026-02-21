@@ -62,23 +62,21 @@ export async function POST(request: NextRequest) {
 
     // Save submission to database
     const { data: submission, error: submissionError } = await supabase
-      .from('congress_submissions')
+      .from('submissions')
       .insert({
         title: body.title,
         abstract: body.abstract,
         keywords: body.keywords,
         presentation_type: body.presentationType,
         track: body.track,
-        user_id: userId,
-        submitter_email: userEmail,
-        submitter_name: userProfile.full_name || `${userProfile.first_name} ${userProfile.last_name}`,
-        affiliation: userProfile.affiliation,
-        country: userProfile.country,
-        year: body.year,
-        status: 'pending',
-        submitted_at: new Date().toISOString(),
+        submitter_id: userId,
+        author_email: userEmail,
+        author_name: userProfile.full_name || `${userProfile.first_name} ${userProfile.last_name}`,
+        author_affiliation: userProfile.affiliation,
+        congress_year: body.year,
+        status: 'submitted',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        last_edited: new Date().toISOString()
       })
       .select()
       .single();

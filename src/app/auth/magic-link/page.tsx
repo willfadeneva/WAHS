@@ -25,7 +25,7 @@ function MagicLinkContent() {
 
       try {
         // Verify the magic link token
-        const { valid, userType, error } = await verifyMagicLinkToken(token, email);
+        const { valid, userType, congressYear, error } = await verifyMagicLinkToken(token, email);
         
         if (!valid) {
           setStatus('error');
@@ -66,6 +66,9 @@ function MagicLinkContent() {
 
         // Redirect based on user type
         if (userType === 'congress') {
+          // Use congress year from token or default to 2026
+          const targetYear = congressYear || '2026';
+          
           // Check if user has a congress profile (by email)
           const { data: congressProfile } = await supabase
             .from('congress_submitters')
@@ -74,11 +77,12 @@ function MagicLinkContent() {
             .single();
 
           if (congressProfile) {
-            // User has profile - redirect to abstract submission
-            router.push('/2026/submissions-new');
+            // User has profile - redirect to abstract submission for target year
+            router.push(`/${targetYear}/submissions-new`);
           } else {
             // No profile yet - redirect to profile completion
-            router.push('/congress/submit-abstract/profile');
+            // Pass the congress year as a parameter
+            router.push(`/congress/submit-abstract/profile?year=${targetYear}`);
           }
         } else if (userType === 'wahs') {
           // Check if user has a WAHS profile (by email)

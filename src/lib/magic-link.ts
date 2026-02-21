@@ -4,7 +4,8 @@ import { sendEmail } from './email-notifications';
 // Generate a secure magic link token
 export async function generateMagicLink(
   email: string, 
-  userType: 'congress' | 'wahs' | 'admin'
+  userType: 'congress' | 'wahs' | 'admin',
+  congressYear?: string
 ): Promise<{ token: string; expiresAt: Date; error?: string }> {
   try {
     // Generate a secure random token
@@ -16,16 +17,22 @@ export async function generateMagicLink(
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 1);
     
-    // Store token in database
+    // Store token in database with congress year if provided
+    const tokenData: any = {
+      email: email.toLowerCase(),
+      token,
+      user_type: userType,
+      expires_at: expiresAt.toISOString(),
+      used: false
+    };
+    
+    if (congressYear && userType === 'congress') {
+      tokenData.congress_year = congressYear;
+    }
+    
     const { error } = await supabase
       .from('magic_link_tokens')
-      .insert({
-        email: email.toLowerCase(),
-        token,
-        user_type: userType,
-        expires_at: expiresAt.toISOString(),
-        used: false
-      });
+      .insert(tokenData);
     
     if (error) {
       return { token: '', expiresAt, error: error.message };
@@ -110,18 +117,22 @@ export async function sendPasswordResetLink(
 // Send magic link email using Resend
 export async function sendMagicLinkEmail(
   email: string,
-  userType: 'congress' | 'wahs' | 'admin'
+  userType: 'congress' | 'wahs' | 'admin',
+  congressYear?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Generate magic link token
-    const { token, expiresAt, error: tokenError } = await generateMagicLink(email, userType);
+    const { token, expiresAt, error: tokenError } = await generateMagicLink(email, userType, congressYear);
     
     if (tokenError || !token) {
       return { success: false, error: tokenError || 'Failed to generate token' };
     }
     
-    // Create magic link URL
-    const magicLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://congress.iwahs.org'}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
+    // Create magic link URL with congress year if provided
+    let magicLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://congress.iwahs.org'}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
+    if (congressYear) {
+      magicLink += `&congressYear=${congressYear}`;
+    }
     
     // Determine email template based on user type
     const templateKey = userType === 'congress' ? 'MAGIC_LINK_CONGRESS' : 
@@ -131,7 +142,8 @@ export async function sendMagicLinkEmail(
     // Send email using our email system (which uses Resend)
     const result = await sendEmail(email, templateKey as any, {
       magicLink,
-      expiresIn: '1 hour'
+      expiresIn: '1 hour',
+      congressYear: congressYear || '2026'
     });
     
     return result;
@@ -150,6 +162,7 @@ export async function verifyMagicLinkToken(
 ): Promise<{ 
   valid: boolean; 
   userType?: 'congress' | 'wahs' | 'admin'; 
+  congressYear?: string;
   error?: string 
 }> {
   try {
@@ -180,7 +193,8 @@ export async function verifyMagicLinkToken(
     
     return { 
       valid: true, 
-      userType: data.user_type as 'congress' | 'wahs' | 'admin'
+      userType: data.user_type as 'congress' | 'wahs' | 'admin',
+      congressYear: data.congress_year
     };
   } catch (error) {
     return {
@@ -229,17 +243,10 @@ export async function sendAdminMagicLink(
 // Unified function to send magic link (for registration or password reset)
 export async function sendMagicLink(
   email: string,
-  purpose: 'registration' | 'password_reset' = 'registration',
-  userType?: 'congress' | 'wahs' | 'admin'
+  userType: 'congress' | 'wahs' | 'admin',
+  congressYear?: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (purpose === 'password_reset') {
-    return sendPasswordResetLink(email);
-  } else {
-    if (!userType) {
-      return { success: false, error: 'User type required for registration' };
-    }
-    return sendMagicLinkEmail(email, userType);
-  }
+  return sendMagicLinkEmail(email, userType, congressYear);
 }
 
 // Clean up expired tokens (run as cron job)

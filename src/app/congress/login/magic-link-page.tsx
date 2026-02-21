@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { sendMagicLink } from '@/lib/magic-link';
 
-export default function CongressLoginPage() {
+export default function CongressMagicLinkLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
