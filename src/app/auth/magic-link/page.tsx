@@ -93,6 +93,11 @@ function MagicLinkContent() {
           } else {
             router.push('/wahs/register/profile');
           }
+        } else if (userType === 'admin') {
+          // Store admin session
+          localStorage.setItem('admin_authenticated', 'true');
+          localStorage.setItem('admin_timestamp', Date.now().toString());
+          router.push('/admin');
         }
 
         setStatus('success');

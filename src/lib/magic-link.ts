@@ -4,7 +4,7 @@ import { sendEmail } from './email-notifications';
 // Generate a secure magic link token
 export async function generateMagicLink(
   email: string, 
-  userType: 'congress' | 'wahs'
+  userType: 'congress' | 'wahs' | 'admin'
 ): Promise<{ token: string; expiresAt: Date; error?: string }> {
   try {
     // Generate a secure random token
@@ -59,16 +59,27 @@ export async function sendPasswordResetLink(
       .eq('email', email.toLowerCase())
       .single();
     
-    let userType: 'congress' | 'wahs' | null = null;
+    let userType: 'congress' | 'wahs' | 'admin' | null = null;
     
     if (congressUser) {
       userType = 'congress';
     } else if (wahsUser) {
       userType = 'wahs';
     } else {
-      // User doesn't exist in either table
-      // Still send a generic magic link that will fail gracefully
-      userType = 'congress'; // Default
+      // Check if admin user
+      const { data: adminUser } = await supabase
+        .from('admin_users')
+        .select('user_id')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id || '')
+        .single();
+      
+      if (adminUser) {
+        userType = 'admin';
+      } else {
+        // User doesn't exist in any table
+        // Still send a generic magic link that will fail gracefully
+        userType = 'congress'; // Default
+      }
     }
     
     // Generate magic link token
@@ -99,7 +110,7 @@ export async function sendPasswordResetLink(
 // Send magic link email using Resend
 export async function sendMagicLinkEmail(
   email: string,
-  userType: 'congress' | 'wahs'
+  userType: 'congress' | 'wahs' | 'admin'
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Generate magic link token
@@ -113,7 +124,9 @@ export async function sendMagicLinkEmail(
     const magicLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://congress.iwahs.org'}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
     
     // Determine email template based on user type
-    const templateKey = userType === 'congress' ? 'MAGIC_LINK_CONGRESS' : 'MAGIC_LINK_WAHS';
+    const templateKey = userType === 'congress' ? 'MAGIC_LINK_CONGRESS' : 
+                       userType === 'wahs' ? 'MAGIC_LINK_WAHS' : 
+                       'MAGIC_LINK_ADMIN';
     
     // Send email using our email system (which uses Resend)
     const result = await sendEmail(email, templateKey as any, {
@@ -136,7 +149,7 @@ export async function verifyMagicLinkToken(
   email: string
 ): Promise<{ 
   valid: boolean; 
-  userType?: 'congress' | 'wahs'; 
+  userType?: 'congress' | 'wahs' | 'admin'; 
   error?: string 
 }> {
   try {
@@ -167,7 +180,7 @@ export async function verifyMagicLinkToken(
     
     return { 
       valid: true, 
-      userType: data.user_type as 'congress' | 'wahs' 
+      userType: data.user_type as 'congress' | 'wahs' | 'admin'
     };
   } catch (error) {
     return {
@@ -177,11 +190,47 @@ export async function verifyMagicLinkToken(
   }
 }
 
+// Send admin magic link
+export async function sendAdminMagicLink(
+  email: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check if user is in admin_users table
+    const { data: userData } = await supabase
+      .from('auth.users')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single();
+
+    if (!userData) {
+      return { success: false, error: 'Admin user not found' };
+    }
+
+    const { data: adminData } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('user_id', userData.id)
+      .single();
+
+    if (!adminData) {
+      return { success: false, error: 'Not authorized as admin' };
+    }
+
+    // Send magic link for admin
+    return sendMagicLinkEmail(email, 'admin');
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
 // Unified function to send magic link (for registration or password reset)
 export async function sendMagicLink(
   email: string,
   purpose: 'registration' | 'password_reset' = 'registration',
-  userType?: 'congress' | 'wahs'
+  userType?: 'congress' | 'wahs' | 'admin'
 ): Promise<{ success: boolean; error?: string }> {
   if (purpose === 'password_reset') {
     return sendPasswordResetLink(email);
