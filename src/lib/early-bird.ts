@@ -128,105 +128,86 @@ export function qualifiesForEarlyBird(registrationDate: Date | string): boolean 
 }
 
 /**
- * Component to display early bird countdown
+ * Get HTML for early bird countdown display
  */
-export function EarlyBirdCountdown() {
-  const [timeRemaining, setTimeRemaining] = useState(getTimeRemaining());
-  const [isActive, setIsActive] = useState(isEarlyBirdAvailable());
-  
-  useEffect(() => {
-    if (!isActive) return;
-    
-    const interval = setInterval(() => {
-      const newTimeRemaining = getTimeRemaining();
-      setTimeRemaining(newTimeRemaining);
-      
-      if (!newTimeRemaining.isActive) {
-        setIsActive(false);
-        clearInterval(interval);
-      }
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, [isActive]);
+export function getEarlyBirdDisplayHtml(): string {
+  const isActive = isEarlyBirdAvailable();
+  const timeRemaining = getTimeRemaining();
   
   if (!isActive) {
-    return (
-      <div style={{
-        background: 'linear-gradient(135deg, #CD2E3A 0%, #0047A0 100%)',
-        color: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        textAlign: 'center',
-        margin: '20px 0'
-      }}>
-        <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem' }}>
+    return `
+      <div style="
+        background: linear-gradient(135deg, #CD2E3A 0%, #0047A0 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        margin: 20px 0;
+      ">
+        <h3 style="margin: 0 0 10px 0; font-size: 1.2rem;">
           Early Bird Registration Closed
         </h3>
-        <p style={{ margin: 0, opacity: 0.9 }}>
+        <p style="margin: 0; opacity: 0.9;">
           Regular pricing now applies
         </p>
       </div>
-    );
+    `;
   }
   
-  return (
-    <div style={{
-      background: 'linear-gradient(135deg, #0047A0 0%, #CD2E3A 100%)',
-      color: 'white',
-      padding: '20px',
-      borderRadius: '8px',
-      textAlign: 'center',
-      margin: '20px 0'
-    }}>
-      <h3 style={{ margin: '0 0 15px 0', fontSize: '1.2rem' }}>
+  return `
+    <div style="
+      background: linear-gradient(135deg, #0047A0 0%, #CD2E3A 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 20px 0;
+    ">
+      <h3 style="margin: 0 0 15px 0; font-size: 1.2rem;">
         🎯 Early Bird Registration Ends Soon!
       </h3>
       
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '15px',
-        marginBottom: '15px'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>
-            {timeRemaining.days.toString().padStart(2, '0')}
+      <div style="
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 15px;
+      ">
+        <div style="text-align: center;">
+          <div style="font-size: 1.8rem; font-weight: bold;">
+            ${timeRemaining.days.toString().padStart(2, '0')}
           </div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>Days</div>
+          <div style="font-size: 0.8rem; opacity: 0.9;">Days</div>
         </div>
         
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>
-            {timeRemaining.hours.toString().padStart(2, '0')}
+        <div style="text-align: center;">
+          <div style="font-size: 1.8rem; font-weight: bold;">
+            ${timeRemaining.hours.toString().padStart(2, '0')}
           </div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>Hours</div>
+          <div style="font-size: 0.8rem; opacity: 0.9;">Hours</div>
         </div>
         
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>
-            {timeRemaining.minutes.toString().padStart(2, '0')}
+        <div style="text-align: center;">
+          <div style="font-size: 1.8rem; font-weight: bold;">
+            ${timeRemaining.minutes.toString().padStart(2, '0')}
           </div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>Minutes</div>
+          <div style="font-size: 0.8rem; opacity: 0.9;">Minutes</div>
         </div>
         
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>
-            {timeRemaining.seconds.toString().padStart(2, '0')}
+        <div style="text-align: center;">
+          <div style="font-size: 1.8rem; font-weight: bold;">
+            ${timeRemaining.seconds.toString().padStart(2, '0')}
           </div>
-          <div style={{ fontSize: '0.8rem', opacity: 0.9 }}>Seconds</div>
+          <div style="font-size: 0.8rem; opacity: 0.9;">Seconds</div>
         </div>
       </div>
       
-      <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>
+      <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">
         Save 20% on registration fees
       </p>
-      <p style={{ margin: '5px 0 0 0', fontSize: '0.8rem', opacity: 0.8 }}>
+      <p style="margin: 5px 0 0 0; font-size: 0.8rem; opacity: 0.8;">
         Deadline: May 15, 2026 23:59:59 KST
       </p>
     </div>
-  );
+  `;
 }
-
-// React hooks
-import { useState, useEffect } from 'react';

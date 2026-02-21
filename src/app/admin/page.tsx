@@ -92,11 +92,15 @@ export default function AdminPage() {
   };
 
   const approveWahsMember = async (memberId: string) => {
+    // Get current admin user ID
+    const { data: { session } } = await supabase.auth.getSession();
+    const adminUserId = session?.user?.id;
+    
     await supabase
       .from('wahs_members')
       .update({ 
         membership_status: 'approved',
-        approved_by: user?.id,
+        approved_by: adminUserId,
         approved_at: new Date().toISOString()
       })
       .eq('id', memberId);

@@ -5,7 +5,7 @@ import {
   isEarlyBirdAvailable, 
   getCurrentPrice, 
   getPriceDisplay,
-  EarlyBirdCountdown,
+  getEarlyBirdDisplayHtml,
   formatTimeRemaining 
 } from '@/lib/early-bird';
 
@@ -56,7 +56,7 @@ export default async function RegistrationPage({
           </p>
           
           {/* Early Bird Countdown */}
-          <EarlyBirdCountdown />
+          <div dangerouslySetInnerHTML={{ __html: getEarlyBirdDisplayHtml() }} />
           
           {/* Registration Options */}
           <div style={{ 

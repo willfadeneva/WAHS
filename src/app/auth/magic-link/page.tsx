@@ -40,42 +40,28 @@ export default function MagicLinkPage() {
           .eq('email', email.toLowerCase())
           .single();
 
-        let userId: string;
-
-        if (existingUser) {
-          // User exists, sign them in
-          userId = existingUser.id;
-        } else {
-          // Create new user
-          const { data: newUser, error: createError } = await supabase.auth.signUp({
-            email: email.toLowerCase(),
-            options: {
-              data: { user_type: userType }
-            }
-          });
-
-          if (createError || !newUser.user) {
-            setStatus('error');
-            setMessage(createError?.message || 'Failed to create user account.');
-            return;
-          }
-
-          userId = newUser.user.id;
-        }
-
-        // Set session in localStorage (similar to Supabase Auth)
-        localStorage.setItem('supabase.auth.token', JSON.stringify({
-          access_token: 'magic-link-auth',
-          user: { id: userId, email: email.toLowerCase() }
+        // For our custom auth system, we don't need Supabase Auth user
+        // Instead, we'll create/update the user profile directly
+        
+        // Generate a user ID if needed
+        const userId = crypto.randomUUID();
+        
+        // Store user session in localStorage
+        localStorage.setItem('wahs_auth', JSON.stringify({
+          userId,
+          email: email.toLowerCase(),
+          userType,
+          authenticated: true,
+          timestamp: Date.now()
         }));
 
         // Redirect based on user type
         if (userType === 'congress') {
-          // Check if user has a congress profile
+          // Check if user has a congress profile (by email)
           const { data: congressProfile } = await supabase
             .from('congress_submitters')
             .select('id')
-            .eq('user_id', userId)
+            .eq('email', email.toLowerCase())
             .single();
 
           if (congressProfile) {
@@ -84,11 +70,11 @@ export default function MagicLinkPage() {
             router.push('/congress/register/profile');
           }
         } else if (userType === 'wahs') {
-          // Check if user has a WAHS profile
+          // Check if user has a WAHS profile (by email)
           const { data: wahsProfile } = await supabase
             .from('wahs_members')
             .select('id')
-            .eq('user_id', userId)
+            .eq('email', email.toLowerCase())
             .single();
 
           if (wahsProfile) {

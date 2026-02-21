@@ -5,11 +5,11 @@ const EMAIL_TEMPLATES = {
   // Congress submission emails
   SUBMISSION_CONFIRMATION: {
     subject: 'WAHS Congress 2026 - Submission Received',
-    template: (name: string, submissionId: string) => `
+    template: (data: { name: string; submissionId: string }) => `
       <h1>Submission Received</h1>
-      <p>Dear ${name},</p>
+      <p>Dear ${data.name},</p>
       <p>Thank you for submitting your abstract to the WAHS Congress 2026.</p>
-      <p>Your submission ID is: <strong>${submissionId}</strong></p>
+      <p>Your submission ID is: <strong>${data.submissionId}</strong></p>
       <p>We will review your submission and notify you of the outcome by April 15, 2026.</p>
       <p>You can check your submission status at any time by logging into your dashboard.</p>
       <br>
@@ -20,9 +20,9 @@ const EMAIL_TEMPLATES = {
 
   SUBMISSION_APPROVED: {
     subject: 'WAHS Congress 2026 - Submission Approved',
-    template: (name: string) => `
+    template: (data: { name: string }) => `
       <h1>Submission Approved</h1>
-      <p>Dear ${name},</p>
+      <p>Dear ${data.name},</p>
       <p>Congratulations! Your submission to the WAHS Congress 2026 has been approved.</p>
       <p>Please complete your registration by May 15, 2026 to secure your spot.</p>
       <p>Early bird registration is available until May 15, 2026.</p>
@@ -36,9 +36,9 @@ const EMAIL_TEMPLATES = {
 
   SUBMISSION_REJECTED: {
     subject: 'WAHS Congress 2026 - Submission Decision',
-    template: (name: string) => `
+    template: (data: { name: string }) => `
       <h1>Submission Decision</h1>
-      <p>Dear ${name},</p>
+      <p>Dear ${data.name},</p>
       <p>Thank you for your submission to the WAHS Congress 2026.</p>
       <p>After careful review, we regret to inform you that your submission was not selected for this year's congress.</p>
       <p>We received a large number of high-quality submissions and had to make difficult decisions.</p>
@@ -52,12 +52,12 @@ const EMAIL_TEMPLATES = {
   // WAHS membership emails
   MEMBERSHIP_APPLICATION: {
     subject: 'WAHS Membership Application Received',
-    template: (name: string, membershipType: string) => `
+    template: (data: { name: string; membershipType: string }) => `
       <h1>Membership Application Received</h1>
-      <p>Dear ${name},</p>
-      <p>Thank you for applying for ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership with WAHS.</p>
+      <p>Dear ${data.name},</p>
+      <p>Thank you for applying for ${data.membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership with WAHS.</p>
       <p>Your application is currently under review.</p>
-      <p>Please complete your payment ($${membershipType === 'professional' ? '250' : '150'}/year) to activate your membership.</p>
+      <p>Please complete your payment ($${data.membershipType === 'professional' ? '250' : '150'}/year) to activate your membership.</p>
       <br>
       <p>You can check your membership status at any time by logging into your dashboard.</p>
       <br>
@@ -68,10 +68,10 @@ const EMAIL_TEMPLATES = {
 
   MEMBERSHIP_APPROVED: {
     subject: 'WAHS Membership Approved',
-    template: (name: string, membershipType: string) => `
+    template: (data: { name: string; membershipType: string }) => `
       <h1>Membership Approved</h1>
-      <p>Dear ${name},</p>
-      <p>Congratulations! Your ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership with WAHS has been approved.</p>
+      <p>Dear ${data.name},</p>
+      <p>Congratulations! Your ${data.membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership with WAHS has been approved.</p>
       <p>Your membership is now active and will expire in 1 year.</p>
       <p>You can now access member-only resources and benefits.</p>
       <br>
@@ -84,9 +84,9 @@ const EMAIL_TEMPLATES = {
 
   MEMBERSHIP_REJECTED: {
     subject: 'WAHS Membership Application Decision',
-    template: (name: string) => `
+    template: (data: { name: string }) => `
       <h1>Membership Application Decision</h1>
-      <p>Dear ${name},</p>
+      <p>Dear ${data.name},</p>
       <p>Thank you for your interest in joining WAHS.</p>
       <p>After reviewing your application, we regret to inform you that it was not approved at this time.</p>
       <p>You may reapply in the future or contact us for more information.</p>
@@ -99,11 +99,11 @@ const EMAIL_TEMPLATES = {
   // Payment emails
   PAYMENT_CONFIRMATION: {
     subject: 'WAHS Membership Payment Confirmed',
-    template: (name: string, membershipType: string, paymentId: string) => `
+    template: (data: { name: string; membershipType: string; paymentId: string }) => `
       <h1>Payment Confirmed</h1>
-      <p>Dear ${name},</p>
-      <p>Your ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership payment has been confirmed.</p>
-      <p>Payment ID: <strong>${paymentId}</strong></p>
+      <p>Dear ${data.name},</p>
+      <p>Your ${data.membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership payment has been confirmed.</p>
+      <p>Payment ID: <strong>${data.paymentId}</strong></p>
       <p>Your membership is now active and will expire in 1 year.</p>
       <br>
       <p><a href="https://congress.iwahs.org/wahs/dashboard">Access your member dashboard</a></p>
@@ -116,12 +116,12 @@ const EMAIL_TEMPLATES = {
   // Password reset
   PASSWORD_RESET: {
     subject: 'WAHS - Password Reset Request',
-    template: (name: string, resetLink: string) => `
+    template: (data: { name: string; resetLink: string }) => `
       <h1>Password Reset</h1>
-      <p>Dear ${name},</p>
+      <p>Dear ${data.name},</p>
       <p>You requested a password reset for your WAHS account.</p>
       <p>Click the link below to reset your password:</p>
-      <p><a href="${resetLink}">${resetLink}</a></p>
+      <p><a href="${data.resetLink}">${data.resetLink}</a></p>
       <p>This link will expire in 1 hour.</p>
       <br>
       <p>If you didn't request this, please ignore this email.</p>
@@ -134,11 +134,11 @@ const EMAIL_TEMPLATES = {
   // Magic link emails
   MAGIC_LINK_CONGRESS: {
     subject: 'WAHS Congress 2026 - Login Link',
-    template: (magicLink: string, expiresIn: string) => `
+    template: (data: { magicLink: string; expiresIn: string }) => `
       <h1>Login to WAHS Congress 2026</h1>
       <p>Click the link below to log in to your WAHS Congress account:</p>
-      <p><a href="${magicLink}">${magicLink}</a></p>
-      <p>This link will expire in ${expiresIn}.</p>
+      <p><a href="${data.magicLink}">${data.magicLink}</a></p>
+      <p>This link will expire in ${data.expiresIn}.</p>
       <br>
       <p>If you didn't request this login link, please ignore this email.</p>
       <br>
@@ -149,11 +149,11 @@ const EMAIL_TEMPLATES = {
 
   MAGIC_LINK_WAHS: {
     subject: 'WAHS Membership - Login Link',
-    template: (magicLink: string, expiresIn: string) => `
+    template: (data: { magicLink: string; expiresIn: string }) => `
       <h1>Login to WAHS Membership</h1>
       <p>Click the link below to log in to your WAHS Membership account:</p>
-      <p><a href="${magicLink}">${magicLink}</a></p>
-      <p>This link will expire in ${expiresIn}.</p>
+      <p><a href="${data.magicLink}">${data.magicLink}</a></p>
+      <p>This link will expire in ${data.expiresIn}.</p>
       <br>
       <p>If you didn't request this login link, please ignore this email.</p>
       <br>
@@ -167,16 +167,20 @@ const EMAIL_TEMPLATES = {
 export async function sendEmail(
   to: string,
   templateKey: keyof typeof EMAIL_TEMPLATES,
-  templateData: Record<string, any>
+  templateData: any
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const template = EMAIL_TEMPLATES[templateKey];
     const subject = template.subject;
     
     // Generate HTML content
-    const html = typeof template.template === 'function' 
-      ? template.template(...Object.values(templateData))
-      : template.template;
+    let html: string;
+    if (typeof template.template === 'function') {
+      // Call the template function with the data
+      html = template.template(templateData);
+    } else {
+      html = template.template;
+    }
 
     console.log(`[EMAIL] Sending ${templateKey} to ${to}`);
     
