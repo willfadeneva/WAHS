@@ -195,7 +195,7 @@ export async function sendEmail(
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'WAHS <noreply@wahs.org>',
+            from: 'WAHS <onboarding@resend.dev>',
             to: [to],
             subject,
             html,
