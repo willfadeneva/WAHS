@@ -1,4 +1,4 @@
-import MainNav from '@/components/MainNav';
+import Nav from '@/components/Nav';
 import Hero from '@/components/Hero';
 import Overview from '@/components/Overview';
 import Speakers from '@/components/Speakers';
@@ -191,7 +191,7 @@ export default function CongressPage({ params }: { params: { year: string } }) {
 
   return (
     <div className="congress-page">
-      <MainNav />
+      <Nav year={congress.year} />
       <Hero congress={congress} />
       
       <Overview congress={congress} />
