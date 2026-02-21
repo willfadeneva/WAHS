@@ -15,20 +15,18 @@ export default function WahsPaymentPage() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [membershipType, setMembershipType] = useState<'professional' | 'non_professional' | null>(null);
+  const [selectedMembershipType, setSelectedMembershipType] = useState<'professional' | 'non_professional' | null>(null);
   const [memberInfo, setMemberInfo] = useState<any>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Get membership type from URL
+        // Get membership type from URL (optional - user can choose on page)
         const type = searchParams.get('membership') as 'professional' | 'non_professional';
         
-        if (!type || !['professional', 'non_professional'].includes(type)) {
-          throw new Error('Invalid membership type');
+        if (type && ['professional', 'non_professional'].includes(type)) {
+          setSelectedMembershipType(type);
         }
-        
-        setMembershipType(type);
 
         // Get current user
         const { data: { user } } = await supabase.auth.getUser();
@@ -58,20 +56,24 @@ export default function WahsPaymentPage() {
     loadData();
   }, [router, searchParams]);
 
-  const handlePayPalRedirect = () => {
-    if (!membershipType) return;
-    
+  const handlePayPalRedirect = (membershipType: 'professional' | 'non_professional') => {
     const paypalLink = PAYPAL_LINKS[membershipType];
     window.open(paypalLink, '_blank');
     
     // Show payment instructions
     alert(`Redirecting to PayPal for ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership payment.\n\nAfter completing payment on PayPal, please return to this page and click "I've Paid" to verify your payment.`);
+    
+    // Store selected membership type for verification
+    setSelectedMembershipType(membershipType);
   };
 
   const handlePaymentComplete = async () => {
-    if (!memberInfo) return;
+    if (!memberInfo || !selectedMembershipType) {
+      alert('Please select a membership type first');
+      return;
+    }
     
-    const paymentId = prompt('Please enter your PayPal transaction ID (you can find this in your PayPal receipt email):');
+    const paymentId = prompt(`Please enter your PayPal transaction ID for ${selectedMembershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership (you can find this in your PayPal receipt email):`);
     
     if (!paymentId) {
       alert('Payment ID is required for verification');
@@ -84,6 +86,7 @@ export default function WahsPaymentPage() {
       const { error } = await supabase
         .from('wahs_members')
         .update({
+          membership_type: selectedMembershipType,
           payment_id: paymentId,
           payment_date: new Date().toISOString(),
           membership_status: 'active',
@@ -94,7 +97,7 @@ export default function WahsPaymentPage() {
 
       if (error) throw error;
 
-      alert('Payment verified successfully! Your membership is now active. Redirecting to your dashboard...');
+      alert(`Payment verified successfully! Your ${selectedMembershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership is now active. Redirecting to your dashboard...`);
       router.push('/wahs/dashboard');
 
     } catch (err) {
@@ -137,8 +140,8 @@ export default function WahsPaymentPage() {
     );
   }
 
-  const price = membershipType === 'professional' ? 250 : 150;
-  const membershipName = membershipType === 'professional' ? 'Professional' : 'Non-Professional';
+  const price = selectedMembershipType === 'professional' ? 250 : 150;
+  const membershipName = selectedMembershipType === 'professional' ? 'Professional' : 'Non-Professional';
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -162,12 +165,14 @@ export default function WahsPaymentPage() {
                 <p className="font-medium">{memberInfo?.email}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Membership Type</p>
-                <p className="font-medium">{membershipName}</p>
+                <p className="text-sm text-gray-500">Current Membership</p>
+                <p className="font-medium">{memberInfo?.membership_type ? memberInfo.membership_type.charAt(0).toUpperCase() + memberInfo.membership_type.slice(1) : 'Not selected'}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Price</p>
-                <p className="font-medium text-blue-600">${price}/year</p>
+                <p className="text-sm text-gray-500">Status</p>
+                <p className={`font-medium ${memberInfo?.membership_status === 'active' ? 'text-green-600' : 'text-yellow-600'}`}>
+                  {memberInfo?.membership_status ? memberInfo.membership_status.charAt(0).toUpperCase() + memberInfo.membership_status.slice(1) : 'Pending'}
+                </p>
               </div>
             </div>
           </div>
@@ -214,39 +219,126 @@ export default function WahsPaymentPage() {
             </div>
           </div>
 
-          {/* PayPal Button */}
+          {/* Two Payment Options */}
           <div className="p-6">
-            <div className="text-center">
-              <button
-                onClick={handlePayPalRedirect}
-                className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md shadow-sm text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-              >
-                <svg className="w-8 h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.973.382-1.052.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-1.588-1.17-3.832-1.49-5.822-1.49h-5.91c-.524 0-.973.382-1.052.9L6.734 19.09h4.376a.65.65 0 0 0 .643-.557l1.85-11.78c.072-.46.44-.777.902-.777h.59c4.303 0 7.82 1.738 8.733 6.746.023.144.046.287.076.434.207 1.06.282 2.291-.417 3.362-.793 1.21-2.304 1.87-4.13 1.87h-1.294c-.524 0-.973.382-1.052.9l-.72 4.58h.007z"/>
-                </svg>
-                Pay with PayPal
-              </button>
-              
-              <p className="mt-4 text-sm text-gray-500">
-                Secure payment processed by PayPal
-              </p>
+            <h2 className="text-lg font-medium text-gray-900 mb-6 text-center">Choose Your Membership Type</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Professional Membership */}
+              <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">Professional</h3>
+                  <p className="text-3xl font-bold text-blue-600 mt-2">$250<span className="text-sm font-normal text-gray-500">/year</span></p>
+                  <p className="text-sm text-gray-500 mt-1">For academics, researchers, professionals</p>
+                </div>
+                
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Full voting rights</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Conference discounts</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Research publication access</span>
+                  </li>
+                </ul>
+                
+                <button
+                  onClick={() => handlePayPalRedirect('professional')}
+                  className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.973.382-1.052.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-1.588-1.17-3.832-1.49-5.822-1.49h-5.91c-.524 0-.973.382-1.052.9L6.734 19.09h4.376a.65.65 0 0 0 .643-.557l1.85-11.78c.072-.46.44-.777.902-.777h.59c4.303 0 7.82 1.738 8.733 6.746.023.144.046.287.076.434.207 1.06.282 2.291-.417 3.362-.793 1.21-2.304 1.87-4.13 1.87h-1.294c-.524 0-.973.382-1.052.9l-.72 4.58h.007z"/>
+                  </svg>
+                  Pay $250 with PayPal
+                </button>
+              </div>
+
+              {/* Non-Professional Membership */}
+              <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-gray-900">Non-Professional</h3>
+                  <p className="text-3xl font-bold text-blue-600 mt-2">$150<span className="text-sm font-normal text-gray-500">/year</span></p>
+                  <p className="text-sm text-gray-500 mt-1">For students, enthusiasts, general public</p>
+                </div>
+                
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Access to member resources</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Newsletter subscription</span>
+                  </li>
+                  <li className="flex items-center">
+                    <svg className="w-5 h-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm">Community forum access</span>
+                  </li>
+                </ul>
+                
+                <button
+                  onClick={() => handlePayPalRedirect('non_professional')}
+                  className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.973.382-1.052.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-1.588-1.17-3.832-1.49-5.822-1.49h-5.91c-.524 0-.973.382-1.052.9L6.734 19.09h4.376a.65.65 0 0 0 .643-.557l1.85-11.78c.072-.46.44-.777.902-.777h.59c4.303 0 7.82 1.738 8.733 6.746.023.144.046.287.076.434.207 1.06.282 2.291-.417 3.362-.793 1.21-2.304 1.87-4.13 1.87h-1.294c-.524 0-.973.382-1.052.9l-.72 4.58h.007z"/>
+                  </svg>
+                  Pay $150 with PayPal
+                </button>
+              </div>
             </div>
 
             {/* Manual Verification */}
             <div className="mt-8 pt-8 border-t">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Already Paid?</h3>
               <p className="text-sm text-gray-600 mb-4">
-                If you've already completed payment on PayPal, click below to verify your payment and activate your membership.
+                If you've already completed payment on PayPal, select your membership type and click below to verify your payment.
               </p>
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Select Your Membership Type</label>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setSelectedMembershipType('professional')}
+                    className={`px-4 py-2 border rounded-md ${selectedMembershipType === 'professional' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    Professional ($250)
+                  </button>
+                  <button
+                    onClick={() => setSelectedMembershipType('non_professional')}
+                    className={`px-4 py-2 border rounded-md ${selectedMembershipType === 'non_professional' ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
+                  >
+                    Non-Professional ($150)
+                  </button>
+                </div>
+              </div>
               
               <button
                 onClick={handlePaymentComplete}
-                className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                disabled={!selectedMembershipType}
+                className="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                I've Paid - Verify My Payment
+                I've Paid - Verify My {selectedMembershipType === 'professional' ? 'Professional' : 'Non-Professional'} Payment
               </button>
             </div>
           </div>
