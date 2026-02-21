@@ -152,7 +152,7 @@ export default function Submissions({ year }: { year: number }) {
           </ul>
           <div style={{ textAlign: 'center' }}>
             <a 
-              href="/congress/register" 
+              href="/congress/submit-abstract" 
               className="auth-link-button"
               style={{
                 display: 'inline-block',

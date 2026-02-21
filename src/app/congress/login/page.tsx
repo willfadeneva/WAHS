@@ -99,10 +99,10 @@ export default function CongressLoginPage() {
 
             <div className="mt-6 text-center">
               <Link 
-                href="/congress/register" 
+                href="/congress/submit-abstract" 
                 className="font-medium text-blue-600 hover:text-blue-500"
               >
-                Create a new account
+                Submit an abstract (create account)
               </Link>
             </div>
             

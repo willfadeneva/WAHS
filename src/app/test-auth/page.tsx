@@ -11,7 +11,7 @@ export default function TestAuthPage() {
     
     // Test 1: Check if pages exist
     try {
-      const response = await fetch('/congress/register');
+      const response = await fetch('/congress/submit-abstract');
       if (response.ok) {
         results.push('✅ Congress Register page loads');
       } else {
@@ -102,7 +102,7 @@ export default function TestAuthPage() {
         <div className="mb-8 p-6 bg-white shadow rounded-lg">
           <h2 className="text-xl font-medium text-gray-900 mb-4">Test Pages</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <Link href="/congress/register" className="p-4 border border-gray-200 rounded-md hover:bg-gray-50">
+            <Link href="/congress/submit-abstract" className="p-4 border border-gray-200 rounded-md hover:bg-gray-50">
               <div className="font-medium text-gray-900">Congress Register</div>
               <div className="text-sm text-gray-600">Register to submit abstracts</div>
             </Link>

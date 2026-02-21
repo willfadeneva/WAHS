@@ -67,7 +67,7 @@ export default function Nav({ year }: { year: number }) {
                 <>
                   <li className="nav-dropdown-header">Congress 2026</li>
                   <li>
-                    <Link href="/congress/register" onClick={() => setOpen(false)}>
+                    <Link href="/congress/submit-abstract" onClick={() => setOpen(false)}>
                       Submit Abstract
                     </Link>
                   </li>
