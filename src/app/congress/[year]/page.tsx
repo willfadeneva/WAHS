@@ -113,46 +113,66 @@ const congressData = {
   ]
 };
 
-// Mock speakers data
+// Mock speakers data - using actual speaker photos that exist
 const speakersData = [
   {
     id: '1',
-    name: 'Dr. Kim Jiyoung',
-    role: 'Director, Korean Culture Institute',
-    affiliation: 'Seoul National University',
-    image_url: '/speakers/kim-jiyoung.jpg',
-    bio: 'Leading scholar in cultural policy and soft power studies with over 20 years of research experience.',
+    name: 'Henry Jenkins',
+    role: 'Provost Professor of Communication, Journalism, Cinematic Arts and Education',
+    affiliation: 'University of Southern California',
+    image_url: '/speakers/henry-jenkins.jpg',
+    bio: 'Leading media scholar known for work on participatory culture, convergence, and fandom studies.',
     sort_order: 1,
     is_plenary: true
   },
   {
     id: '2',
-    name: 'Prof. Lee Minho',
-    role: 'Chair of Media Studies',
-    affiliation: 'Yonsei University',
-    image_url: '/speakers/lee-minho.jpg',
-    bio: 'Expert in digital platforms and media circulation in East Asian contexts.',
+    name: 'Jieun Kiaer',
+    role: 'Professor of Korean Language and Linguistics',
+    affiliation: 'University of Oxford',
+    image_url: '/speakers/jieun-kiaer.jpg',
+    bio: 'Expert in Korean linguistics, translation studies, and Hallyu language phenomena.',
     sort_order: 2,
     is_plenary: true
   },
   {
     id: '3',
-    name: 'Dr. Park Sooyoung',
-    role: 'Research Fellow',
-    affiliation: 'Harvard Korea Institute',
-    image_url: '/speakers/park-sooyoung.jpg',
-    bio: 'Specialist in transnational fandom and participatory culture studies.',
+    name: 'Roald Maliangkay',
+    role: 'Associate Professor of Korean Studies',
+    affiliation: 'Australian National University',
+    image_url: '/speakers/roald-maliangkay.jpg',
+    bio: 'Specialist in Korean popular music, cultural policy, and heritage studies.',
     sort_order: 3,
     is_plenary: false
   },
   {
     id: '4',
-    name: 'Prof. Choi Young',
-    role: 'Department Head',
-    affiliation: 'University of Tokyo',
-    image_url: '/speakers/choi-young.jpg',
-    bio: 'Pioneer in regional reception studies of Korean popular culture.',
+    name: 'Ingyu Oh',
+    role: 'Professor of Business and Management',
+    affiliation: 'Korea University',
+    image_url: '/speakers/ingyu-oh.jpg',
+    bio: 'Focuses on business models, creative industries, and Hallyu economics.',
     sort_order: 4,
+    is_plenary: false
+  },
+  {
+    id: '5',
+    name: 'Rob Kutner',
+    role: 'Writer and Producer',
+    affiliation: 'The Daily Show, Conan',
+    image_url: '/speakers/rob-kutner.jpg',
+    bio: 'Emmy-winning comedy writer with expertise in satire and pop culture commentary.',
+    sort_order: 5,
+    is_plenary: false
+  },
+  {
+    id: '6',
+    name: 'Marlene Sharp',
+    role: 'Entertainment Attorney and Producer',
+    affiliation: 'Sharp Entertainment Law',
+    image_url: '/speakers/marlene-sharp.jpg',
+    bio: 'Specializes in entertainment law, intellectual property, and media production.',
+    sort_order: 6,
     is_plenary: false
   }
 ];
