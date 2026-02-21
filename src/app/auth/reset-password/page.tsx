@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { sendMagicLink } from '@/lib/magic-link';
+import { sendPasswordResetLink } from '@/lib/magic-link';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function ResetPasswordPage() {
 
     try {
       // Send magic link for password reset
-      const result = await sendMagicLink(email, 'password_reset');
+      const result = await sendPasswordResetLink(email);
       
       if (result.success) {
         setSuccess(true);

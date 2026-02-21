@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendMagicLink } from '@/lib/magic-link';
+import { sendPasswordResetLink } from '@/lib/magic-link';
 import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send magic link for password reset (which is just a login link)
-    const result = await sendMagicLink(email, 'password_reset');
+    const result = await sendPasswordResetLink(email);
     
     if (result.success) {
       return NextResponse.json({
