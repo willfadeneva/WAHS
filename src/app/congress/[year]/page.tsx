@@ -1,3 +1,4 @@
+import MainNav from '@/components/MainNav';
 import Hero from '@/components/Hero';
 import Overview from '@/components/Overview';
 import Speakers from '@/components/Speakers';
@@ -170,25 +171,26 @@ export default function CongressPage({ params }: { params: { year: string } }) {
 
   return (
     <div className="congress-page">
-        <Hero congress={congress} />
-        
-        <Overview congress={congress} />
-        
-        <Speakers speakers={speakersData} />
-        
-        <Tracks tracks={congress.tracks} />
-        
-        <Timeline congress={congress} />
-        
-        <Venue congress={congress} />
-        
-        <Publications publications={congress.publications} />
-        
-        <Congress2022 />
-        
-        <CTA congress={congress} year={congress.year} />
-        
-        <Footer />
+      <MainNav />
+      <Hero congress={congress} />
+      
+      <Overview congress={congress} />
+      
+      <Speakers speakers={speakersData} />
+      
+      <Tracks tracks={congress.tracks} />
+      
+      <Timeline congress={congress} />
+      
+      <Venue congress={congress} />
+      
+      <Publications publications={congress.publications} />
+      
+      <Congress2022 />
+      
+      <CTA congress={congress} year={congress.year} />
+      
+      <Footer />
     </div>
   );
 }
