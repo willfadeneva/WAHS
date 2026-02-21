@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,19 +12,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine email subject and content based on status
-    const isAccepted = status === 'accepted';
-    const subject = isAccepted 
-      ? `WAHS Congress ${congressYear} - Submission Accepted`
-      : `WAHS Congress ${congressYear} - Submission Decision`;
+    // TEMPORARY FIX: Log email instead of sending
+    console.log('Email notification (would send):', {
+      toEmail,
+      submissionTitle,
+      status,
+      congressYear,
+      timestamp: new Date().toISOString()
+    });
 
-    const statusText = isAccepted ? 'accepted' : 'not selected';
-    const actionText = isAccepted ? 'Congratulations!' : 'Thank you for your submission.';
-
-    const { data, error } = await resend.emails.send({
-      from: 'WAHS Congress <noreply@congress.iwahs.org>',
-      to: [toEmail],
-      subject,
+    // Return success without actually sending email
+    return NextResponse.json({
+      success: true,
+      message: 'Email logged (Resend API key not configured)',
+      logged: true,
+      email: toEmail,
+      status
+    });
       html: `
         <!DOCTYPE html>
         <html>
