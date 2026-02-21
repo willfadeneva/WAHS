@@ -1,218 +1,194 @@
-import Link from 'next/link';
+import Hero from '@/components/Hero';
+import Overview from '@/components/Overview';
+import Speakers from '@/components/Speakers';
+import Tracks from '@/components/Tracks';
+import Timeline from '@/components/Timeline';
+import Venue from '@/components/Venue';
+import Publications from '@/components/Publications';
+import CTA from '@/components/CTA';
+import Footer from '@/components/Footer';
+import Congress2022 from '@/components/Congress2022';
+
+// Mock data for the Congress
+const congressData = {
+  year: 2026,
+  title: 'Cultural Dynamism in the Digital Age',
+  subtitle: 'Toward a Universal Theory of Pop Culture Globalization',
+  theme: 'Cultural Dynamism',
+  dates: 'May 28–30, 2026',
+  venue: 'Cheju Halla University',
+  location: 'Jeju Island, South Korea',
+  submission_deadline: 'March 31, 2026',
+  early_bird_deadline: 'May 15, 2026',
+  video_url: 'https://www.youtube.com/embed/sample',
+  is_active: true,
+  is_archived: false,
+  tracks: [
+    {
+      number: '1',
+      title: 'Cultural Dynamism',
+      subtitle: 'Annual Theme',
+      topics: [
+        'Platform capitalism and digital circulation',
+        'Gender politics and female universalism',
+        'Production systems and business models',
+        'Fandom practices and participatory culture',
+        'Postcolonial positioning and geopolitical contexts',
+        'Transmedia storytelling and IP management',
+        'Comparative cases beyond Korea',
+        'Methodological innovations'
+      ]
+    },
+    {
+      number: '2',
+      title: 'Open Topics in Hallyu Studies',
+      subtitle: 'All Topics Welcome',
+      topics: [
+        'K-pop, K-drama, Film, Webtoons, Gaming',
+        'Regional reception studies',
+        'Language learning and Korean studies',
+        'Cultural policy and soft power',
+        'Tourism and place branding',
+        'Consumption practices',
+        'Authenticity and cultural translation'
+      ]
+    }
+  ],
+  pricing: [
+    {
+      tier: 'Regular',
+      amount: '$300',
+      early_bird: '$250',
+      features: ['Full conference access', 'Conference materials', 'Lunch & coffee breaks', 'Welcome reception'],
+      featured: false
+    },
+    {
+      tier: 'Student',
+      amount: '$150',
+      early_bird: '$120',
+      features: ['Full conference access', 'Conference materials', 'Lunch & coffee breaks'],
+      featured: false
+    },
+    {
+      tier: 'WAHS Member',
+      amount: '$250',
+      early_bird: '$200',
+      features: ['Full conference access', 'Conference materials', 'Lunch & coffee breaks', 'Welcome reception', 'Member networking event'],
+      featured: true
+    },
+    {
+      tier: 'Virtual',
+      amount: '$100',
+      early_bird: '$80',
+      features: ['Virtual conference access', 'Digital materials', 'Online networking'],
+      featured: false
+    }
+  ],
+  publications: [
+    {
+      badge: 'A&HCI',
+      badge_class: 'indexed',
+      title: 'SOCIÉTÉS',
+      desc: 'Peer-reviewed, A&HCI indexed journal (special issue)'
+    },
+    {
+      badge: 'WAHS',
+      badge_class: 'wahs',
+      title: 'HALLYU',
+      desc: 'WAHS flagship journal (special issue)'
+    },
+    {
+      badge: 'Brill',
+      badge_class: 'publisher',
+      title: 'BRILL',
+      desc: 'Leading academic publisher (edited volume)'
+    },
+    {
+      badge: 'OA',
+      badge_class: 'open',
+      title: 'Congress Proceedings',
+      desc: 'Open access publication of selected papers'
+    }
+  ]
+};
+
+// Mock speakers data
+const speakersData = [
+  {
+    id: '1',
+    name: 'Dr. Kim Jiyoung',
+    role: 'Director, Korean Culture Institute',
+    affiliation: 'Seoul National University',
+    image_url: '/speakers/kim-jiyoung.jpg',
+    bio: 'Leading scholar in cultural policy and soft power studies with over 20 years of research experience.',
+    sort_order: 1,
+    is_plenary: true
+  },
+  {
+    id: '2',
+    name: 'Prof. Lee Minho',
+    role: 'Chair of Media Studies',
+    affiliation: 'Yonsei University',
+    image_url: '/speakers/lee-minho.jpg',
+    bio: 'Expert in digital platforms and media circulation in East Asian contexts.',
+    sort_order: 2,
+    is_plenary: true
+  },
+  {
+    id: '3',
+    name: 'Dr. Park Sooyoung',
+    role: 'Research Fellow',
+    affiliation: 'Harvard Korea Institute',
+    image_url: '/speakers/park-sooyoung.jpg',
+    bio: 'Specialist in transnational fandom and participatory culture studies.',
+    sort_order: 3,
+    is_plenary: false
+  },
+  {
+    id: '4',
+    name: 'Prof. Choi Young',
+    role: 'Department Head',
+    affiliation: 'University of Tokyo',
+    image_url: '/speakers/choi-young.jpg',
+    bio: 'Pioneer in regional reception studies of Korean popular culture.',
+    sort_order: 4,
+    is_plenary: false
+  }
+];
 
 export default function CongressPage({ params }: { params: { year: string } }) {
   const year = params.year;
   
+  // Update congress data with correct year
+  const congress = {
+    ...congressData,
+    year: parseInt(year),
+    dates: `May 28–30, ${year}`,
+    submission_deadline: `March 31, ${year}`,
+    early_bird_deadline: `May 15, ${year}`
+  };
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Simple Header */}
-      <header style={{ 
-        background: 'linear-gradient(135deg, #0047A0 0%, #CD2E3A 100%)',
-        padding: '20px 24px',
-        color: 'white'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.5rem', fontWeight: 'bold' }}>
-            WAHS
-          </Link>
-          <div>
-            <Link href="/" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>Home</Link>
-            <Link href="/call-for-papers" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>Call for Papers</Link>
-            <Link href="/membership" style={{ color: 'white', textDecoration: 'none' }}>Membership</Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section style={{ 
-        background: 'linear-gradient(135deg, #0047A0 0%, #CD2E3A 100%)',
-        padding: '120px 24px 80px',
-        textAlign: 'center',
-        color: 'white'
-      }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <div style={{ fontSize: '1.2rem', opacity: 0.9, marginBottom: '10px' }}>세계한류학회</div>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', marginBottom: '20px', fontWeight: 'bold' }}>
-            WORLD CONGRESS FOR HALLYU STUDIES {year}
-          </h1>
-          <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.2rem)', marginBottom: '10px', fontWeight: '300' }}>
-            Cultural Dynamism in the Digital Age
-          </h2>
-          <p style={{ fontSize: 'clamp(1.2rem, 2vw, 1.8rem)', marginBottom: '30px', fontWeight: '600' }}>
-            Toward a Universal Theory of Pop Culture Globalization
-          </p>
-          <div style={{ fontSize: '1.3rem', marginBottom: '8px', fontWeight: '500' }}>
-            MAY 28–30, {year}
-          </div>
-          <div style={{ fontSize: '1.1rem', marginBottom: '40px', opacity: 0.9 }}>
-            CHEJU HALLA UNIVERSITY, JEJU ISLAND, SOUTH KOREA
-          </div>
-          
-          {/* CTA Buttons */}
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link
-              href={`/congress/${year}/submissions-new`}
-              style={{
-                background: '#0047A0',
-                color: 'white',
-                border: 'none',
-                padding: '14px 32px',
-                borderRadius: '4px',
-                fontSize: '1.1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                transition: 'background 0.3s'
-              }}
-              className="hover-button-blue"
-            >
-              Submit Abstract
-            </Link>
-            <Link
-              href={`/congress/${year}/registration`}
-              style={{
-                background: '#CD2E3A',
-                color: 'white',
-                border: 'none',
-                padding: '14px 32px',
-                borderRadius: '4px',
-                fontSize: '1.1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                transition: 'background 0.3s'
-              }}
-              className="hover-button-red"
-            >
-              Register for Congress
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <section style={{ background: '#fff', padding: '80px 24px' }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          
-          {/* Overview */}
-          <div style={{ marginBottom: '60px' }}>
-            <h3 style={{ fontSize: '1.8rem', color: '#0047A0', marginBottom: '20px', borderBottom: '2px solid #0047A0', paddingBottom: '10px' }}>
-              CONFERENCE OVERVIEW
-            </h3>
-            <p style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#333', marginBottom: '20px' }}>
-              The World Association for Hallyu Studies (WAHS) invites you to the {year} World Congress, 
-              which seeks to develop a universal theory of pop culture success in the digital platform era. 
-              The Korean Wave presents the paradigmatic case for this theoretical project: the first postcolonial 
-              pop culture to achieve sustained global dominance in the platform capitalism age.
-            </p>
-          </div>
-
-          {/* Tracks */}
-          <div style={{ marginBottom: '60px' }}>
-            <h3 style={{ fontSize: '1.8rem', color: '#0047A0', marginBottom: '20px', borderBottom: '2px solid #0047A0', paddingBottom: '10px' }}>
-              RESEARCH TRACKS
-            </h3>
-            
-            <div style={{ marginBottom: '40px' }}>
-              <h4 style={{ fontSize: '1.4rem', color: '#CD2E3A', marginBottom: '15px' }}>Track 1: Cultural Dynamism (Annual Theme)</h4>
-              <p style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#333', marginBottom: '15px' }}>
-                Papers addressing theoretical, empirical, or methodological aspects of cultural dynamism.
-              </p>
-            </div>
-            
-            <div>
-              <h4 style={{ fontSize: '1.4rem', color: '#CD2E3A', marginBottom: '15px' }}>Track 2: Open Topics in Hallyu Studies</h4>
-              <p style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#333', marginBottom: '15px' }}>
-                All topics related to Korean Wave studies welcome.
-              </p>
-            </div>
-          </div>
-
-          {/* Important Dates */}
-          <div style={{ marginBottom: '60px' }}>
-            <h3 style={{ fontSize: '1.8rem', color: '#0047A0', marginBottom: '20px', borderBottom: '2px solid #0047A0', paddingBottom: '10px' }}>
-              IMPORTANT DATES
-            </h3>
-            <ul style={{ fontSize: '1.1rem', lineHeight: 1.8, color: '#333', marginBottom: '20px', paddingLeft: '20px' }}>
-              <li><strong>Abstract Submission Deadline:</strong> March 31, {year}</li>
-              <li><strong>Notification of Acceptance:</strong> April 15, {year}</li>
-              <li><strong>Early Bird Registration:</strong> May 15, {year}</li>
-              <li><strong>Congress Dates:</strong> May 28–30, {year}</li>
-            </ul>
-          </div>
-
-          {/* Final CTA */}
-          <div style={{ 
-            background: 'linear-gradient(135deg, rgba(0,71,160,0.05) 0%, rgba(205,46,58,0.05) 100%)', 
-            padding: '60px 40px', 
-            borderRadius: '12px',
-            textAlign: 'center',
-            border: '1px solid rgba(0,71,160,0.1)'
-          }}>
-            <h3 style={{ fontSize: '2rem', color: '#0047A0', marginBottom: '20px' }}>
-              Join Us for Congress {year}
-            </h3>
-            <p style={{ fontSize: '1.2rem', lineHeight: 1.8, color: '#333', marginBottom: '40px', maxWidth: '700px', marginLeft: 'auto', marginRight: 'auto' }}>
-              Submit your abstract today and be part of this groundbreaking academic event.
-            </p>
-            
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link
-                href={`/congress/${year}/submissions-new`}
-                style={{
-                  background: '#0047A0',
-                  color: 'white',
-                  border: 'none',
-                  padding: '16px 40px',
-                  borderRadius: '4px',
-                  fontSize: '1.2rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                  transition: 'background 0.3s'
-                }}
-                className="hover-button-blue"
-              >
-                Submit Abstract Now
-              </Link>
-              <Link
-                href={`/congress/${year}/registration`}
-                style={{
-                  background: '#CD2E3A',
-                  color: 'white',
-                  border: 'none',
-                  padding: '16px 40px',
-                  borderRadius: '4px',
-                  fontSize: '1.2rem',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  textDecoration: 'none',
-                  transition: 'background 0.3s'
-                }}
-                className="hover-button-red"
-              >
-                Register for Congress
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Simple Footer */}
-      <footer style={{ 
-        background: '#1a1a1a', 
-        color: '#fff', 
-        padding: '40px 24px',
-        textAlign: 'center'
-      }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <p style={{ marginBottom: '10px' }}>© {year} World Association for Hallyu Studies (WAHS)</p>
-          <p style={{ fontSize: '0.9rem', color: '#aaa' }}>
-            Cheju Halla University, Jeju Island, South Korea • 
-            <a href="mailto:wahskorea@gmail.com" style={{ color: '#aaa', marginLeft: '10px' }}>wahskorea@gmail.com</a>
-          </p>
-        </div>
-      </footer>
+    <div className="congress-page">
+        <Hero congress={congress} />
+        
+        <Overview congress={congress} />
+        
+        <Speakers speakers={speakersData} />
+        
+        <Tracks tracks={congress.tracks} />
+        
+        <Timeline congress={congress} />
+        
+        <Venue congress={congress} />
+        
+        <Publications publications={congress.publications} />
+        
+        <Congress2022 />
+        
+        <CTA congress={congress} year={congress.year} />
+        
+        <Footer />
     </div>
   );
 }
