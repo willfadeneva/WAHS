@@ -2799,3 +2799,12 @@ footer a:hover { color: #fff; }
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
+
+/* Hover button styles for Server Components */
+.hover-button-blue:hover {
+  background: #003680 !important;
+}
+
+.hover-button-red:hover {
+  background: #B0262A !important;
+}

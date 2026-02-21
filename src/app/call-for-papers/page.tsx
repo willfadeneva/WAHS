@@ -58,8 +58,7 @@ export default function CallForPapersPage() {
                   textDecoration: 'none',
                   transition: 'background 0.3s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#003680'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#0047A0'}
+                className="hover-button-blue"
               >
                 Submit Abstract
               </Link>
@@ -77,8 +76,7 @@ export default function CallForPapersPage() {
                   textDecoration: 'none',
                   transition: 'background 0.3s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#B0262A'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#CD2E3A'}
+                className="hover-button-red"
               >
                 Register for Congress
               </Link>
@@ -309,8 +307,7 @@ export default function CallForPapersPage() {
                   textDecoration: 'none',
                   transition: 'background 0.3s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#003680'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#0047A0'}
+                className="hover-button-blue"
               >
                 Submit Abstract Now
               </Link>
@@ -328,8 +325,7 @@ export default function CallForPapersPage() {
                   textDecoration: 'none',
                   transition: 'background 0.3s'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#B0262A'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#CD2E3A'}
+                className="hover-button-red"
               >
                 Register for Congress
               </Link>
