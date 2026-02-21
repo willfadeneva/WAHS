@@ -74,8 +74,10 @@ export default function MagicLinkPage() {
             .single();
 
           if (congressProfile) {
-            router.push('/congress/dashboard');
+            // User has profile - redirect to abstract submission
+            router.push('/2026/submissions-new');
           } else {
+            // No profile yet - redirect to profile completion
             router.push('/congress/register/profile');
           }
         } else if (userType === 'wahs') {

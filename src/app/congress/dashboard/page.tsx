@@ -138,7 +138,7 @@ export default function CongressDashboardPage() {
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
               <div className="space-y-3">
                 <Link
-                  href="/2026/submissions"
+                  href="/2026/submissions-new"
                   className="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
                 >
                   Submit New Abstract

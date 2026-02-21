@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { sendEmail } from '@/lib/email-notifications';
 
 export default function CongressProfilePage() {
   const router = useRouter();
@@ -14,10 +13,6 @@ export default function CongressProfilePage() {
     fullName: '',
     affiliation: '',
     country: '',
-    presentationType: 'individual',
-    abstractTitle: '',
-    abstractText: '',
-    keywords: '',
     bio: ''
   });
 
@@ -27,19 +22,20 @@ export default function CongressProfilePage() {
     setError('');
 
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
+      // Get current user from localStorage (custom auth)
+      const authData = localStorage.getItem('wahs_auth');
+      if (!authData) {
         throw new Error('You must be logged in to complete your profile');
       }
 
+      const { userId, email } = JSON.parse(authData);
+      
       // Create congress submitter profile
       const { data: profile, error: profileError } = await supabase
         .from('congress_submitters')
         .insert({
-          user_id: user.id,
-          email: user.email,
+          id: userId,
+          email: email,
           full_name: formData.fullName,
           affiliation: formData.affiliation,
           country: formData.country,
@@ -50,39 +46,26 @@ export default function CongressProfilePage() {
 
       if (profileError) throw profileError;
 
-      // Create submission
-      const { data: submission, error: submissionError } = await supabase
-        .from('submissions')
-        .insert({
-          submitter_id: profile.id,
-          title: formData.abstractTitle,
-          abstract: formData.abstractText,
-          presentation_type: formData.presentationType,
-          keywords: formData.keywords.split(',').map(k => k.trim()),
-          status: 'submitted'
-        })
-        .select()
-        .single();
+      // Update localStorage with user type
+      localStorage.setItem('wahs_auth', JSON.stringify({
+        userId,
+        email,
+        userType: 'congress',
+        authenticated: true,
+        timestamp: Date.now()
+      }));
 
-      if (submissionError) throw submissionError;
-
-      // Send confirmation email
-      await sendEmail(user.email!, 'SUBMISSION_CONFIRMATION', {
-        name: formData.fullName,
-        submissionId: submission.id
-      });
-
-      // Redirect to dashboard
-      router.push('/congress/dashboard');
+      // Redirect to abstract submission page
+      router.push('/2026/submissions-new');
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit profile');
+      setError(err instanceof Error ? err.message : 'Failed to save profile');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -91,10 +74,10 @@ export default function CongressProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900">Complete Your Congress Profile</h1>
-          <p className="mt-2 text-gray-600">Finish setting up your account and submit your abstract for WAHS Congress 2026</p>
+          <p className="mt-2 text-gray-600">Please provide your basic information. You'll submit your abstract on the next page.</p>
         </div>
 
         {error && (
@@ -107,6 +90,7 @@ export default function CongressProfilePage() {
           {/* Personal Information */}
           <div className="border-b pb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -150,29 +134,11 @@ export default function CongressProfilePage() {
                   placeholder="South Korea"
                 />
               </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Presentation Type *
-                </label>
-                <select
-                  name="presentationType"
-                  value={formData.presentationType}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="individual">Individual Paper</option>
-                  <option value="panel">Full Panel</option>
-                  <option value="roundtable">Roundtable</option>
-                  <option value="workshop">Workshop</option>
-                </select>
-              </div>
             </div>
             
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Brief Bio
+                Brief Bio (Optional)
               </label>
               <textarea
                 name="bio"
@@ -185,58 +151,6 @@ export default function CongressProfilePage() {
             </div>
           </div>
 
-          {/* Abstract Submission */}
-          <div className="border-b pb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Abstract Submission</h2>
-            
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Abstract Title *
-              </label>
-              <input
-                type="text"
-                name="abstractTitle"
-                value={formData.abstractTitle}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Title of your presentation"
-              />
-            </div>
-            
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Abstract Text (300-500 words) *
-              </label>
-              <textarea
-                name="abstractText"
-                value={formData.abstractText}
-                onChange={handleChange}
-                required
-                rows={8}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter your abstract here..."
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                Word count: {formData.abstractText.split(/\s+/).filter(word => word.length > 0).length}
-              </p>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Keywords (comma-separated)
-              </label>
-              <input
-                type="text"
-                name="keywords"
-                value={formData.keywords}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Hallyu, K-pop, Korean drama, cultural studies"
-              />
-            </div>
-          </div>
-
           {/* Submit Button */}
           <div className="flex justify-end">
             <button
@@ -244,13 +158,13 @@ export default function CongressProfilePage() {
               disabled={loading}
               className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Submitting...' : 'Submit Abstract & Complete Profile'}
+              {loading ? 'Saving...' : 'Save Profile & Continue to Abstract Submission'}
             </button>
           </div>
 
           <div className="text-sm text-gray-500">
             <p>* Required fields</p>
-            <p className="mt-1">By submitting, you agree to the WAHS Congress terms and conditions.</p>
+            <p className="mt-1">You'll submit your abstract on the next page.</p>
           </div>
         </form>
 
