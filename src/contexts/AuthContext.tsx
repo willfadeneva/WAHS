@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { sendMagicLinkEmail } from '@/lib/magic-link';
 import { User } from '@supabase/supabase-js';
 
 type UserType = 'congress' | 'wahs' | 'admin' | null;
@@ -106,14 +107,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signIn = async (email: string, type: 'congress' | 'wahs') => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-        data: { user_type: type }
+    try {
+      // Use our custom magic link system with Resend
+      const { success, error } = await sendMagicLinkEmail(email, type);
+      
+      if (!success) {
+        return { error: new Error(error || 'Failed to send magic link') };
       }
-    });
-    return { error };
+      
+      return { error: null };
+    } catch (error) {
+      return { error: error instanceof Error ? error : new Error('Failed to send magic link') };
+    }
   };
 
   const signOut = async () => {

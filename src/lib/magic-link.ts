@@ -1,0 +1,144 @@
+import { supabase } from './supabase';
+import { sendEmail } from './email-notifications';
+
+// Generate a secure magic link token
+export async function generateMagicLink(
+  email: string, 
+  userType: 'congress' | 'wahs'
+): Promise<{ token: string; expiresAt: Date; error?: string }> {
+  try {
+    // Generate a secure random token
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+    
+    // Token expires in 1 hour
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+    
+    // Store token in database
+    const { error } = await supabase
+      .from('magic_link_tokens')
+      .insert({
+        email: email.toLowerCase(),
+        token,
+        user_type: userType,
+        expires_at: expiresAt.toISOString(),
+        used: false
+      });
+    
+    if (error) {
+      return { token: '', expiresAt, error: error.message };
+    }
+    
+    return { token, expiresAt };
+  } catch (error) {
+    return { 
+      token: '', 
+      expiresAt: new Date(), 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+}
+
+// Send magic link email using Resend
+export async function sendMagicLinkEmail(
+  email: string,
+  userType: 'congress' | 'wahs'
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Generate magic link token
+    const { token, expiresAt, error: tokenError } = await generateMagicLink(email, userType);
+    
+    if (tokenError || !token) {
+      return { success: false, error: tokenError || 'Failed to generate token' };
+    }
+    
+    // Create magic link URL
+    const magicLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://congress.iwahs.org'}/auth/magic-link?token=${token}&email=${encodeURIComponent(email)}`;
+    
+    // Determine email template based on user type
+    const templateKey = userType === 'congress' ? 'MAGIC_LINK_CONGRESS' : 'MAGIC_LINK_WAHS';
+    
+    // Send email using our email system (which uses Resend)
+    const result = await sendEmail(email, templateKey as any, {
+      magicLink,
+      expiresIn: '1 hour'
+    });
+    
+    return result;
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+// Verify magic link token
+export async function verifyMagicLinkToken(
+  token: string,
+  email: string
+): Promise<{ 
+  valid: boolean; 
+  userType?: 'congress' | 'wahs'; 
+  error?: string 
+}> {
+  try {
+    // Find token in database
+    const { data, error } = await supabase
+      .from('magic_link_tokens')
+      .select('*')
+      .eq('token', token)
+      .eq('email', email.toLowerCase())
+      .eq('used', false)
+      .single();
+    
+    if (error || !data) {
+      return { valid: false, error: 'Invalid or expired token' };
+    }
+    
+    // Check if token is expired
+    const expiresAt = new Date(data.expires_at);
+    if (expiresAt < new Date()) {
+      return { valid: false, error: 'Token has expired' };
+    }
+    
+    // Mark token as used
+    await supabase
+      .from('magic_link_tokens')
+      .update({ used: true, used_at: new Date().toISOString() })
+      .eq('id', data.id);
+    
+    return { 
+      valid: true, 
+      userType: data.user_type as 'congress' | 'wahs' 
+    };
+  } catch (error) {
+    return {
+      valid: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
+// Clean up expired tokens (run as cron job)
+export async function cleanupExpiredTokens(): Promise<{ deleted: number; error?: string }> {
+  try {
+    const { count, error } = await supabase
+      .from('magic_link_tokens')
+      .delete()
+      .lt('expires_at', new Date().toISOString());
+    
+    if (error) {
+      return { deleted: 0, error: error.message };
+    }
+    
+    return { deleted: count || 0 };
+  } catch (error) {
+    return {
+      deleted: 0,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}

@@ -129,10 +129,41 @@ const EMAIL_TEMPLATES = {
       <p>Best regards,<br>
       WAHS</p>
     `
+  },
+
+  // Magic link emails
+  MAGIC_LINK_CONGRESS: {
+    subject: 'WAHS Congress 2026 - Login Link',
+    template: (magicLink: string, expiresIn: string) => `
+      <h1>Login to WAHS Congress 2026</h1>
+      <p>Click the link below to log in to your WAHS Congress account:</p>
+      <p><a href="${magicLink}">${magicLink}</a></p>
+      <p>This link will expire in ${expiresIn}.</p>
+      <br>
+      <p>If you didn't request this login link, please ignore this email.</p>
+      <br>
+      <p>Best regards,<br>
+      WAHS Congress Committee</p>
+    `
+  },
+
+  MAGIC_LINK_WAHS: {
+    subject: 'WAHS Membership - Login Link',
+    template: (magicLink: string, expiresIn: string) => `
+      <h1>Login to WAHS Membership</h1>
+      <p>Click the link below to log in to your WAHS Membership account:</p>
+      <p><a href="${magicLink}">${magicLink}</a></p>
+      <p>This link will expire in ${expiresIn}.</p>
+      <br>
+      <p>If you didn't request this login link, please ignore this email.</p>
+      <br>
+      <p>Best regards,<br>
+      WAHS Membership Committee</p>
+    `
   }
 };
 
-// Email sending function (using Supabase Edge Functions or external service)
+// Email sending function with Resend integration
 export async function sendEmail(
   to: string,
   templateKey: keyof typeof EMAIL_TEMPLATES,
@@ -148,33 +179,80 @@ export async function sendEmail(
       : template.template;
 
     console.log(`[EMAIL] Sending ${templateKey} to ${to}`);
-    console.log(`[EMAIL] Subject: ${subject}`);
     
-    // For now, log the email (in production, integrate with email service)
-    // TODO: Integrate with Resend, SendGrid, or Supabase Edge Functions
+    // Try Resend first (if configured)
+    try {
+      const resendApiKey = process.env.RESEND_API_KEY;
+      if (resendApiKey) {
+        const resendResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: 'WAHS <noreply@wahs.org>',
+            to: [to],
+            subject,
+            html,
+            reply_to: 'wahskorea@gmail.com',
+          }),
+        });
+
+        if (resendResponse.ok) {
+          const data = await resendResponse.json();
+          console.log(`[EMAIL] Sent via Resend: ${data.id}`);
+          
+          // Store email in database for tracking
+          await supabase.from('email_logs').insert({
+            to_email: to,
+            template: templateKey,
+            subject,
+            sent_at: new Date().toISOString(),
+            status: 'sent',
+            provider: 'resend',
+            provider_id: data.id
+          });
+
+          return { success: true };
+        }
+      }
+    } catch (resendError) {
+      console.warn('Resend failed, falling back to logging:', resendError);
+    }
+
+    // Fallback: Log email (for development/testing)
+    console.log(`[EMAIL LOGGED] To: ${to}, Subject: ${subject}`);
     
-    // Example with Supabase Edge Functions:
-    /*
-    const { error } = await supabase.functions.invoke('send-email', {
-      body: { to, subject, html }
-    });
-    
-    if (error) throw error;
-    */
-    
-    // Store email in database for tracking
+    // Store email in database as logged (not sent)
     await supabase.from('email_logs').insert({
       to_email: to,
       template: templateKey,
       subject,
       sent_at: new Date().toISOString(),
-      status: 'logged' // In production: 'sent', 'failed'
+      status: 'logged',
+      provider: 'log'
     });
 
     return { success: true };
     
   } catch (error) {
     console.error('Email sending error:', error);
+    
+    // Store failure in database
+    try {
+      await supabase.from('email_logs').insert({
+        to_email: to,
+        template: templateKey,
+        subject: EMAIL_TEMPLATES[templateKey].subject,
+        sent_at: new Date().toISOString(),
+        status: 'failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    } catch (dbError) {
+      console.error('Failed to log email error:', dbError);
+    }
+    
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

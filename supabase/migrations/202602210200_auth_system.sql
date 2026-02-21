@@ -122,3 +122,36 @@ CREATE INDEX IF NOT EXISTS idx_congress_submitters_email ON congress_submitters(
 CREATE INDEX IF NOT EXISTS idx_wahs_members_status ON wahs_members(membership_status);
 CREATE INDEX IF NOT EXISTS idx_submissions_submitter_id ON submissions(submitter_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_status ON submissions(status);
+-- Magic link tokens table (for custom email service)
+CREATE TABLE IF NOT EXISTS magic_link_tokens (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL,
+  token TEXT NOT NULL UNIQUE,
+  user_type TEXT NOT NULL CHECK (user_type IN ('congress', 'wahs')),
+  expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  used BOOLEAN DEFAULT false,
+  used_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_magic_link_tokens_token ON magic_link_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_magic_link_tokens_email ON magic_link_tokens(email);
+CREATE INDEX IF NOT EXISTS idx_magic_link_tokens_expires ON magic_link_tokens(expires_at);
+
+-- Email logs table
+CREATE TABLE IF NOT EXISTS email_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  to_email TEXT NOT NULL,
+  template TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status TEXT NOT NULL DEFAULT 'sent', -- 'sent', 'failed', 'logged'
+  provider TEXT, -- 'resend', 'supabase', 'log'
+  provider_id TEXT,
+  error TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_logs_to_email ON email_logs(to_email);
+CREATE INDEX IF NOT EXISTS idx_email_logs_sent_at ON email_logs(sent_at);
+CREATE INDEX IF NOT EXISTS idx_email_logs_status ON email_logs(status);
