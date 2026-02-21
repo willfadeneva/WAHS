@@ -101,7 +101,7 @@ export default async function RegistrationPage({
                 <li>Conference dinner</li>
               </ul>
               <a 
-                href="https://www.paypal.com/ncp/payment/5HCS2HYEPSTSG" 
+                href={isEarlyBird ? "https://www.paypal.com/ncp/payment/5HCS2HYEPSTSG" : "https://www.paypal.com/ncp/payment/FCVG73FR3RELG"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -123,7 +123,7 @@ export default async function RegistrationPage({
                 onMouseOver={(e) => e.currentTarget.style.background = '#b0262e'}
                 onMouseOut={(e) => e.currentTarget.style.background = '#CD2E3A'}
               >
-                Register Now (PayPal)
+                {isEarlyBird ? 'Register Now (Early Bird)' : 'Register Now (Regular)'}
               </a>
             </div>
             
@@ -179,7 +179,7 @@ export default async function RegistrationPage({
                 <li>Student ID required</li>
               </ul>
               <a 
-                href="https://www.paypal.com/ncp/payment/GWYKZDB2TBXRC" 
+                href={isEarlyBird ? "https://www.paypal.com/ncp/payment/GWYKZDB2TBXRC" : "https://www.paypal.com/ncp/payment/FCVG73FR3RELG"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -201,7 +201,7 @@ export default async function RegistrationPage({
                 onMouseOver={(e) => e.currentTarget.style.background = '#003680'}
                 onMouseOut={(e) => e.currentTarget.style.background = '#0047A0'}
               >
-                Register Now (PayPal)
+                {isEarlyBird ? 'Register Now (Early Bird)' : 'Register Now (Regular)'}
               </a>
             </div>
             
@@ -260,7 +260,7 @@ export default async function RegistrationPage({
                 <li>Member-only sessions</li>
               </ul>
               <a 
-                href="https://www.paypal.com/ncp/payment/69333BMBXNTUE" 
+                href={isEarlyBird ? "https://www.paypal.com/ncp/payment/69333BMBXNTUE" : "https://www.paypal.com/ncp/payment/FCVG73FR3RELG"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -282,8 +282,16 @@ export default async function RegistrationPage({
                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                Register Now (PayPal)
+                {isEarlyBird ? 'Register Now (Early Bird)' : 'Register Now (Regular)'}
               </a>
+              <p style={{ 
+                fontSize: '0.8rem', 
+                color: '#666', 
+                marginTop: '10px',
+                textAlign: 'center'
+              }}>
+                WAHS members: <a href="/wahs/login" style={{ color: '#CD2E3A' }}>Login for free entry</a>
+              </p>
             </div>
           </div>
           
