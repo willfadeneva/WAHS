@@ -1,30 +1,46 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { 
-  isEarlyBirdAvailable, 
-  getCurrentPrice, 
-  getPriceDisplay,
-  getEarlyBirdDisplayHtml,
-  formatTimeRemaining 
-} from '@/lib/early-bird';
 
-export default async function RegistrationPage({ 
-  params 
-}: { 
-  params: Promise<{ year: string }> 
-}) {
-  const { year: yearStr } = await params;
+// Simple pricing - no early bird logic for now
+const PRICES = {
+  REGULAR: 300,
+  STUDENT: 150,
+  WAHS_MEMBER: 0
+};
+
+// PayPal links
+const PAYPAL_LINKS = {
+  REGULAR: 'https://www.paypal.com/ncp/payment/5HCS2HYEPSTSG',
+  STUDENT: 'https://www.paypal.com/ncp/payment/GWYKZDB2TBXRC',
+  WAHS_MEMBER: 'https://www.paypal.com/ncp/payment/69333BMBXNTUE'
+};
+
+export default function SimpleRegistrationPage({ params }: { params: { year: string } }) {
+  const { year: yearStr } = params;
   const year = parseInt(yearStr);
   
-  const isEarlyBird = isEarlyBirdAvailable();
-  const timeRemaining = formatTimeRemaining();
-  
-  const prices = {
-    regular: getCurrentPrice('REGULAR'),
-    student: getCurrentPrice('STUDENT'),
-    wahsMember: getCurrentPrice('WAHS_MEMBER')
-  };
+  const [isValidYear, setIsValidYear] = useState(true);
+
+  useEffect(() => {
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      setIsValidYear(false);
+    }
+  }, [year]);
+
+  if (!isValidYear) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Invalid Year</h1>
+          <p className="text-gray-600">Please check the URL and try again.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -55,9 +71,6 @@ export default async function RegistrationPage({
             May 28–30, {year}
           </p>
           
-          {/* Early Bird Countdown */}
-          <div dangerouslySetInnerHTML={{ __html: getEarlyBirdDisplayHtml() }} />
-          
           {/* Registration Options */}
           <div style={{ 
             display: 'grid', 
@@ -86,7 +99,9 @@ export default async function RegistrationPage({
                 fontWeight: 'bold', 
                 color: '#0047A0',
                 marginBottom: '20px'
-              }} dangerouslySetInnerHTML={{ __html: getPriceDisplay('REGULAR') }} />
+              }}>
+                ${PRICES.REGULAR}
+              </div>
               <ul style={{ 
                 textAlign: 'left', 
                 paddingLeft: '20px', 
@@ -101,7 +116,7 @@ export default async function RegistrationPage({
                 <li>Conference dinner</li>
               </ul>
               <a 
-                href={isEarlyBird ? "https://www.paypal.com/ncp/payment/5HCS2HYEPSTSG" : "https://www.paypal.com/ncp/payment/FCVG73FR3RELG"}
+                href={PAYPAL_LINKS.REGULAR}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -123,7 +138,7 @@ export default async function RegistrationPage({
                 onMouseOver={(e) => e.currentTarget.style.background = '#b0262e'}
                 onMouseOut={(e) => e.currentTarget.style.background = '#CD2E3A'}
               >
-                {isEarlyBird ? 'Register Now (Early Bird)' : 'Register Now (Regular)'}
+                Register Now (PayPal)
               </a>
             </div>
             
@@ -164,7 +179,9 @@ export default async function RegistrationPage({
                 fontWeight: 'bold', 
                 color: '#0047A0',
                 marginBottom: '20px'
-              }} dangerouslySetInnerHTML={{ __html: getPriceDisplay('STUDENT') }} />
+              }}>
+                ${PRICES.STUDENT}
+              </div>
               <ul style={{ 
                 textAlign: 'left', 
                 paddingLeft: '20px', 
@@ -179,7 +196,7 @@ export default async function RegistrationPage({
                 <li>Student ID required</li>
               </ul>
               <a 
-                href={isEarlyBird ? "https://www.paypal.com/ncp/payment/GWYKZDB2TBXRC" : "https://www.paypal.com/ncp/payment/FCVG73FR3RELG"}
+                href={PAYPAL_LINKS.STUDENT}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -201,7 +218,7 @@ export default async function RegistrationPage({
                 onMouseOver={(e) => e.currentTarget.style.background = '#003680'}
                 onMouseOut={(e) => e.currentTarget.style.background = '#0047A0'}
               >
-                {isEarlyBird ? 'Register Now (Early Bird)' : 'Register Now (Regular)'}
+                Register Now (PayPal)
               </a>
             </div>
             
@@ -260,7 +277,7 @@ export default async function RegistrationPage({
                 <li>Member-only sessions</li>
               </ul>
               <a 
-                href={isEarlyBird ? "https://www.paypal.com/ncp/payment/69333BMBXNTUE" : "https://www.paypal.com/ncp/payment/FCVG73FR3RELG"}
+                href={PAYPAL_LINKS.WAHS_MEMBER}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -282,7 +299,7 @@ export default async function RegistrationPage({
                 onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
               >
-                {isEarlyBird ? 'Register Now (Early Bird)' : 'Register Now (Regular)'}
+                Register Now (PayPal)
               </a>
               <p style={{ 
                 fontSize: '0.8rem', 
@@ -290,212 +307,8 @@ export default async function RegistrationPage({
                 marginTop: '10px',
                 textAlign: 'center'
               }}>
-                WAHS members: <a href="/wahs/login" style={{ color: '#CD2E3A' }}>Login for free entry</a>
+                WAHS members: <a href="/wahs/login" style={{ color: '#CD2E3A' }}>Login to verify membership</a>
               </p>
-            </div>
-          </div>
-          
-          {/* Two Registration Paths */}
-          <div style={{ 
-            background: '#f8f8f8', 
-            padding: '40px', 
-            borderRadius: '8px',
-            marginBottom: '40px'
-          }}>
-            <h2 style={{ 
-              fontFamily: "'DM Serif Display', serif", 
-              fontSize: '1.8rem', 
-              color: '#000', 
-              marginBottom: '30px',
-              textAlign: 'center'
-            }}>
-              Choose Your Registration Path
-            </h2>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
-              {/* Path 1: Just Attend */}
-              <div style={{ 
-                background: 'white', 
-                padding: '25px', 
-                borderRadius: '8px',
-                border: '1px solid #e0e0e0'
-              }}>
-                <h3 style={{ 
-                  fontSize: '1.3rem', 
-                  color: '#0047A0', 
-                  marginBottom: '15px',
-                  textAlign: 'center'
-                }}>
-                  Just Attend the Conference
-                </h3>
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  <div style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    background: '#0047A0', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    marginRight: '10px'
-                  }}>1</div>
-                  <span style={{ fontSize: '1rem', fontWeight: '500' }}>Select Ticket Type</span>
-                </div>
-                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                  <div style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    background: '#0047A0', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    marginRight: '10px'
-                  }}>2</div>
-                  <span style={{ fontSize: '1rem', fontWeight: '500' }}>Pay via PayPal</span>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ 
-                    width: '40px', 
-                    height: '40px', 
-                    background: '#0047A0', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '1rem',
-                    fontWeight: 'bold',
-                    marginRight: '10px'
-                  }}>3</div>
-                  <span style={{ fontSize: '1rem', fontWeight: '500' }}>Receive Confirmation</span>
-                </div>
-                <p style={{ 
-                  fontSize: '0.9rem', 
-                  color: '#666', 
-                  marginTop: '20px',
-                  textAlign: 'center',
-                  fontStyle: 'italic'
-                }}>
-                  Simple one-time payment. No account needed.
-                </p>
-              </div>
-              
-              {/* Path 2: Submit Research */}
-              <div style={{ 
-                background: 'white', 
-                padding: '25px', 
-                borderRadius: '8px',
-                border: '1px solid #e0e0e0'
-              }}>
-                <h3 style={{ 
-                  fontSize: '1.3rem', 
-                  color: '#CD2E3A', 
-                  marginBottom: '15px',
-                  textAlign: 'center'
-                }}>
-                  Submit Research & Present
-                </h3>
-                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                  <div style={{ 
-                    width: '35px', 
-                    height: '35px', 
-                    background: '#CD2E3A', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.9rem',
-                    fontWeight: 'bold',
-                    marginRight: '8px'
-                  }}>1</div>
-                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Sign up for abstract submission</span>
-                </div>
-                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                  <div style={{ 
-                    width: '35px', 
-                    height: '35px', 
-                    background: '#CD2E3A', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.9rem',
-                    fontWeight: 'bold',
-                    marginRight: '8px'
-                  }}>2</div>
-                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Submit your abstract</span>
-                </div>
-                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                  <div style={{ 
-                    width: '35px', 
-                    height: '35px', 
-                    background: '#CD2E3A', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.9rem',
-                    fontWeight: 'bold',
-                    marginRight: '8px'
-                  }}>3</div>
-                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Wait for committee review</span>
-                </div>
-                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                  <div style={{ 
-                    width: '35px', 
-                    height: '35px', 
-                    background: '#CD2E3A', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.9rem',
-                    fontWeight: 'bold',
-                    marginRight: '8px'
-                  }}>4</div>
-                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>If accepted, register & pay</span>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ 
-                    width: '35px', 
-                    height: '35px', 
-                    background: '#CD2E3A', 
-                    color: 'white', 
-                    borderRadius: '50%',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.9rem',
-                    fontWeight: 'bold',
-                    marginRight: '8px'
-                  }}>5</div>
-                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Present at conference</span>
-                </div>
-                <p style={{ 
-                  fontSize: '0.9rem', 
-                  color: '#666', 
-                  marginTop: '20px',
-                  textAlign: 'center',
-                  fontStyle: 'italic'
-                }}>
-                  Requires account to manage submissions.
-                  <br />
-                  <a href="/congress/submit-abstract" style={{ color: '#CD2E3A', textDecoration: 'underline' }}>
-                    Start abstract submission →
-                  </a>
-                </p>
-              </div>
             </div>
           </div>
           
@@ -517,35 +330,23 @@ export default async function RegistrationPage({
             }}>
               <div style={{ 
                 padding: '20px', 
-                background: isEarlyBird ? 'linear-gradient(135deg, rgba(0,71,160,0.1) 0%, rgba(205,46,58,0.1) 100%)' : '#f8f8f8',
-                border: isEarlyBird ? '2px solid #CD2E3A' : '1px solid #e0e0e0',
+                background: '#f8f8f8',
+                border: '1px solid #e0e0e0',
                 borderRadius: '8px'
               }}>
-                <h4 style={{ fontSize: '1.1rem', marginBottom: '8px', color: isEarlyBird ? '#CD2E3A' : '#000' }}>
-                  {isEarlyBird ? '🎯 Early Bird Registration' : 'Early Bird Registration'}
-                </h4>
-                <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>
-                  Deadline: <strong>May 15, 2026 23:59:59 KST</strong>
-                </p>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                  {isEarlyBird ? `Time remaining: ${timeRemaining}` : 'Closed'}
-                </p>
-              </div>
-              
-              <div style={{ padding: '20px', background: '#f8f8f8', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
                 <h4 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Abstract Submission</h4>
                 <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>
-                  Deadline: <strong>March 31, 2026</strong>
+                  Deadline: <strong>March 31, {year}</strong>
                 </p>
                 <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                  Notification: April 15, 2026
+                  Notification: April 15, {year}
                 </p>
               </div>
               
               <div style={{ padding: '20px', background: '#f8f8f8', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
                 <h4 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Conference Dates</h4>
                 <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>
-                  <strong>May 28–30, 2026</strong>
+                  <strong>May 28–30, {year}</strong>
                 </p>
                 <p style={{ fontSize: '0.9rem', color: '#666' }}>
                   Cheju Halla University, Jeju Island

@@ -1,75 +1,37 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 
-// PayPal payment links
+// Simple PayPal links - users pay directly, then contact us for account setup
 const PAYPAL_LINKS = {
   professional: 'https://www.paypal.com/ncp/payment/9K9JC2CZ6N7S2',
   non_professional: 'https://www.paypal.com/ncp/payment/Y2V33KK92X5SU',
 };
 
-export default function SimpleWahsPaymentPage() {
-  const [selectedMembershipType, setSelectedMembershipType] = useState<'professional' | 'non_professional' | null>(null);
-  const [email, setEmail] = useState('');
-  const [showEmailInput, setShowEmailInput] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-
-  const handleMembershipSelect = (type: 'professional' | 'non_professional') => {
-    setSelectedMembershipType(type);
-    setShowEmailInput(true);
-  };
-
-  const handlePayment = async () => {
-    if (!selectedMembershipType) {
-      setMessage({ type: 'error', text: 'Please select a membership type' });
-      return;
-    }
-
-    if (!email || !email.includes('@')) {
-      setMessage({ type: 'error', text: 'Please enter a valid email address' });
-      return;
-    }
-
-    setLoading(true);
-    setMessage(null);
-
-    try {
-      // In production, you would:
-      // 1. Send magic link to email
-      // 2. Create user account
-      // 3. Redirect to PayPal with return URL
-      
-      // For now, just redirect to PayPal
-      const paypalLink = PAYPAL_LINKS[selectedMembershipType];
-      const returnUrl = `https://congress.iwahs.org/wahs/payment/success?membership=${selectedMembershipType}&email=${encodeURIComponent(email)}`;
-      const finalPayPalLink = `${paypalLink}?return=${encodeURIComponent(returnUrl)}`;
-      
-      window.location.href = finalPayPalLink;
-      
-    } catch (error) {
-      setMessage({ 
-        type: 'error', 
-        text: error instanceof Error ? error.message : 'Failed to process payment' 
-      });
-      setLoading(false);
-    }
-  };
-
+export default function SimpleDirectPaymentPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900">WAHS Membership Payment</h1>
-          <p className="mt-2 text-gray-600">Join the World Association for Hallyu Studies</p>
+          <p className="mt-2 text-gray-600">Simple PayPal payment - no account needed</p>
         </div>
 
-        {message && (
-          <div className={`mb-6 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-            {message.text}
-          </div>
-        )}
+        <div className="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <h3 className="text-lg font-bold text-yellow-800 mb-2">Important Notice</h3>
+          <p className="text-yellow-700">
+            After payment, please email <a href="mailto:wahskorea@gmail.com" className="font-semibold underline">wahskorea@gmail.com</a> with:
+          </p>
+          <ul className="mt-2 text-yellow-700 list-disc list-inside space-y-1">
+            <li>Your PayPal receipt/transaction ID</li>
+            <li>Your email address</li>
+            <li>Your full name</li>
+            <li>Membership type (Professional or Non-Professional)</li>
+          </ul>
+          <p className="mt-3 text-yellow-700">
+            We will manually activate your membership and send you login instructions.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
           {/* Professional Membership */}
@@ -116,17 +78,14 @@ export default function SimpleWahsPaymentPage() {
                 </li>
               </ul>
 
-              <button
-                onClick={() => handleMembershipSelect('professional')}
-                disabled={loading}
-                className={`w-full py-3 px-4 rounded-md font-medium ${
-                  selectedMembershipType === 'professional'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                }`}
+              <a
+                href={PAYPAL_LINKS.professional}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 px-4 bg-blue-600 text-white font-medium rounded-md text-center hover:bg-blue-700"
               >
-                {selectedMembershipType === 'professional' ? 'Selected' : 'Select Professional'}
-              </button>
+                Pay $250 via PayPal
+              </a>
             </div>
           </div>
 
@@ -174,79 +133,55 @@ export default function SimpleWahsPaymentPage() {
                 </li>
               </ul>
 
-              <button
-                onClick={() => handleMembershipSelect('non_professional')}
-                disabled={loading}
-                className={`w-full py-3 px-4 rounded-md font-medium ${
-                  selectedMembershipType === 'non_professional'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-green-100 text-green-700 hover:bg-green-200'
-                }`}
+              <a
+                href={PAYPAL_LINKS.non_professional}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-3 px-4 bg-green-600 text-white font-medium rounded-md text-center hover:bg-green-700"
               >
-                {selectedMembershipType === 'non_professional' ? 'Selected' : 'Select Non-Professional'}
-              </button>
+                Pay $150 via PayPal
+              </a>
             </div>
           </div>
         </div>
 
-        {showEmailInput && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Enter Your Email</h3>
-            <p className="text-gray-600 mb-4">
-              Please enter your email address. After payment, you'll receive a magic link to access your member dashboard.
+        <div className="bg-blue-50 rounded-lg p-6 mb-8">
+          <h3 className="text-lg font-bold text-gray-900 mb-3">How It Works</h3>
+          <ol className="space-y-3 text-gray-600">
+            <li className="flex items-start">
+              <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3">1</span>
+              <span>Click the PayPal button for your chosen membership</span>
+            </li>
+            <li className="flex items-start">
+              <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3">2</span>
+              <span>Complete payment on PayPal (credit card or PayPal account)</span>
+            </li>
+            <li className="flex items-start">
+              <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3">3</span>
+              <span>Email your receipt to <a href="mailto:wahskorea@gmail.com" className="text-blue-600 hover:text-blue-500">wahskorea@gmail.com</a> with your details</span>
+            </li>
+            <li className="flex items-start">
+              <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center mr-3">4</span>
+              <span>We'll activate your membership and send login instructions within 24 hours</span>
+            </li>
+          </ol>
+        </div>
+
+        <div className="bg-white rounded-lg shadow p-6 mb-8">
+          <h3 className="text-lg font-bold text-gray-900 mb-3">Already a Member?</h3>
+          <div className="space-y-3">
+            <p className="text-gray-600">
+              If you've already paid and need login instructions, or if you're having issues:
             </p>
-            
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="you@university.edu"
-                  required
-                />
-              </div>
-
-              <div className="flex items-start">
-                <input
-                  type="checkbox"
-                  id="terms"
-                  className="mt-1 mr-2"
-                  required
-                />
-                <label htmlFor="terms" className="text-sm text-gray-600">
-                  I agree to the WAHS membership terms and conditions. I understand that membership is valid for one year from the date of payment.
-                </label>
-              </div>
-
-              <button
-                onClick={handlePayment}
-                disabled={loading || !email || !email.includes('@')}
-                className="w-full py-3 px-4 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Processing...' : `Pay $${selectedMembershipType === 'professional' ? '250' : '150'} via PayPal`}
-              </button>
-            </div>
+            <ul className="text-gray-600 space-y-2">
+              <li>• Email <a href="mailto:wahskorea@gmail.com" className="text-blue-600 hover:text-blue-500">wahskorea@gmail.com</a> for support</li>
+              <li>• Include your PayPal transaction ID</li>
+              <li>• Login page: <Link href="/wahs/login" className="text-blue-600 hover:text-blue-500">/wahs/login</Link></li>
+            </ul>
           </div>
-        )}
-
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-3">Important Information</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li>• Membership is valid for one year from the date of payment</li>
-            <li>• You will receive a confirmation email with your membership details</li>
-            <li>• After payment, you can login to your dashboard at <Link href="/wahs/login" className="text-blue-600 hover:text-blue-500">/wahs/login</Link></li>
-            <li>• For questions, contact <a href="mailto:wahskorea@gmail.com" className="text-blue-600 hover:text-blue-500">wahskorea@gmail.com</a></li>
-            <li>• All payments are processed securely through PayPal</li>
-          </ul>
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="text-center">
           <Link href="/membership" className="text-blue-600 hover:text-blue-500 font-medium">
             ← Back to Membership Information
           </Link>
