@@ -2646,3 +2646,23 @@ footer a:hover { color: #fff; }
     grid-template-columns: 1fr;
   }
 }
+
+/* Auth Navigation Styles */
+.nav-auth-item {
+  margin-left: 10px;
+}
+
+.nav-auth-link {
+  background: linear-gradient(135deg, rgba(205,46,58,0.9) 0%, rgba(205,46,58,0.7) 100%);
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-auth-link:hover {
+  background: linear-gradient(135deg, rgba(205,46,58,1) 0%, rgba(205,46,58,0.9) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(205,46,58,0.3);
+}

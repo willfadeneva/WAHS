@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MainNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [congressOpen, setCongressOpen] = useState(false);
   const pathname = usePathname();
+  const { user, userType } = useAuth();
 
   const isActive = (href: string) => pathname === href;
   const isAboutActive = pathname?.includes('/history') || pathname?.includes('/board-members');
@@ -57,6 +59,35 @@ export default function MainNav() {
           <li><Link href="/2026/submissions" className={pathname?.includes('/submissions') ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Call for Papers</Link></li>
           <li><Link href="/membership" className={isActive('/membership') ? 'active' : ''} onClick={() => setIsMenuOpen(false)}>Membership</Link></li>
           <li><a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a></li>
+          
+          {/* Auth Links */}
+          {user ? (
+            <li className="nav-auth-item">
+              <Link 
+                href={userType === 'congress' ? '/congress/dashboard' : 
+                      userType === 'wahs' ? '/wahs/dashboard' : 
+                      '/admin'}
+                className="nav-auth-link"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span style={{ marginRight: '5px' }}>👤</span>
+                Dashboard
+              </Link>
+            </li>
+          ) : (
+            <>
+              <li className="nav-auth-item">
+                <Link href="/congress/register" className="nav-auth-link" onClick={() => setIsMenuOpen(false)}>
+                  Submit Abstract
+                </Link>
+              </li>
+              <li className="nav-auth-item">
+                <Link href="/wahs/register" className="nav-auth-link" onClick={() => setIsMenuOpen(false)}>
+                  Join WAHS
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
