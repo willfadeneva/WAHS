@@ -5,9 +5,19 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 // PayPal payment links from membership page
-const PAYPAL_LINKS = {
-  professional: 'https://www.paypal.com/ncp/payment/9K9JC2CZ6N7S2',
-  non_professional: 'https://www.paypal.com/ncp/payment/Y2V33KK92X5SU',
+// Note: For automatic activation, PayPal NCP links need return URL parameter
+// Format: https://www.paypal.com/ncp/payment/CODE?return=https://congress.iwahs.org/wahs/payment/success?membership=professional
+const PAYPAL_BASE_URL = 'https://www.paypal.com/ncp/payment';
+const PAYPAL_CODES = {
+  professional: '9K9JC2CZ6N7S2',
+  non_professional: 'Y2V33KK92X5SU',
+};
+
+// Generate PayPal link with return URL
+const getPayPalLink = (membershipType: 'professional' | 'non_professional') => {
+  const baseUrl = `${PAYPAL_BASE_URL}/${PAYPAL_CODES[membershipType]}`;
+  const returnUrl = `https://congress.iwahs.org/wahs/payment/success?membership=${membershipType}`;
+  return `${baseUrl}?return=${encodeURIComponent(returnUrl)}`;
 };
 
 export default function WahsPaymentPage() {
@@ -57,14 +67,13 @@ export default function WahsPaymentPage() {
   }, [router, searchParams]);
 
   const handlePayPalRedirect = (membershipType: 'professional' | 'non_professional') => {
-    const paypalLink = PAYPAL_LINKS[membershipType];
-    window.open(paypalLink, '_blank');
-    
-    // Show payment instructions
-    alert(`Redirecting to PayPal for ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership payment.\n\nAfter completing payment on PayPal, please return to this page and click "I've Paid" to verify your payment.`);
+    const paypalLink = getPayPalLink(membershipType);
     
     // Store selected membership type for verification
     setSelectedMembershipType(membershipType);
+    
+    // Redirect to PayPal (not open in new tab for better return flow)
+    window.location.href = paypalLink;
   };
 
   const handlePaymentComplete = async () => {
@@ -305,11 +314,11 @@ export default function WahsPaymentPage() {
               </div>
             </div>
 
-            {/* Manual Verification */}
+            {/* Manual Verification (Fallback) */}
             <div className="mt-8 pt-8 border-t">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Already Paid?</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Issues?</h3>
               <p className="text-sm text-gray-600 mb-4">
-                If you've already completed payment on PayPal, select your membership type and click below to verify your payment.
+                If you completed payment but weren't automatically redirected back, or if you need manual verification, use this option.
               </p>
               
               <div className="mb-4">
@@ -338,7 +347,7 @@ export default function WahsPaymentPage() {
                 <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                I've Paid - Verify My {selectedMembershipType === 'professional' ? 'Professional' : 'Non-Professional'} Payment
+                Manual Verification for {selectedMembershipType === 'professional' ? 'Professional' : 'Non-Professional'}
               </button>
             </div>
           </div>
