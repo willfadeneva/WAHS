@@ -100,20 +100,31 @@ export default async function RegistrationPage({
                 <li>Welcome reception</li>
                 <li>Conference dinner</li>
               </ul>
-              <button style={{
-                background: '#CD2E3A',
-                color: 'white',
-                border: 'none',
-                padding: '12px 30px',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'background 0.3s'
-              }} className="register-button">
-                Register Now
-              </button>
+              <a 
+                href="YOUR_REGULAR_PAYPAL_LINK_HERE" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: '#CD2E3A',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 30px',
+                  borderRadius: '4px',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  width: '100%',
+                  transition: 'background 0.3s',
+                  display: 'block',
+                  textDecoration: 'none',
+                  textAlign: 'center'
+                }}
+                className="register-button"
+                onMouseOver={(e) => e.currentTarget.style.background = '#b0262e'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#CD2E3A'}
+              >
+                Register Now (PayPal)
+              </a>
             </div>
             
             {/* Student Registration */}
@@ -167,20 +178,31 @@ export default async function RegistrationPage({
                 <li>Welcome reception</li>
                 <li>Student ID required</li>
               </ul>
-              <button style={{
-                background: '#0047A0',
-                color: 'white',
-                border: 'none',
-                padding: '12px 30px',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'background 0.3s'
-              }} className="register-button">
-                Register Now
-              </button>
+              <a 
+                href="YOUR_STUDENT_PAYPAL_LINK_HERE" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: '#0047A0',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 30px',
+                  borderRadius: '4px',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  width: '100%',
+                  transition: 'background 0.3s',
+                  display: 'block',
+                  textDecoration: 'none',
+                  textAlign: 'center'
+                }}
+                className="register-button"
+                onMouseOver={(e) => e.currentTarget.style.background = '#003680'}
+                onMouseOut={(e) => e.currentTarget.style.background = '#0047A0'}
+              >
+                Register Now (PayPal)
+              </a>
             </div>
             
             {/* WAHS Member Registration */}
@@ -237,24 +259,35 @@ export default async function RegistrationPage({
                 <li>Conference dinner</li>
                 <li>Member-only sessions</li>
               </ul>
-              <button style={{
-                background: 'linear-gradient(135deg, #CD2E3A 0%, #0047A0 100%)',
-                color: 'white',
-                border: 'none',
-                padding: '12px 30px',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontWeight: '500',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'transform 0.3s'
-              }} className="register-button-gradient">
-                Register Now
-              </button>
+              <a 
+                href="YOUR_WAHS_MEMBER_PAYPAL_LINK_HERE" 
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: 'linear-gradient(135deg, #CD2E3A 0%, #0047A0 100%)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 30px',
+                  borderRadius: '4px',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  width: '100%',
+                  transition: 'transform 0.3s',
+                  display: 'block',
+                  textDecoration: 'none',
+                  textAlign: 'center'
+                }}
+                className="register-button-gradient"
+                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                Register Now (PayPal)
+              </a>
             </div>
           </div>
           
-          {/* Registration Process */}
+          {/* Two Registration Paths */}
           <div style={{ 
             background: '#f8f8f8', 
             padding: '40px', 
@@ -265,89 +298,194 @@ export default async function RegistrationPage({
               fontFamily: "'DM Serif Display', serif", 
               fontSize: '1.8rem', 
               color: '#000', 
-              marginBottom: '20px' 
+              marginBottom: '30px',
+              textAlign: 'center'
             }}>
-              Registration Process
+              Choose Your Registration Path
             </h2>
             
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  width: '50px', 
-                  height: '50px', 
-                  background: '#0047A0', 
-                  color: 'white', 
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  margin: '0 auto 15px'
-                }}>1</div>
-                <h4 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Submit Abstract</h4>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                  Submit your abstract through the Call for Papers
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+              {/* Path 1: Just Attend */}
+              <div style={{ 
+                background: 'white', 
+                padding: '25px', 
+                borderRadius: '8px',
+                border: '1px solid #e0e0e0'
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.3rem', 
+                  color: '#0047A0', 
+                  marginBottom: '15px',
+                  textAlign: 'center'
+                }}>
+                  Just Attend the Conference
+                </h3>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: '#0047A0', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    marginRight: '10px'
+                  }}>1</div>
+                  <span style={{ fontSize: '1rem', fontWeight: '500' }}>Select Ticket Type</span>
+                </div>
+                <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: '#0047A0', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    marginRight: '10px'
+                  }}>2</div>
+                  <span style={{ fontSize: '1rem', fontWeight: '500' }}>Pay via PayPal</span>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    background: '#0047A0', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    marginRight: '10px'
+                  }}>3</div>
+                  <span style={{ fontSize: '1rem', fontWeight: '500' }}>Receive Confirmation</span>
+                </div>
+                <p style={{ 
+                  fontSize: '0.9rem', 
+                  color: '#666', 
+                  marginTop: '20px',
+                  textAlign: 'center',
+                  fontStyle: 'italic'
+                }}>
+                  Simple one-time payment. No account needed.
                 </p>
               </div>
               
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  width: '50px', 
-                  height: '50px', 
-                  background: '#0047A0', 
-                  color: 'white', 
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  margin: '0 auto 15px'
-                }}>2</div>
-                <h4 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Wait for Approval</h4>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                  Committee reviews and notifies you of acceptance
-                </p>
-              </div>
-              
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  width: '50px', 
-                  height: '50px', 
-                  background: '#0047A0', 
-                  color: 'white', 
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  margin: '0 auto 15px'
-                }}>3</div>
-                <h4 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Complete Registration</h4>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                  Register and pay registration fees
-                </p>
-              </div>
-              
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  width: '50px', 
-                  height: '50px', 
-                  background: '#0047A0', 
-                  color: 'white', 
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.2rem',
-                  fontWeight: 'bold',
-                  margin: '0 auto 15px'
-                }}>4</div>
-                <h4 style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Receive Confirmation</h4>
-                <p style={{ fontSize: '0.9rem', color: '#666' }}>
-                  Get conference details and preparation materials
+              {/* Path 2: Submit Research */}
+              <div style={{ 
+                background: 'white', 
+                padding: '25px', 
+                borderRadius: '8px',
+                border: '1px solid #e0e0e0'
+              }}>
+                <h3 style={{ 
+                  fontSize: '1.3rem', 
+                  color: '#CD2E3A', 
+                  marginBottom: '15px',
+                  textAlign: 'center'
+                }}>
+                  Submit Research & Present
+                </h3>
+                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                  <div style={{ 
+                    width: '35px', 
+                    height: '35px', 
+                    background: '#CD2E3A', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    marginRight: '8px'
+                  }}>1</div>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Sign up for abstract submission</span>
+                </div>
+                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                  <div style={{ 
+                    width: '35px', 
+                    height: '35px', 
+                    background: '#CD2E3A', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    marginRight: '8px'
+                  }}>2</div>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Submit your abstract</span>
+                </div>
+                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                  <div style={{ 
+                    width: '35px', 
+                    height: '35px', 
+                    background: '#CD2E3A', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    marginRight: '8px'
+                  }}>3</div>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Wait for committee review</span>
+                </div>
+                <div style={{ textAlign: 'center', marginBottom: '15px' }}>
+                  <div style={{ 
+                    width: '35px', 
+                    height: '35px', 
+                    background: '#CD2E3A', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    marginRight: '8px'
+                  }}>4</div>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>If accepted, register & pay</span>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ 
+                    width: '35px', 
+                    height: '35px', 
+                    background: '#CD2E3A', 
+                    color: 'white', 
+                    borderRadius: '50%',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.9rem',
+                    fontWeight: 'bold',
+                    marginRight: '8px'
+                  }}>5</div>
+                  <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>Present at conference</span>
+                </div>
+                <p style={{ 
+                  fontSize: '0.9rem', 
+                  color: '#666', 
+                  marginTop: '20px',
+                  textAlign: 'center',
+                  fontStyle: 'italic'
+                }}>
+                  Requires account to manage submissions.
+                  <br />
+                  <a href="/congress/submit-abstract" style={{ color: '#CD2E3A', textDecoration: 'underline' }}>
+                    Start abstract submission →
+                  </a>
                 </p>
               </div>
             </div>
