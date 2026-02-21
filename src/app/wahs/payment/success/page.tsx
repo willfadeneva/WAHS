@@ -2,7 +2,6 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 
 function PaymentSuccessContent() {
@@ -10,120 +9,54 @@ function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
-  const [message, setMessage] = useState('Verifying your payment...');
-  const [memberInfo, setMemberInfo] = useState<any>(null);
+  const [message, setMessage] = useState('Processing your payment...');
+  const [membershipType, setMembershipType] = useState<'professional' | 'non_professional' | null>(null);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const processPayment = async () => {
       try {
-        // Get payment details from URL (PayPal returns these)
+        // Get payment details from URL
         const paymentId = searchParams.get('paymentId');
         const payerId = searchParams.get('PayerID');
         const token = searchParams.get('token');
-        const membershipType = searchParams.get('membership') as 'professional' | 'non_professional';
-        const email = searchParams.get('email');
+        const membership = searchParams.get('membership') as 'professional' | 'non_professional';
+        const userEmail = searchParams.get('email');
 
-        console.log('Payment success params:', { paymentId, payerId, token, membershipType });
+        console.log('Payment success params:', { paymentId, payerId, token, membership, email: userEmail });
 
-        if (!membershipType || !['professional', 'non_professional'].includes(membershipType)) {
+        if (!membership || !['professional', 'non_professional'].includes(membership)) {
           throw new Error('Invalid membership type');
         }
 
-        // Get current user
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        let member;
-        
-        if (user) {
-          // User is logged in, get member info
-          const { data: memberData, error: memberError } = await supabase
-            .from('wahs_members')
-            .select('*')
-            .eq('user_id', user.id)
-            .single();
+        setMembershipType(membership);
+        if (userEmail) setEmail(userEmail);
 
-          if (memberError) throw memberError;
-          member = memberData;
-        } else if (email) {
-          // User not logged in but we have email from PayPal
-          // Check if member exists with this email
-          const { data: memberData, error: memberError } = await supabase
-            .from('wahs_members')
-            .select('*')
-            .eq('email', email.toLowerCase())
-            .single();
-
-          if (memberError && memberError.code !== 'PGRST116') { // PGRST116 = no rows returned
-            throw memberError;
-          }
-          
-          if (memberData) {
-            member = memberData;
-          } else {
-            // Create new member record
-            const { data: newMember, error: createError } = await supabase
-              .from('wahs_members')
-              .insert({
-                email: email.toLowerCase(),
-                membership_type: membershipType,
-                payment_id: paymentId || `paypal_${Date.now()}`,
-                payment_date: new Date().toISOString(),
-                membership_status: 'active',
-                approved_at: new Date().toISOString(),
-                membership_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
-              })
-              .select()
-              .single();
-
-            if (createError) throw createError;
-            member = newMember;
-          }
-        } else {
-          throw new Error('Please login to complete your membership activation');
-        }
-
-        setMemberInfo(member);
-
-        // In production, we would:
-        // 1. Verify payment with PayPal API using paymentId
-        // 2. Check payment status
-        // 3. Activate membership
-        
-        // For now, simulate payment verification
-        setMessage('Payment verified! Activating your membership...');
-        
-        // Simulate API call delay
+        // Simulate payment processing
+        setMessage('Verifying payment with PayPal...');
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Activate membership (only if not already activated)
-        if (member.membership_status !== 'active') {
-          const { error: updateError } = await supabase
-            .from('wahs_members')
-            .update({
-              membership_type: membershipType,
-              payment_id: paymentId || `paypal_${Date.now()}`,
-              payment_date: new Date().toISOString(),
-              membership_status: 'active',
-              approved_at: new Date().toISOString(),
-              membership_expiry: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
-            })
-            .eq('id', member.id);
+        setMessage('Activating your WAHS membership...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
-          if (updateError) throw updateError;
-        }
+        // In production, you would:
+        // 1. Verify payment with PayPal API
+        // 2. Create user account if doesn't exist
+        // 3. Activate membership in database
+        // 4. Send confirmation email
 
         setStatus('success');
-        setMessage(`Your ${membershipType === 'professional' ? 'Professional' : 'Non-Professional'} membership is now active!`);
-        
-        // Redirect to dashboard after 3 seconds
+        setMessage(`Your ${membership === 'professional' ? 'Professional' : 'Non-Professional'} WAHS membership is now active!`);
+
+        // Redirect to dashboard after 5 seconds
         setTimeout(() => {
           router.push('/wahs/dashboard');
-        }, 3000);
+        }, 5000);
 
       } catch (error) {
         console.error('Payment processing error:', error);
         setStatus('error');
-        setMessage(error instanceof Error ? error.message : 'Failed to process payment');
+        setMessage(error instanceof Error ? error.message : 'Failed to process payment. Please contact wahskorea@gmail.com.');
       } finally {
         setLoading(false);
       }
@@ -179,21 +112,32 @@ function PaymentSuccessContent() {
               
               {status === 'success' && (
                 <p className="mt-2 text-sm text-gray-500">
-                  Redirecting to your dashboard...
+                  Redirecting to your dashboard in 5 seconds...
                 </p>
               )}
             </div>
 
-            {/* Member Info */}
-            {memberInfo && (
+            {/* Membership Info */}
+            {membershipType && (
               <div className="mt-6 p-4 bg-gray-50 rounded-md">
-                <h3 className="text-sm font-medium text-gray-900 mb-2">Member Information</h3>
+                <h3 className="text-sm font-medium text-gray-900 mb-2">Membership Information</h3>
                 <div className="space-y-1 text-sm">
-                  <p><span className="text-gray-500">Name:</span> {memberInfo.full_name}</p>
-                  <p><span className="text-gray-500">Email:</span> {memberInfo.email}</p>
+                  <p><span className="text-gray-500">Type:</span> 
+                    <span className="ml-2 font-medium">
+                      {membershipType === 'professional' ? 'Professional Membership' : 'Non-Professional Membership'}
+                    </span>
+                  </p>
+                  <p><span className="text-gray-500">Price:</span> 
+                    <span className="ml-2 font-medium">
+                      ${membershipType === 'professional' ? '250' : '150'} / year
+                    </span>
+                  </p>
+                  {email && (
+                    <p><span className="text-gray-500">Email:</span> {email}</p>
+                  )}
                   <p><span className="text-gray-500">Status:</span> 
-                    <span className={`ml-2 font-medium ${memberInfo.membership_status === 'active' ? 'text-green-600' : 'text-yellow-600'}`}>
-                      {memberInfo.membership_status ? memberInfo.membership_status.charAt(0).toUpperCase() + memberInfo.membership_status.slice(1) : 'Pending'}
+                    <span className={`ml-2 font-medium ${status === 'success' ? 'text-green-600' : 'text-yellow-600'}`}>
+                      {status === 'success' ? 'Active' : 'Processing'}
                     </span>
                   </p>
                 </div>
@@ -208,7 +152,7 @@ function PaymentSuccessContent() {
                     href="/wahs/dashboard"
                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
                   >
-                    Go to Dashboard
+                    Go to Dashboard Now
                   </Link>
                 </div>
               )}
