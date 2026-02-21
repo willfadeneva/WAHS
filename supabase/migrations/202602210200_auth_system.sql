@@ -155,3 +155,42 @@ CREATE TABLE IF NOT EXISTS email_logs (
 CREATE INDEX IF NOT EXISTS idx_email_logs_to_email ON email_logs(to_email);
 CREATE INDEX IF NOT EXISTS idx_email_logs_sent_at ON email_logs(sent_at);
 CREATE INDEX IF NOT EXISTS idx_email_logs_status ON email_logs(status);
+
+-- 9. Congress Event Registrations (separate from abstract submissions)
+CREATE TABLE IF NOT EXISTS congress_registrations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+  full_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  registration_type TEXT NOT NULL, -- 'regular', 'student', 'wahs_member'
+  payment_id TEXT,
+  payment_amount DECIMAL(10,2),
+  payment_currency TEXT DEFAULT 'USD',
+  payment_status TEXT DEFAULT 'pending', -- 'pending', 'completed', 'failed', 'refunded'
+  payment_date TIMESTAMP WITH TIME ZONE,
+  ticket_number TEXT,
+  registration_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  checked_in BOOLEAN DEFAULT false,
+  checked_in_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS for congress registrations
+ALTER TABLE congress_registrations ENABLE ROW LEVEL SECURITY;
+
+-- Users can view their own registrations
+CREATE POLICY "Users can view own congress registrations" 
+ON congress_registrations FOR SELECT 
+USING (auth.uid() = user_id);
+
+-- Admins can view all registrations
+CREATE POLICY "Admins can view all congress registrations" 
+ON congress_registrations FOR SELECT 
+USING (EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid()));
+
+-- Indexes for congress registrations
+CREATE INDEX IF NOT EXISTS idx_congress_regs_user_id ON congress_registrations(user_id);
+CREATE INDEX IF NOT EXISTS idx_congress_regs_email ON congress_registrations(email);
+CREATE INDEX IF NOT EXISTS idx_congress_regs_payment_status ON congress_registrations(payment_status);
+CREATE INDEX IF NOT EXISTS idx_congress_regs_registration_date ON congress_registrations(registration_date);

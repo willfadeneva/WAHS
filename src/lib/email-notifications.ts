@@ -24,10 +24,20 @@ const EMAIL_TEMPLATES = {
       <h1>Submission Approved</h1>
       <p>Dear ${data.name},</p>
       <p>Congratulations! Your submission to the WAHS Congress 2026 has been approved.</p>
-      <p>Please complete your registration by May 15, 2026 to secure your spot.</p>
+      
+      <h3>📚 Publication Opportunities</h3>
+      <p>Selected papers from the congress will be considered for publication in:</p>
+      <ul>
+        <li><strong>SOCIÉTÉS</strong> - Peer-reviewed, A&HCI indexed (special issue)</li>
+        <li><strong>HALLYU</strong> - WAHS flagship journal (special issue)</li>
+        <li><strong>BRILL</strong> - Leading academic publisher (edited volume)</li>
+        <li><strong>WAHS Congress Proceedings</strong> - Open access publication</li>
+      </ul>
+      
+      <p>Please complete your registration by May 15, 2026 to secure your presentation spot.</p>
       <p>Early bird registration is available until May 15, 2026.</p>
       <br>
-      <p><a href="https://congress.iwahs.org/2026/registration">Click here to register</a></p>
+      <p><a href="https://congress.iwahs.org/2026/registration">Click here to register for the congress</a></p>
       <br>
       <p>Best regards,<br>
       WAHS Congress Committee</p>
@@ -43,6 +53,36 @@ const EMAIL_TEMPLATES = {
       <p>After careful review, we regret to inform you that your submission was not selected for this year's congress.</p>
       <p>We received a large number of high-quality submissions and had to make difficult decisions.</p>
       <p>We encourage you to submit again for future congresses.</p>
+      <br>
+      <p>Best regards,<br>
+      WAHS Congress Committee</p>
+    `
+  },
+
+  SUBMISSION_EDITED: {
+    subject: 'WAHS Congress 2026 - Submission Edited',
+    template: (data: { name: string; submissionId: string }) => `
+      <h1>Submission Edited</h1>
+      <p>Dear ${data.name},</p>
+      <p>Your submission to the WAHS Congress 2026 has been successfully edited.</p>
+      <p>Submission ID: <strong>${data.submissionId}</strong></p>
+      <p>The changes have been saved and will be reviewed by the committee.</p>
+      <p>You can view your updated submission in your dashboard.</p>
+      <br>
+      <p>Best regards,<br>
+      WAHS Congress Committee</p>
+    `
+  },
+
+  SUBMISSION_WITHDRAWN: {
+    subject: 'WAHS Congress 2026 - Submission Withdrawn',
+    template: (data: { name: string; submissionId: string }) => `
+      <h1>Submission Withdrawn</h1>
+      <p>Dear ${data.name},</p>
+      <p>Your submission to the WAHS Congress 2026 has been withdrawn.</p>
+      <p>Submission ID: <strong>${data.submissionId}</strong></p>
+      <p>The submission is no longer under consideration for the congress.</p>
+      <p>If this was a mistake, please contact the congress committee immediately.</p>
       <br>
       <p>Best regards,<br>
       WAHS Congress Committee</p>
@@ -307,6 +347,36 @@ export async function sendSubmissionRejection(submitterId: string): Promise<void
   if (submitter) {
     await sendEmail(submitter.email, 'SUBMISSION_REJECTED', {
       name: submitter.full_name
+    });
+  }
+}
+
+export async function sendSubmissionEditNotification(submitterId: string, submissionId: string): Promise<void> {
+  const { data: submitter } = await supabase
+    .from('congress_submitters')
+    .select('full_name, email')
+    .eq('id', submitterId)
+    .single();
+
+  if (submitter) {
+    await sendEmail(submitter.email, 'SUBMISSION_EDITED', {
+      name: submitter.full_name,
+      submissionId
+    });
+  }
+}
+
+export async function sendSubmissionWithdrawalNotification(submitterId: string, submissionId: string): Promise<void> {
+  const { data: submitter } = await supabase
+    .from('congress_submitters')
+    .select('full_name, email')
+    .eq('id', submitterId)
+    .single();
+
+  if (submitter) {
+    await sendEmail(submitter.email, 'SUBMISSION_WITHDRAWN', {
+      name: submitter.full_name,
+      submissionId
     });
   }
 }

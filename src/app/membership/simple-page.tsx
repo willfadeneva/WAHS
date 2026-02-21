@@ -10,7 +10,7 @@ const PAYPAL_LINKS = {
   non_professional: 'https://www.paypal.com/ncp/payment/Y2V33KK92X5SU',
 };
 
-export default function MembershipPage() {
+export default function SimpleMembershipPage() {
   const [selectedType, setSelectedType] = useState<'professional' | 'non_professional' | ''>('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

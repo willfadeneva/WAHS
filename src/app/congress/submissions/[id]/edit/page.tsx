@@ -3,58 +3,89 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { sendSubmissionConfirmation } from '@/lib/email-notifications';
+import { sendSubmissionEditNotification } from '@/lib/email-notifications';
 
-export default function CongressSubmitAbstractPage() {
+interface Submission {
+  id: string;
+  title: string;
+  abstract: string;
+  keywords: string;
+  presentation_type: string;
+  track: string;
+  co_authors: string;
+  special_requirements: string;
+  file_url: string | null;
+  status: string;
+  withdrawn: boolean;
+  created_at: string;
+  last_edited: string;
+}
+
+export default function EditSubmissionPage() {
   const { user, userType, loading } = useAuth();
   const router = useRouter();
+  const params = useParams();
+  const submissionId = params.id as string;
+  
+  const [submission, setSubmission] = useState<Submission | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     abstract: '',
     keywords: '',
-    presentation_type: 'individual',
-    track: 'track1',
+    presentation_type: 'oral',
+    track: 'general',
     co_authors: '',
     special_requirements: ''
   });
   const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [currentFileUrl, setCurrentFileUrl] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [loadingSubmission, setLoadingSubmission] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  const [profileComplete, setProfileComplete] = useState(false);
 
   useEffect(() => {
     if (!loading && (!user || userType !== 'congress')) {
       router.push('/congress/login');
     } else if (user && userType === 'congress') {
-      checkProfile();
+      loadSubmission();
     }
-  }, [user, userType, loading, router]);
+  }, [user, userType, loading, router, submissionId]);
 
-  const checkProfile = async () => {
+  const loadSubmission = async () => {
     try {
       const { data, error } = await supabase
-        .from('congress_submitters')
-        .select('full_name, country')
-        .eq('id', user?.id)
+        .from('submissions')
+        .select('*')
+        .eq('id', submissionId)
+        .eq('submitter_id', user?.id)
         .single();
 
       if (error) {
-        console.error('Error checking profile:', error);
+        console.error('Error loading submission:', error);
+        setMessage({ type: 'error', text: 'Submission not found or access denied' });
         return;
       }
 
-      // Check if profile has required info (name and country)
-      if (data && data.full_name && data.full_name.trim() !== '' && data.country && data.country.trim() !== '') {
-        setProfileComplete(true);
-      } else {
-        // Redirect to profile completion
-        router.push('/congress/profile');
+      if (data) {
+        setSubmission(data);
+        setFormData({
+          title: data.title,
+          abstract: data.abstract,
+          keywords: data.keywords,
+          presentation_type: data.presentation_type,
+          track: data.track,
+          co_authors: data.co_authors || '',
+          special_requirements: data.special_requirements || ''
+        });
+        setCurrentFileUrl(data.file_url);
       }
     } catch (error) {
-      console.error('Profile check error:', error);
+      console.error('Submission load error:', error);
+      setMessage({ type: 'error', text: 'Failed to load submission' });
+    } finally {
+      setLoadingSubmission(false);
     }
   };
 
@@ -66,14 +97,12 @@ export default function CongressSubmitAbstractPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      // Check file type (PDF only)
-      if (selectedFile.type !== 'application/pdf') {
-        setMessage({ type: 'error', text: 'Please upload a PDF file only' });
+      if (selectedFile.size > 5 * 1024 * 1024) { // 5MB limit
+        setMessage({ type: 'error', text: 'File size must be less than 5MB' });
         return;
       }
-      // Check file size (5MB max)
-      if (selectedFile.size > 5 * 1024 * 1024) {
-        setMessage({ type: 'error', text: 'File size must be less than 5MB' });
+      if (selectedFile.type !== 'application/pdf') {
+        setMessage({ type: 'error', text: 'Only PDF files are allowed' });
         return;
       }
       setFile(selectedFile);
@@ -81,33 +110,31 @@ export default function CongressSubmitAbstractPage() {
   };
 
   const uploadFile = async (): Promise<string | null> => {
-    if (!file || !user) return null;
+    if (!file) return currentFileUrl;
 
     try {
-      setUploading(true);
-      
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `abstracts/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('abstracts')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
       if (uploadError) {
         throw uploadError;
       }
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('abstracts')
         .getPublicUrl(filePath);
 
-      setUploading(false);
       return publicUrl;
     } catch (error) {
       console.error('File upload error:', error);
-      setUploading(false);
       setMessage({ type: 'error', text: 'Failed to upload file' });
       return null;
     }
@@ -115,13 +142,13 @@ export default function CongressSubmitAbstractPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
+    setSaving(true);
     setMessage(null);
 
     // Validation
     if (!formData.title.trim()) {
       setMessage({ type: 'error', text: 'Please enter a title' });
-      setSubmitting(false);
+      setSaving(false);
       return;
     }
 
@@ -130,120 +157,138 @@ export default function CongressSubmitAbstractPage() {
     
     if (formData.presentation_type === 'individual' && (wordCount < 300 || wordCount > 500)) {
       setMessage({ type: 'error', text: 'Individual paper abstracts must be 300-500 words' });
-      setSubmitting(false);
+      setSaving(false);
       return;
     }
     
     if (formData.presentation_type === 'panel' && (wordCount < 800 || wordCount > 1000)) {
       setMessage({ type: 'error', text: 'Panel proposals must be 800-1,000 words' });
-      setSubmitting(false);
+      setSaving(false);
       return;
     }
     
     if ((formData.presentation_type === 'roundtable' || formData.presentation_type === 'workshop') && 
         (wordCount < 500 || wordCount > 700)) {
       setMessage({ type: 'error', text: 'Roundtable/workshop proposals must be 500-700 words' });
-      setSubmitting(false);
+      setSaving(false);
       return;
     }
 
     if (!formData.keywords.trim()) {
       setMessage({ type: 'error', text: 'Please enter keywords' });
-      setSubmitting(false);
+      setSaving(false);
       return;
     }
 
     try {
-      let fileUrl = null;
-      if (file) {
-        fileUrl = await uploadFile();
-        if (!fileUrl && file) {
-          setSubmitting(false);
-          return; // Upload failed, error already set
-        }
+      // Check if submission can still be edited
+      if (submission?.status !== 'submitted' || submission?.withdrawn) {
+        setMessage({ type: 'error', text: 'This submission can no longer be edited' });
+        setSaving(false);
+        return;
       }
 
-      // Get submitter profile for author info
-      const { data: profile } = await supabase
-        .from('congress_submitters')
-        .select('full_name, affiliation, email')
-        .eq('id', user?.id)
-        .single();
+      const fileUrl = await uploadFile();
+      if (file === null && !currentFileUrl) {
+        // No file was selected and there's no existing file
+        setMessage({ type: 'error', text: 'Please upload a PDF file' });
+        setSaving(false);
+        return;
+      }
 
-      // Create submission
-      const { data: submissionData, error: submissionError } = await supabase
+      const finalFileUrl = fileUrl || currentFileUrl;
+
+      // Update submission
+      const { error: updateError } = await supabase
         .from('submissions')
-        .insert([
-          {
-            submitter_id: user?.id,
-            title: formData.title,
-            abstract: formData.abstract,
-            keywords: formData.keywords,
-            presentation_type: formData.presentation_type,
-            track: formData.track,
-            co_authors: formData.co_authors,
-            special_requirements: formData.special_requirements,
-            file_url: fileUrl,
-            status: 'submitted',
-            author_name: profile?.full_name || '',
-            author_email: profile?.email || '',
-            author_affiliation: profile?.affiliation || '',
-            created_at: new Date().toISOString(),
-            last_edited: new Date().toISOString()
-          }
-        ])
-        .select()
-        .single();
+        .update({
+          title: formData.title,
+          abstract: formData.abstract,
+          keywords: formData.keywords,
+          presentation_type: formData.presentation_type,
+          track: formData.track,
+          co_authors: formData.co_authors,
+          special_requirements: formData.special_requirements,
+          file_url: finalFileUrl,
+          last_edited: new Date().toISOString()
+        })
+        .eq('id', submissionId)
+        .eq('submitter_id', user?.id);
 
-      if (submissionError) {
-        throw submissionError;
+      if (updateError) {
+        throw updateError;
       }
 
       // Send email notification
-      if (submissionData && user?.id) {
+      if (user?.id) {
         try {
-          await sendSubmissionConfirmation(user.id, submissionData.id);
+          await sendSubmissionEditNotification(user.id, submissionId);
         } catch (emailError) {
           console.error('Failed to send email notification:', emailError);
-          // Don't fail the submission if email fails
+          // Don't fail the update if email fails
         }
       }
 
       setMessage({ 
         type: 'success', 
-        text: 'Abstract submitted successfully! You will receive a confirmation email shortly.' 
+        text: 'Submission updated successfully! You will receive a confirmation email.' 
       });
-      
-      // Reset form
-      setFormData({
-        title: '',
-        abstract: '',
-        keywords: '',
-        presentation_type: 'individual',
-        track: 'track1',
-        co_authors: '',
-        special_requirements: ''
-      });
-      setFile(null);
-      
-      // Clear file input
-      const fileInput = document.getElementById('file') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
+
+      // Redirect back to dashboard after 2 seconds
+      setTimeout(() => {
+        router.push('/congress/dashboard');
+      }, 2000);
 
     } catch (error) {
-      console.error('Submission error:', error);
-      setMessage({ type: 'error', text: 'Failed to submit abstract. Please try again.' });
+      console.error('Update error:', error);
+      setMessage({ type: 'error', text: 'Failed to update submission. Please try again.' });
     } finally {
-      setSubmitting(false);
+      setSaving(false);
     }
   };
 
-  if (loading || !profileComplete) {
+  if (loading || loadingSubmission) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!submission) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Submission Not Found</h1>
+          <p className="text-gray-600 mb-4">The submission you're trying to edit doesn't exist or you don't have access.</p>
+          <Link
+            href="/congress/dashboard"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (submission.status !== 'submitted' || submission.withdrawn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Cannot Edit Submission</h1>
+          <p className="text-gray-600 mb-4">
+            This submission {submission.withdrawn ? 'has been withdrawn' : `has been ${submission.status}`} and can no longer be edited.
+          </p>
+          <Link
+            href="/congress/dashboard"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Back to Dashboard
+          </Link>
         </div>
       </div>
     );
@@ -256,9 +301,12 @@ export default function CongressSubmitAbstractPage() {
           <div className="px-4 py-5 sm:px-6">
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Submit Abstract</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Edit Submission</h1>
                 <p className="mt-1 text-sm text-gray-600">
-                  Submit your research abstract for Congress 2026
+                  Edit your research abstract for Congress 2026
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Submission ID: {submissionId}
                 </p>
               </div>
               <div className="flex space-x-3">
@@ -268,19 +316,7 @@ export default function CongressSubmitAbstractPage() {
                 >
                   Dashboard
                 </Link>
-                <Link
-                  href="/2026/registration"
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-                >
-                  Register for Congress
-                </Link>
               </div>
-            </div>
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-              <p className="text-sm text-blue-800">
-                <strong>Important:</strong> Abstract submission deadline is April 30, 2026. 
-                All submissions will undergo peer review. You will be notified of acceptance by May 15, 2026.
-              </p>
             </div>
           </div>
         </div>
@@ -296,7 +332,7 @@ export default function CongressSubmitAbstractPage() {
             {/* Title */}
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                Abstract Title *
+                Title *
               </label>
               <div className="mt-1">
                 <input
@@ -307,7 +343,7 @@ export default function CongressSubmitAbstractPage() {
                   onChange={handleChange}
                   required
                   className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Enter the title of your research"
+                  placeholder="Title of your research"
                 />
               </div>
             </div>
@@ -351,24 +387,24 @@ export default function CongressSubmitAbstractPage() {
                   onChange={handleChange}
                   required
                   className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="e.g., K-pop, Korean drama, Hallyu tourism, cultural policy"
+                  placeholder="e.g., K-pop, Korean drama, Hallyu, Cultural studies"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-500">Separate keywords with commas</p>
             </div>
 
-            {/* Presentation Type and Track */}
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label htmlFor="presentation_type" className="block text-sm font-medium text-gray-700">
-                  Submission Type *
-                </label>
+            {/* Presentation Type */}
+            <div>
+              <label htmlFor="presentation_type" className="block text-sm font-medium text-gray-700">
+                Submission Type *
+              </label>
+              <div className="mt-1">
                 <select
                   id="presentation_type"
                   name="presentation_type"
                   value={formData.presentation_type}
                   onChange={handleChange}
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                  className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 >
                   <option value="individual">Individual Paper Abstract (300-500 words)</option>
                   <option value="panel">Full Panel Proposal (800-1,000 words)</option>
@@ -376,17 +412,20 @@ export default function CongressSubmitAbstractPage() {
                   <option value="workshop">Workshop Proposal (500-700 words)</option>
                 </select>
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="track" className="block text-sm font-medium text-gray-700">
-                  Conference Track *
-                </label>
+            {/* Track */}
+            <div>
+              <label htmlFor="track" className="block text-sm font-medium text-gray-700">
+                Conference Track *
+              </label>
+              <div className="mt-1">
                 <select
                   id="track"
                   name="track"
                   value={formData.track}
                   onChange={handleChange}
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                  className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 >
                   <option value="track1">Track 1: Cultural Dynamism (Annual Theme)</option>
                   <option value="track2">Track 2: Open Topics in Hallyu Studies</option>
@@ -403,47 +442,14 @@ export default function CongressSubmitAbstractPage() {
                 <textarea
                   id="co_authors"
                   name="co_authors"
-                  rows={3}
+                  rows={2}
                   value={formData.co_authors}
                   onChange={handleChange}
                   className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                   placeholder="List co-authors with their affiliations (one per line)"
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">Include name, affiliation, and email for each co-author</p>
-            </div>
-
-            {/* File Upload */}
-            <div>
-              <label htmlFor="file" className="block text-sm font-medium text-gray-700">
-                Upload Abstract (Optional)
-              </label>
-              <div className="mt-1 flex items-center">
-                <input
-                  type="file"
-                  id="file"
-                  name="file"
-                  onChange={handleFileChange}
-                  accept=".pdf"
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-              </div>
-              <p className="mt-1 text-xs text-gray-500">
-                PDF only, max 5MB. Include full paper if available.
-              </p>
-              {file && (
-                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
-                  <p className="text-sm text-green-800">
-                    Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                  </p>
-                </div>
-              )}
-              {uploading && (
-                <div className="mt-2 text-sm text-gray-600">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 inline-block mr-2"></div>
-                  Uploading file...
-                </div>
-              )}
+              <p className="mt-1 text-xs text-gray-500">Optional. One author per line with affiliation in parentheses</p>
             </div>
 
             {/* Special Requirements */}
@@ -459,52 +465,98 @@ export default function CongressSubmitAbstractPage() {
                   value={formData.special_requirements}
                   onChange={handleChange}
                   className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                  placeholder="Any special requirements for your presentation (equipment, accessibility, etc.)"
+                  placeholder="Any special requirements for your presentation"
                 />
               </div>
+              <p className="mt-1 text-xs text-gray-500">Optional. E.g., accessibility needs, equipment requirements</p>
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <label htmlFor="file" className="block text-sm font-medium text-gray-700">
+                Abstract File (PDF) *
+              </label>
+              <div className="mt-1">
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                  className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Maximum file size: 5MB. Only PDF files accepted.
+              </p>
+              {currentFileUrl && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">Current file:</p>
+                  <a
+                    href={currentFileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-500"
+                  >
+                    Download current PDF
+                  </a>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Leave empty to keep current file. Upload a new file to replace it.
+                  </p>
+                </div>
+              )}
+              {file && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">New file selected:</p>
+                  <p className="text-sm text-green-600">{file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                </div>
+              )}
             </div>
 
             {/* Submit Button */}
             <div className="pt-6 border-t border-gray-200">
-              <div className="flex justify-end">
+              <div className="flex justify-between">
+                <Link
+                  href="/congress/dashboard"
+                  className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancel
+                </Link>
                 <button
                   type="submit"
-                  disabled={submitting || uploading}
+                  disabled={saving}
                   className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submitting ? (
+                  {saving ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Submitting...
+                      Saving...
                     </>
                   ) : (
-                    'Submit Abstract'
+                    'Save Changes'
                   )}
                 </button>
               </div>
-              <p className="mt-2 text-xs text-gray-500 text-center">
-                By submitting, you confirm that this work is original and has not been published elsewhere.
-              </p>
             </div>
           </div>
         </form>
 
         {/* Help Section */}
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-blue-900">Need Help?</h3>
+          <h3 className="text-lg font-medium text-blue-900">Editing Guidelines</h3>
           <ul className="mt-2 text-sm text-blue-800 space-y-1">
-            <li>• <strong>Word Counts:</strong> Individual papers 300-500 words, Panels 800-1,000 words, Roundtables/Workshops 500-700 words</li>
-            <li>• <strong>Review Process:</strong> Double-blind peer review, notification by April 30, 2026</li>
-            <li>• <strong>Publication Opportunities:</strong> Selected papers considered for SOCIÉTÉS (A&HCI), HALLYU, BRILL, and Congress Proceedings</li>
-            <li>• <strong>Questions?</strong> Contact <a href="mailto:wahskorea@gmail.com" className="underline">wahskorea@gmail.com</a></li>
-            <li>• <strong>Technical Issues?</strong> Check your profile is complete first</li>
+            <li>• You can edit your submission until it's reviewed by the committee</li>
+            <li>• Once accepted or rejected, editing is no longer possible</li>
+            <li>• Withdrawn submissions cannot be edited</li>
+            <li>• All edits will be logged and reviewers notified</li>
+            <li>• You will receive an email confirmation after editing</li>
           </ul>
           <div className="mt-4">
             <Link
-              href="/call-for-papers"
+              href="/congress/dashboard"
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
             >
-              View Full Call for Papers
+              Back to Dashboard
             </Link>
           </div>
         </div>

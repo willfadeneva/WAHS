@@ -1,19 +1,64 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import Nav from '@/components/Nav';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
 
-export default function SimpleSubmissionsPage({ params }: { params: { year: string } }) {
+export default function ProtectedSubmissionsPage({ params }: { params: { year: string } }) {
   const { year: yearStr } = params;
   const year = parseInt(yearStr);
+  const router = useRouter();
+  const { user, userType, loading } = useAuth();
+  
   const [isValidYear, setIsValidYear] = useState(true);
+  const [formData, setFormData] = useState({
+    title: '',
+    abstract: '',
+    keywords: '',
+    presentationType: 'oral',
+    track: 'general',
+    agreeToTerms: false
+  });
+
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   // Validate year
-  if (isNaN(year) || year < 2000 || year > 2100) {
-    setIsValidYear(false);
+  useEffect(() => {
+    if (isNaN(year) || year < 2000 || year > 2100) {
+      setIsValidYear(false);
+    }
+  }, [year]);
+
+  // Check authentication
+  useEffect(() => {
+    if (!loading && !user) {
+      // Not logged in, redirect to Congress login
+      router.push(`/congress/login?redirect=/2026/submissions-new`);
+    } else if (!loading && user && userType !== 'congress') {
+      // Logged in but wrong user type
+      if (userType === 'wahs') {
+        router.push('/wahs/dashboard');
+      } else if (userType === 'admin') {
+        router.push('/admin');
+      }
+    }
+  }, [user, userType, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isValidYear) {
@@ -27,24 +72,17 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
     );
   }
 
-  const [formData, setFormData] = useState({
-    title: '',
-    abstract: '',
-    keywords: '',
-    presentationType: 'oral',
-    track: 'general',
-    firstName: '',
-    lastName: '',
-    email: '',
-    affiliation: '',
-    country: '',
-    bio: '',
-    agreeToTerms: false
-  });
-
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  if (!user || userType !== 'congress') {
+    // Should have been redirected, but just in case
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,15 +96,18 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
     }
 
     try {
-      // Simple form submission
+      // Submit with user authentication
       const response = await fetch('/api/submit-abstract', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.id}` // In production, use proper JWT
         },
         body: JSON.stringify({
           ...formData,
-          year
+          year,
+          userId: user.id,
+          userEmail: user.email
         }),
       });
 
@@ -75,6 +116,12 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
       }
 
       setSubmitSuccess(true);
+      
+      // Redirect to dashboard after 3 seconds
+      setTimeout(() => {
+        router.push('/congress/dashboard');
+      }, 3000);
+      
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'Submission failed. Please try again or contact wahskorea@gmail.com.');
     } finally {
@@ -100,6 +147,14 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
       
       <section style={{ background: '#fff', padding: '140px 24px 80px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <div style={{ marginBottom: '20px', padding: '15px', background: '#e8f4fd', borderRadius: '8px', border: '1px solid #b6d4fe' }}>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: '#004085' }}>
+              <strong>Logged in as:</strong> {user.email} •{' '}
+              <a href="/congress/dashboard" style={{ color: '#0047A0', textDecoration: 'underline' }}>View your submissions</a> •{' '}
+              <a href="#" onClick={(e) => { e.preventDefault(); /* Add sign out */ }} style={{ color: '#CD2E3A', textDecoration: 'underline' }}>Sign out</a>
+            </p>
+          </div>
+          
           <h1 style={{ 
             fontFamily: "'DM Serif Display', serif", 
             fontSize: '2.5rem', 
@@ -132,9 +187,17 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
               marginBottom: '30px'
             }}>
               <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>✅ Submission Successful!</h3>
-              <p>Thank you for submitting your abstract. You will receive a confirmation email shortly.</p>
+              <p>Thank you for submitting your abstract. It has been saved to your account.</p>
               <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>
-                <strong>Note:</strong> The committee will review all submissions and notify authors by April 15, {year}.
+                <strong>Note:</strong> 
+                <ul style={{ marginTop: '5px', paddingLeft: '20px' }}>
+                  <li>The committee will review all submissions and notify authors by April 15, {year}.</li>
+                  <li>You can view and manage your submissions in your <a href="/congress/dashboard" style={{ color: '#155724', textDecoration: 'underline' }}>dashboard</a>.</li>
+                  <li>If accepted, you must register for the conference to present.</li>
+                </ul>
+              </p>
+              <p style={{ marginTop: '15px', fontSize: '0.9rem' }}>
+                Redirecting to your dashboard in 3 seconds...
               </p>
             </div>
           ) : (
@@ -277,132 +340,21 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
                 <div style={{ marginBottom: '30px' }}>
                   <h3 style={{ fontSize: '1.2rem', marginBottom: '20px', color: '#0047A0' }}>Author Information</h3>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                        First Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleChange}
-                        required
-                        style={{
-                          width: '100%',
-                          padding: '10px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          fontSize: '1rem'
-                        }}
-                        placeholder="Enter your first name"
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                        Last Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleChange}
-                        required
-                        style={{
-                          width: '100%',
-                          padding: '10px',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                          fontSize: '1rem'
-                        }}
-                        placeholder="Enter your last name"
-                      />
-                    </div>
+                  <div style={{ padding: '15px', background: '#f0f0f0', borderRadius: '6px', marginBottom: '20px' }}>
+                    <p style={{ margin: 0, fontSize: '0.9rem', color: '#555' }}>
+                      <strong>Your information:</strong><br />
+                      Name: {user.user_metadata?.full_name || 'Not set'} • 
+                      Email: {user.email} • 
+                      <a href="/congress/register/profile" style={{ color: '#0047A0', marginLeft: '10px', textDecoration: 'underline' }}>
+                        Update profile
+                      </a>
+                    </p>
                   </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        fontSize: '1rem'
-                      }}
-                      placeholder="you@university.edu"
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                      Affiliation
-                    </label>
-                    <input
-                      type="text"
-                      name="affiliation"
-                      value={formData.affiliation}
-                      onChange={handleChange}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        fontSize: '1rem'
-                      }}
-                      placeholder="University, Institution, or Company"
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                      Country *
-                    </label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleChange}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        fontSize: '1rem'
-                      }}
-                      placeholder="Enter your country"
-                    />
-                  </div>
-
-                  <div style={{ marginBottom: '20px' }}>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-                      Brief Bio (optional)
-                    </label>
-                    <textarea
-                      name="bio"
-                      value={formData.bio}
-                      onChange={handleChange}
-                      rows={3}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        fontSize: '1rem',
-                        resize: 'vertical'
-                      }}
-                      placeholder="Brief professional biography (max 200 words)"
-                    />
-                  </div>
+                  
+                  <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '20px' }}>
+                    Your name and email will be used as the primary author. 
+                    If you need to add co-authors, please list them in the abstract text.
+                  </p>
                 </div>
 
                 <div style={{ marginBottom: '30px' }}>
@@ -447,10 +399,15 @@ export default function SimpleSubmissionsPage({ params }: { params: { year: stri
                     {submitting ? 'Submitting...' : 'Submit Abstract'}
                   </button>
                   
-                  <p style={{ marginTop: '15px', fontSize: '0.9rem', color: '#666' }}>
-                    After submission, you will receive a confirmation email. 
-                    For questions, contact <a href="mailto:wahskorea@gmail.com" style={{ color: '#0047A0' }}>wahskorea@gmail.com</a>.
-                  </p>
+                  <div style={{ marginTop: '20px', fontSize: '0.9rem', color: '#666' }}>
+                    <p>
+                      After submission, you can view and manage your abstracts in your{' '}
+                      <a href="/congress/dashboard" style={{ color: '#0047A0', textDecoration: 'underline' }}>dashboard</a>.
+                    </p>
+                    <p style={{ marginTop: '5px' }}>
+                      For questions, contact <a href="mailto:wahskorea@gmail.com" style={{ color: '#0047A0' }}>wahskorea@gmail.com</a>.
+                    </p>
+                  </div>
                 </div>
               </form>
             </>

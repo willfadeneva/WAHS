@@ -11,7 +11,7 @@ export default function MainNav() {
   const [congressOpen, setCongressOpen] = useState(false);
   const [membershipOpen, setMembershipOpen] = useState(false);
   const pathname = usePathname();
-  const { user, userType } = useAuth();
+  const { user, userType, signOut } = useAuth();
 
   const isActive = (href: string) => pathname === href;
   const isAboutActive = pathname?.includes('/history') || pathname?.includes('/board-members');
@@ -93,7 +93,7 @@ export default function MainNav() {
             </ul>
           </li>
           
-          <li><Link href="/2026/submissions" className={pathname?.includes('/submissions') ? 'active' : ''} onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Call for Papers</Link></li>
+          <li><Link href="/call-for-papers" className={pathname?.includes('/call-for-papers') ? 'active' : ''} onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Call for Papers</Link></li>
           
           {/* Membership Dropdown */}
           <li className="nav-dropdown-parent">
@@ -113,21 +113,15 @@ export default function MainNav() {
                   <li><Link href="/wahs/dashboard" onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Dashboard</Link></li>
                   <li><Link href="/wahs/profile" onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Profile</Link></li>
                   <li><Link href="/wahs/members" onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Member Directory</Link></li>
+                  <li><Link href="/wahs/resources" onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Resources</Link></li>
                   <li className="nav-dropdown-divider"></li>
-                  <li><Link href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); closeAllDropdowns(); /* Add sign out logic */ }}>Logout</Link></li>
+                  <li><Link href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); closeAllDropdowns(); signOut(); }}>Logout</Link></li>
                 </>
               )}
             </ul>
           </li>
           
           <li><a href="#contact" onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>Contact</a></li>
-          
-          {/* Congress Auth Link (separate) */}
-          <li>
-            <Link href="/congress/login" className={isActive('/congress/login') ? 'active' : ''} onClick={() => { setIsMenuOpen(false); closeAllDropdowns(); }}>
-              Submit Abstract
-            </Link>
-          </li>
         </ul>
       </div>
 

@@ -1,53 +1,72 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { sendMagicLinkEmail } from '@/lib/magic-link';
-import { User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { Session, User } from '@supabase/supabase-js';
 
-type UserType = 'congress' | 'wahs' | 'admin' | null;
+type UserType = 'wahs' | 'congress' | null;
 
 interface AuthContextType {
+  session: Session | null;
   user: User | null;
   userType: UserType;
-  profile: any;
   loading: boolean;
-  signIn: (email: string, userType: 'congress' | 'wahs') => Promise<{ error: any }>;
+  signIn: (email: string, password: string, userType: UserType) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, userType: UserType) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  updateProfile: (data: any) => Promise<{ error: any }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userType, setUserType] = useState<UserType>(null);
-  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        loadUserProfile(session.user.id);
-      } else {
+    const initializeAuth = async () => {
+      setLoading(true);
+      
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+        }
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+        
+        // Determine user type based on session
+        if (currentSession?.user) {
+          await determineUserType(currentSession.user);
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
         setLoading(false);
       }
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          await loadUserProfile(session.user.id);
+      async (event, newSession) => {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        
+        if (newSession?.user) {
+          await determineUserType(newSession.user);
         } else {
-          setProfile(null);
           setUserType(null);
         }
+        
         setLoading(false);
       }
     );
@@ -55,91 +74,194 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadUserProfile = async (userId: string) => {
+  const determineUserType = async (user: User) => {
     try {
-      // Check if user is a congress submitter
-      const { data: congressData } = await supabase
-        .from('congress_submitters')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (congressData) {
-        setProfile(congressData);
-        setUserType('congress');
-        return;
-      }
-
       // Check if user is a WAHS member
-      const { data: wahsData } = await supabase
+      const { data: wahsMember, error: wahsError } = await supabase
         .from('wahs_members')
-        .select('*')
-        .eq('id', userId)
+        .select('id')
+        .eq('id', user.id)
         .single();
 
-      if (wahsData) {
-        setProfile(wahsData);
+      if (!wahsError && wahsMember) {
         setUserType('wahs');
         return;
       }
 
-      // Check if user is an admin
-      const { data: adminData } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', userId)
+      // Check if user is a Congress submitter
+      const { data: congressSubmitter, error: congressError } = await supabase
+        .from('congress_submitters')
+        .select('id')
+        .eq('id', user.id)
         .single();
 
-      if (adminData) {
-        setProfile(adminData);
-        setUserType('admin');
+      if (!congressError && congressSubmitter) {
+        setUserType('congress');
         return;
       }
 
-      // User authenticated but no profile yet (just signed up)
-      setProfile(null);
+      // Default to null if not found in either table
       setUserType(null);
     } catch (error) {
-      console.error('Error loading user profile:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error determining user type:', error);
+      setUserType(null);
     }
   };
 
-  const signIn = async (email: string, type: 'congress' | 'wahs') => {
+  const signIn = async (email: string, password: string, userType: UserType): Promise<{ error: any }> => {
     try {
-      // Use our custom magic link system with Resend
-      const { success, error } = await sendMagicLinkEmail(email, type);
-      
-      if (!success) {
-        return { error: new Error(error || 'Failed to send magic link') };
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { error };
       }
-      
+
+      // After successful login, determine user type
+      if (data.user) {
+        await determineUserType(data.user);
+        
+        // Redirect based on user type
+        if (userType === 'wahs') {
+          router.push('/wahs/dashboard');
+        } else if (userType === 'congress') {
+          router.push('/congress/dashboard');
+        }
+      }
+
       return { error: null };
     } catch (error) {
-      return { error: error instanceof Error ? error : new Error('Failed to send magic link') };
+      console.error('Sign in error:', error);
+      return { error };
+    }
+  };
+
+  const signUp = async (email: string, password: string, fullName: string, userType: UserType): Promise<{ error: any }> => {
+    try {
+      // Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
+
+      if (authError) {
+        return { error: authError };
+      }
+
+      if (!authData.user) {
+        return { error: new Error('User creation failed') };
+      }
+
+      // Create user profile based on type
+      if (userType === 'wahs') {
+        const { error: profileError } = await supabase
+          .from('wahs_members')
+          .insert([
+            {
+              id: authData.user.id,
+              full_name: fullName,
+              email: email,
+              membership_type: 'pending',
+              membership_status: 'pending',
+            },
+          ]);
+
+        if (profileError) {
+          // If profile creation fails, delete the auth user
+          await supabase.auth.admin.deleteUser(authData.user.id);
+          return { error: profileError };
+        }
+      } else if (userType === 'congress') {
+        const { error: profileError } = await supabase
+          .from('congress_submitters')
+          .insert([
+            {
+              id: authData.user.id,
+              full_name: fullName,
+              email: email,
+            },
+          ]);
+
+        if (profileError) {
+          await supabase.auth.admin.deleteUser(authData.user.id);
+          return { error: profileError };
+        }
+      }
+
+      // Set user type
+      setUserType(userType);
+      
+      // Redirect based on user type
+      if (userType === 'wahs') {
+        router.push('/membership');
+      } else if (userType === 'congress') {
+        // Redirect to profile completion first
+        router.push('/congress/profile');
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Sign up error:', error);
+      return { error };
     }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
+    try {
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
-  const refreshProfile = async () => {
-    if (user) {
-      await loadUserProfile(user.id);
+  const updateProfile = async (data: any): Promise<{ error: any }> => {
+    try {
+      if (!user) {
+        return { error: new Error('No user logged in') };
+      }
+
+      let error;
+      
+      if (userType === 'wahs') {
+        const { error: updateError } = await supabase
+          .from('wahs_members')
+          .update(data)
+          .eq('id', user.id);
+        error = updateError;
+      } else if (userType === 'congress') {
+        const { error: updateError } = await supabase
+          .from('congress_submitters')
+          .update(data)
+          .eq('id', user.id);
+        error = updateError;
+      } else {
+        return { error: new Error('Unknown user type') };
+      }
+
+      return { error };
+    } catch (error) {
+      console.error('Update profile error:', error);
+      return { error };
     }
   };
 
   const value = {
+    session,
     user,
     userType,
-    profile,
     loading,
     signIn,
+    signUp,
     signOut,
-    refreshProfile
+    updateProfile,
   };
 
   return (

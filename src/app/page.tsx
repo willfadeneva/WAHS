@@ -43,7 +43,7 @@ export default function HomePage() {
           <p style={{ fontSize: '1.05rem', color: '#555', lineHeight: 1.7, fontStyle: 'italic', marginBottom: '32px', maxWidth: '700px', margin: '0 auto 32px' }}>
             Theme: Cultural Dynamism in the Digital Age—Toward a Universal Theory of Pop Culture Globalization
           </p>
-          <Link href="/2026/submissions" style={{
+          <Link href="/call-for-papers" style={{
             display: 'inline-block',
             padding: '16px 40px',
             background: '#CD2E3A',
@@ -54,7 +54,7 @@ export default function HomePage() {
             textDecoration: 'none',
             transition: 'all 0.3s ease',
           }}>
-            Submit Your Abstract →
+            Details... →
           </Link>
         </div>
       </section>

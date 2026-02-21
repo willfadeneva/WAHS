@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
+import { sendSubmissionWithdrawalNotification } from '@/lib/email-notifications';
 
 interface Submission {
   id: string;
@@ -17,14 +18,9 @@ interface Submission {
 }
 
 export default function CongressDashboardPage() {
-  const { user, userType, profile, loading, signOut } = useAuth();
+  const { user, userType, loading, signOut } = useAuth();
   const router = useRouter();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [profileData, setProfileData] = useState({
-    full_name: profile?.full_name || '',
-    affiliation: profile?.affiliation || ''
-  });
 
   useEffect(() => {
     if (!loading && (!user || userType !== 'congress')) {
@@ -50,17 +46,43 @@ export default function CongressDashboardPage() {
     }
   };
 
-  const handleProfileUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setProfileLoading(true);
-    
-    await supabase
-      .from('congress_submitters')
-      .update(profileData)
-      .eq('id', user?.id);
-    
-    setProfileLoading(false);
-    alert('Profile updated successfully!');
+  const handleWithdraw = async (submissionId: string) => {
+    if (!confirm('Are you sure you want to withdraw this submission? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      // Update submission as withdrawn
+      const { error } = await supabase
+        .from('submissions')
+        .update({ 
+          withdrawn: true,
+          status: 'withdrawn',
+          last_edited: new Date().toISOString()
+        })
+        .eq('id', submissionId)
+        .eq('submitter_id', user?.id);
+
+      if (error) throw error;
+
+      // Send email notification
+      if (user?.id) {
+        try {
+          await sendSubmissionWithdrawalNotification(user.id, submissionId);
+        } catch (emailError) {
+          console.error('Failed to send email notification:', emailError);
+          // Don't fail the withdrawal if email fails
+        }
+      }
+
+      // Reload submissions
+      loadSubmissions();
+      
+      alert('Submission withdrawn successfully. You will receive a confirmation email.');
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      alert('Failed to withdraw submission. Please try again.');
+    }
   };
 
   if (loading) {
@@ -109,35 +131,30 @@ export default function CongressDashboardPage() {
             {/* Profile Card */}
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Your Profile</h2>
-              <form onSubmit={handleProfileUpdate} className="space-y-4">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Full Name</label>
-                  <input
-                    type="text"
-                    value={profileData.full_name}
-                    onChange={(e) => setProfileData({...profileData, full_name: e.target.value})}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Your full name"
-                  />
+                  <p className="text-sm text-gray-600 mb-3">
+                    Manage your profile information for abstract submission.
+                  </p>
+                  <Link
+                    href="/congress/profile"
+                    className="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Edit Profile
+                  </Link>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Affiliation</label>
-                  <input
-                    type="text"
-                    value={profileData.affiliation}
-                    onChange={(e) => setProfileData({...profileData, affiliation: e.target.value})}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="University/Organization"
-                  />
+                <div className="pt-4 border-t border-gray-200">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">Profile Status</h3>
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="ml-2">
+                      <p className="text-sm text-gray-600">Ready for abstract submission</p>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  type="submit"
-                  disabled={profileLoading}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {profileLoading ? 'Updating...' : 'Update Profile'}
-                </button>
-              </form>
+              </div>
             </div>
 
             {/* Quick Actions */}
@@ -145,7 +162,7 @@ export default function CongressDashboardPage() {
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
               <div className="space-y-3">
                 <Link
-                  href="/2026/submissions-new"
+                  href="/congress/submit-abstract"
                   className="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
                 >
                   Submit New Abstract
@@ -174,7 +191,7 @@ export default function CongressDashboardPage() {
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No submissions yet</h3>
                   <p className="text-gray-600 mb-4">Submit your first abstract to get started</p>
                   <Link
-                    href="/2026/submissions"
+                    href="/congress/submit-abstract"
                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                   >
                     Submit Abstract
@@ -206,20 +223,14 @@ export default function CongressDashboardPage() {
                       </div>
                       
                       <div className="mt-4 flex space-x-3">
-                        <button
-                          onClick={() => alert('Edit functionality coming soon')}
-                          disabled={submission.withdrawn || submission.status !== 'submitted'}
-                          className="text-sm text-blue-600 hover:text-blue-500 disabled:text-gray-400"
+                        <Link
+                          href={`/congress/submissions/${submission.id}/edit`}
+                          className={`text-sm text-blue-600 hover:text-blue-500 ${(submission.withdrawn || submission.status !== 'submitted') ? 'pointer-events-none text-gray-400' : ''}`}
                         >
                           Edit
-                        </button>
+                        </Link>
                         <button
-                          onClick={() => {
-                            if (confirm('Are you sure you want to withdraw this submission?')) {
-                              // Withdraw logic here
-                              alert('Withdraw functionality coming soon');
-                            }
-                          }}
+                          onClick={() => handleWithdraw(submission.id)}
                           disabled={submission.withdrawn}
                           className="text-sm text-red-600 hover:text-red-500 disabled:text-gray-400"
                         >

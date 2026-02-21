@@ -43,9 +43,10 @@ export default function AdminPage() {
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState(false);
   const [adminEmail, setAdminEmail] = useState('');
-  const [activeTab, setActiveTab] = useState<'wahs' | 'congress'>('wahs');
+  const [activeTab, setActiveTab] = useState<'wahs' | 'congress' | 'registrations'>('wahs');
   const [wahsMembers, setWahsMembers] = useState<any[]>([]);
   const [congressSubmissions, setCongressSubmissions] = useState<any[]>([]);
+  const [congressRegistrations, setCongressRegistrations] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(false);
 
   useEffect(() => {
@@ -82,21 +83,29 @@ export default function AdminPage() {
   const loadData = async () => {
     setLoadingData(true);
     
-    if (activeTab === 'wahs') {
-      const { data } = await supabase
-        .from('wahs_members')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (data) setWahsMembers(data);
-    } else {
-      const { data } = await supabase
-        .from('submissions')
-        .select('*, congress_submitters(full_name, affiliation)')
-        .order('created_at', { ascending: false });
-      
-      if (data) setCongressSubmissions(data);
-    }
+    // Load WAHS members
+    const { data: wahsData } = await supabase
+      .from('wahs_members')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (wahsData) setWahsMembers(wahsData);
+    
+    // Load Congress submissions
+    const { data: congressData } = await supabase
+      .from('submissions')
+      .select('*, congress_submitters(full_name, affiliation)')
+      .order('created_at', { ascending: false });
+    
+    if (congressData) setCongressSubmissions(congressData);
+    
+    // Load Congress registrations
+    const { data: regData } = await supabase
+      .from('congress_registrations')
+      .select('*')
+      .order('registration_date', { ascending: false });
+    
+    if (regData) setCongressRegistrations(regData);
     
     setLoadingData(false);
   };
@@ -119,12 +128,55 @@ export default function AdminPage() {
   };
 
   const updateSubmissionStatus = async (submissionId: string, status: string) => {
-    await supabase
-      .from('submissions')
-      .update({ status })
-      .eq('id', submissionId);
-    
-    loadData();
+    try {
+      // Get submission details first
+      const { data: submission } = await supabase
+        .from('submissions')
+        .select('*, congress_submitters(full_name, email)')
+        .eq('id', submissionId)
+        .single();
+      
+      if (!submission) {
+        alert('Submission not found');
+        return;
+      }
+      
+      // Update status
+      await supabase
+        .from('submissions')
+        .update({ status })
+        .eq('id', submissionId);
+      
+      // Send email notification
+      if (submission.congress_submitters?.email) {
+        try {
+          const response = await fetch('/api/email/notify-submission-status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              toEmail: submission.congress_submitters.email,
+              toName: submission.congress_submitters.full_name || 'Submitter',
+              submissionTitle: submission.title,
+              submissionId: submissionId,
+              status: status,
+              congressYear: '2026'
+            })
+          });
+          
+          if (!response.ok) {
+            console.error('Failed to send email notification');
+          }
+        } catch (emailError) {
+          console.error('Email notification error:', emailError);
+        }
+      }
+      
+      loadData();
+      alert(`Submission ${status}. Email notification ${submission.congress_submitters?.email ? 'sent' : 'failed (no email)'}`);
+    } catch (error) {
+      console.error('Error updating submission:', error);
+      alert('Failed to update submission');
+    }
   };
 
   if (!authenticated) {
@@ -190,6 +242,19 @@ export default function AdminPage() {
               Congress Submissions
               <span className="ml-2 bg-gray-100 text-gray-900 text-xs font-medium px-2 py-0.5 rounded">
                 {congressSubmissions.length}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('registrations')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'registrations'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Congress Registrations
+              <span className="ml-2 bg-gray-100 text-gray-900 text-xs font-medium px-2 py-0.5 rounded">
+                {congressRegistrations.length}
               </span>
             </button>
           </nav>
@@ -276,7 +341,7 @@ export default function AdminPage() {
               </div>
             )}
           </div>
-        ) : (
+        ) : activeTab === 'congress' ? (
           <div className="bg-white shadow rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-medium text-gray-900">Congress Submissions</h2>
@@ -377,22 +442,126 @@ export default function AdminPage() {
               </div>
             )}
           </div>
+        ) : (
+          <div className="bg-white shadow rounded-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-medium text-gray-900">Congress 2026 Registrations</h2>
+              <p className="text-sm text-gray-600">Manage event registrations and check-ins</p>
+            </div>
+            
+            {congressRegistrations.length === 0 ? (
+              <div className="px-6 py-12 text-center">
+                <div className="text-gray-400 mb-4">🎫</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No registrations yet</h3>
+                <p className="text-gray-600">When users register for the congress, they'll appear here</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {congressRegistrations.map((registration) => (
+                  <div key={registration.id} className="px-6 py-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-md font-medium text-gray-900">
+                          {registration.full_name}
+                        </h3>
+                        <div className="mt-1 text-sm text-gray-500">
+                          <div>{registration.email}</div>
+                          <div>Type: {registration.registration_type}</div>
+                        </div>
+                        <div className="mt-2 flex items-center space-x-4">
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            registration.payment_status === 'completed' ? 'bg-green-100 text-green-800' :
+                            registration.payment_status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            Payment: {registration.payment_status}
+                          </span>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            registration.checked_in ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {registration.checked_in ? 'Checked In' : 'Not Checked In'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            Registered: {new Date(registration.registration_date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-2">
+                        {!registration.checked_in && (
+                          <button
+                            onClick={() => alert('Check-in functionality coming soon')}
+                            className="px-3 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded"
+                          >
+                            Check In
+                          </button>
+                        )}
+                        <button
+                          onClick={() => alert('View registration details coming soon')}
+                          className="px-3 py-1 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded"
+                        >
+                          Details
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3 text-sm text-gray-700">
+                      <div className="font-medium">Payment Details:</div>
+                      <div className="mt-1 grid grid-cols-2 gap-2">
+                        <div>
+                          <span className="text-gray-500">Amount:</span> 
+                          <span className="ml-2 font-medium">
+                            {registration.payment_currency} {registration.payment_amount}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Payment ID:</span> 
+                          <span className="ml-2 font-mono text-xs">
+                            {registration.payment_id || 'N/A'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Ticket #:</span> 
+                          <span className="ml-2 font-medium">
+                            {registration.ticket_number || 'Not assigned'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">User ID:</span> 
+                          <span className="ml-2 font-mono text-xs">
+                            {registration.user_id?.substring(0, 8)}...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* Stats */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="bg-white shadow rounded-lg p-6">
             <div className="text-2xl font-bold text-gray-900">{wahsMembers.length}</div>
-            <div className="text-sm text-gray-600">Total WAHS Members</div>
+            <div className="text-sm text-gray-600">WAHS Members</div>
             <div className="mt-2 text-xs text-gray-500">
               {wahsMembers.filter(m => m.membership_status === 'pending').length} pending
             </div>
           </div>
           <div className="bg-white shadow rounded-lg p-6">
             <div className="text-2xl font-bold text-gray-900">{congressSubmissions.length}</div>
-            <div className="text-sm text-gray-600">Total Submissions</div>
+            <div className="text-sm text-gray-600">Congress Submissions</div>
             <div className="mt-2 text-xs text-gray-500">
               {congressSubmissions.filter(s => s.status === 'submitted').length} under review
+            </div>
+          </div>
+          <div className="bg-white shadow rounded-lg p-6">
+            <div className="text-2xl font-bold text-gray-900">{congressRegistrations.length}</div>
+            <div className="text-sm text-gray-600">Congress Registrations</div>
+            <div className="mt-2 text-xs text-gray-500">
+              {congressRegistrations.filter(r => r.payment_status === 'completed').length} paid
             </div>
           </div>
           <div className="bg-white shadow rounded-lg p-6">

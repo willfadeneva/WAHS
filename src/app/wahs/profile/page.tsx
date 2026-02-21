@@ -1,120 +1,145 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import MainNav from '@/components/MainNav';
-import MainFooter from '@/components/MainFooter';
+import Link from 'next/link';
+
+interface WahsMember {
+  id: string;
+  full_name: string;
+  email: string;
+  affiliation: string | null;
+  bio: string | null;
+  membership_type: string;
+  membership_status: string;
+  membership_expiry: string | null;
+  created_at: string;
+}
 
 export default function WahsProfilePage() {
-  const router = useRouter();
+  const { user, userType, signOut, updateProfile } = useAuth();
+  const [profile, setProfile] = useState<WahsMember | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [isMember, setIsMember] = useState(false);
-  const [profile, setProfile] = useState<any>(null);
+  const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
     affiliation: '',
-    country: '',
     bio: '',
-    research_interests: '',
   });
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   useEffect(() => {
-    const loadProfile = async () => {
-      // Check if user is authenticated as WAHS member
-      const authData = localStorage.getItem('wahs_auth');
-      if (!authData) {
-        router.push('/wahs/login?redirect=/wahs/profile');
-        return;
-      }
+    if (user && userType === 'wahs') {
+      loadProfile();
+    } else if (user && userType !== 'wahs') {
+      // Redirect if not a WAHS member
+      window.location.href = '/';
+    }
+  }, [user, userType]);
 
-      try {
-        const auth = JSON.parse(authData);
-        if (!auth.authenticated || auth.userType !== 'wahs') {
-          router.push('/wahs/login?redirect=/wahs/profile');
-          return;
-        }
-
-        // User is WAHS member - fetch profile
-        setIsMember(true);
-        
-        const { data: profileData, error } = await supabase
-          .from('wahs_members')
-          .select('*')
-          .eq('email', auth.email.toLowerCase())
-          .single();
-
-        if (error) throw error;
-        
-        setProfile(profileData);
-        setFormData({
-          name: profileData.name || '',
-          affiliation: profileData.affiliation || '',
-          country: profileData.country || '',
-          bio: profileData.bio || '',
-          research_interests: profileData.research_interests || '',
-        });
-      } catch (error) {
-        console.error('Error loading profile:', error);
-        setMessage({ type: 'error', text: 'Error loading profile' });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProfile();
-  }, [router]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage(null);
-
+  const loadProfile = async () => {
     try {
-      const authData = localStorage.getItem('wahs_auth');
-      if (!authData) throw new Error('Not authenticated');
-
-      const auth = JSON.parse(authData);
+      setLoading(true);
       
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('wahs_members')
-        .update({
-          name: formData.name,
-          affiliation: formData.affiliation,
-          country: formData.country,
-          bio: formData.bio,
-          research_interests: formData.research_interests,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('email', auth.email.toLowerCase());
+        .select('*')
+        .eq('id', user?.id)
+        .single();
 
-      if (error) throw error;
-
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
-      
-      // Update local profile
-      setProfile({
-        ...profile,
-        ...formData,
-      });
+      if (error) {
+        console.error('Error loading profile:', error);
+        setMessage({ type: 'error', text: 'Failed to load profile' });
+      } else {
+        setProfile(data);
+        setFormData({
+          full_name: data.full_name || '',
+          affiliation: data.affiliation || '',
+          bio: data.bio || '',
+        });
+      }
     } catch (error) {
-      console.error('Error updating profile:', error);
-      setMessage({ type: 'error', text: 'Error updating profile' });
+      console.error('Profile load error:', error);
+      setMessage({ type: 'error', text: 'Failed to load profile' });
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleEdit = () => {
+    setEditing(true);
+  };
+
+  const handleCancel = () => {
+    setEditing(false);
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name || '',
+        affiliation: profile.affiliation || '',
+        bio: profile.bio || '',
+      });
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      setMessage(null);
+
+      const { error } = await updateProfile({
+        full_name: formData.full_name,
+        affiliation: formData.affiliation,
+        bio: formData.bio,
+        updated_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        setMessage({ type: 'error', text: error.message || 'Failed to update profile' });
+      } else {
+        setMessage({ type: 'success', text: 'Profile updated successfully' });
+        setEditing(false);
+        await loadProfile(); // Reload to get updated data
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      setMessage({ type: 'error', text: 'Failed to update profile' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  if (loading) {
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'Not set';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  if (!user || userType !== 'wahs') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-2xl font-semibold text-gray-900">Access Denied</div>
+          <p className="mt-2 text-gray-600">You need to be a WAHS member to access this page.</p>
+          <Link href="/wahs/login" className="mt-4 inline-block text-blue-600 hover:text-blue-500">
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading profile...</p>
@@ -123,186 +148,241 @@ export default function WahsProfilePage() {
     );
   }
 
-  if (!isMember) {
-    return null; // Already redirecting
-  }
-
   return (
-    <>
-      <MainNav />
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">WAHS Member Profile</h1>
-            <p className="mt-2 text-gray-600">Update your member profile information</p>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          {/* Header */}
+          <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <div>
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                WAHS Member Profile
+              </h3>
+              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                Manage your membership and profile information
+              </p>
+            </div>
+            <div className="flex space-x-3">
+              <Link
+                href="/wahs/dashboard"
+                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={signOut}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
 
+          {/* Message Alert */}
           {message && (
-            <div className={`mb-6 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+            <div className={`mx-6 mt-4 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
               {message.text}
             </div>
           )}
 
-          <div className="bg-white shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                      Full Name *
-                    </label>
+          <div className="border-t border-gray-200">
+            <dl>
+              {/* Membership Status */}
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Membership Status</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium ${
+                    profile?.membership_status === 'active' 
+                      ? 'bg-green-100 text-green-800'
+                      : profile?.membership_status === 'pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {profile?.membership_status?.toUpperCase() || 'UNKNOWN'}
+                  </span>
+                  {profile?.membership_type && (
+                    <span className="ml-3 text-gray-600">
+                      ({profile.membership_type})
+                    </span>
+                  )}
+                </dd>
+              </div>
+
+              {/* Membership Expiry */}
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Membership Expiry</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {formatDate(profile?.membership_expiry)}
+                </dd>
+              </div>
+
+              {/* Email */}
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Email address</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {profile?.email}
+                </dd>
+              </div>
+
+              {/* Full Name */}
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Full name</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {editing ? (
                     <input
                       type="text"
-                      name="name"
-                      id="name"
-                      required
-                      value={formData.name}
+                      name="full_name"
+                      value={formData.full_name}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     />
-                  </div>
+                  ) : (
+                    profile?.full_name || 'Not set'
+                  )}
+                </dd>
+              </div>
 
-                  <div>
-                    <label htmlFor="affiliation" className="block text-sm font-medium text-gray-700">
-                      Affiliation/Institution
-                    </label>
+              {/* Affiliation */}
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Affiliation</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {editing ? (
                     <input
                       type="text"
                       name="affiliation"
-                      id="affiliation"
                       value={formData.affiliation}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="University, Institution, or Company"
                     />
-                  </div>
+                  ) : (
+                    profile?.affiliation || 'Not set'
+                  )}
+                </dd>
+              </div>
 
-                  <div>
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                      Country
-                    </label>
-                    <select
-                      name="country"
-                      id="country"
-                      value={formData.country}
-                      onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    >
-                      <option value="">Select a country</option>
-                      <option value="South Korea">South Korea</option>
-                      <option value="United States">United States</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                      <option value="Japan">Japan</option>
-                      <option value="China">China</option>
-                      <option value="Australia">Australia</option>
-                      <option value="Canada">Canada</option>
-                      <option value="Germany">Germany</option>
-                      <option value="France">France</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="research_interests" className="block text-sm font-medium text-gray-700">
-                      Research Interests
-                    </label>
-                    <input
-                      type="text"
-                      name="research_interests"
-                      id="research_interests"
-                      value={formData.research_interests}
-                      onChange={handleChange}
-                      placeholder="e.g., K-pop, Korean drama, Korean language education"
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="bio" className="block text-sm font-medium text-gray-700">
-                      Bio/Introduction
-                    </label>
+              {/* Bio */}
+              <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Bio</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {editing ? (
                     <textarea
                       name="bio"
-                      id="bio"
-                      rows={4}
                       value={formData.bio}
                       onChange={handleChange}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      placeholder="Tell us about yourself, your research, and your interest in Hallyu studies..."
+                      rows={4}
+                      className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      placeholder="Tell us about yourself..."
                     />
-                  </div>
-                </div>
+                  ) : (
+                    profile?.bio || 'No bio provided'
+                  )}
+                </dd>
+              </div>
 
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => router.push('/wahs/dashboard')}
-                    className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-3"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                  >
-                    {saving ? 'Saving...' : 'Save Profile'}
-                  </button>
-                </div>
-              </form>
-            </div>
+              {/* Member Since */}
+              <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt className="text-sm font-medium text-gray-500">Member since</dt>
+                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  {formatDate(profile?.created_at)}
+                </dd>
+              </div>
+            </dl>
           </div>
 
-          {/* Membership Info Card */}
-          {profile && (
-            <div className="mt-8 bg-white shadow sm:rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Membership Information</h3>
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Membership Type</dt>
-                    <dd className="mt-1 text-sm text-gray-900 capitalize">
-                      {profile.membership_type?.replace('_', ' ') || 'Not specified'}
+          {/* Action Buttons */}
+          <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+            {editing ? (
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={loading}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleEdit}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Edit Profile
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Links */}
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z" />
+                  </svg>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Member Directory
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">
+                      Connect with other members
                     </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Membership Status</dt>
-                    <dd className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        profile.membership_status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {profile.membership_status || 'pending'}
-                      </span>
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Member Since</dt>
-                    <dd className="mt-1 text-sm text-gray-900">
-                      {profile.approved_at ? new Date(profile.approved_at).toLocaleDateString() : 'Not approved yet'}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500">Membership Expires</dt>
-                    <dd className="mt-1 text-sm text-gray-900">
-                      {profile.membership_expiry ? new Date(profile.membership_expiry).toLocaleDateString() : 'Not set'}
-                    </dd>
-                  </div>
-                </dl>
-                <div className="mt-6">
-                  <a
-                    href="/wahs/dashboard"
-                    className="text-sm font-medium text-blue-600 hover:text-blue-500"
-                  >
-                    ← Back to Dashboard
-                  </a>
+                  </dl>
                 </div>
               </div>
             </div>
-          )}
+            <div className="bg-gray-50 px-5 py-3">
+              <div className="text-sm">
+                <Link href="/wahs/members" className="font-medium text-blue-700 hover:text-blue-900">
+                  View directory
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-5">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt className="text-sm font-medium text-gray-500 truncate">
+                      Membership Details
+                    </dt>
+                    <dd className="text-lg font-medium text-gray-900">
+                      Renew or upgrade
+                    </dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+            <div className="bg-gray-50 px-5 py-3">
+              <div className="text-sm">
+                <Link href="/membership" className="font-medium text-blue-700 hover:text-blue-900">
+                  Manage membership
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <MainFooter />
-    </>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ interface CoAuthor {
 }
 
 export default function SubmissionFormAuth({ year }: { year: number }) {
-  const { user, userType, profile } = useAuth();
+  const { user, userType } = useAuth();
   const router = useRouter();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -98,9 +98,9 @@ export default function SubmissionFormAuth({ year }: { year: number }) {
       track: form.get('track') as string,
       abstract: form.get('abstract') as string,
       keywords: form.get('keywords') as string,
-      author_name: profile?.full_name || form.get('author_name') as string,
+      author_name: form.get('author_name') as string,
       author_email: user.email,
-      author_affiliation: profile?.affiliation || form.get('author_affiliation') as string,
+      author_affiliation: form.get('author_affiliation') as string,
       author_bio: form.get('author_bio') as string,
       co_authors: coAuthors.filter(c => c.name.trim()),
       special_requirements: form.get('special_requirements') as string || '',
@@ -223,7 +223,7 @@ export default function SubmissionFormAuth({ year }: { year: number }) {
             <input
               type="text"
               name="author_name"
-              defaultValue={profile?.full_name || ''}
+              defaultValue={''}
               required
               className="form-input"
               placeholder="Your full name"
@@ -249,7 +249,7 @@ export default function SubmissionFormAuth({ year }: { year: number }) {
           <input
             type="text"
             name="author_affiliation"
-            defaultValue={profile?.affiliation || ''}
+            defaultValue={''}
             required
             className="form-input"
             placeholder="University/Organization"
