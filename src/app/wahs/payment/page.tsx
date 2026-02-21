@@ -32,9 +32,14 @@ export default function WahsPaymentPage() {
     const loadData = async () => {
       try {
         // Get membership type from URL (optional - user can choose on page)
-        const type = searchParams.get('membership') as 'professional' | 'non_professional';
+        const type = searchParams.get('membership') as 'free' | 'professional' | 'non_professional';
         
-        if (type && ['professional', 'non_professional'].includes(type)) {
+        if (type && ['free', 'professional', 'non_professional'].includes(type)) {
+          if (type === 'free') {
+            // Free membership shouldn't reach payment page
+            router.push('/wahs/dashboard');
+            return;
+          }
           setSelectedMembershipType(type);
         }
 

@@ -32,6 +32,10 @@ export default function WahsProfilePage() {
         throw new Error('You must be logged in to complete your profile');
       }
 
+      // Determine membership status based on type
+      const isFreeMembership = formData.membershipType === 'free';
+      const membershipStatus = isFreeMembership ? 'approved' : 'pending';
+      
       // Create WAHS member profile
       const { data: profile, error: profileError } = await supabase
         .from('wahs_members')
@@ -42,7 +46,9 @@ export default function WahsProfilePage() {
           affiliation: formData.affiliation,
           country: formData.country,
           membership_type: formData.membershipType,
-          membership_status: 'pending', // Will change to 'active' after payment
+          membership_status: membershipStatus,
+          approved_at: isFreeMembership ? new Date().toISOString() : null,
+          membership_expiry: isFreeMembership ? new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0] : null,
           bio: formData.bio,
           research_interests: formData.researchInterests.split(',').map(ri => ri.trim())
         })
@@ -54,11 +60,18 @@ export default function WahsProfilePage() {
       // Send application confirmation email
       await sendEmail(user.email!, 'MEMBERSHIP_APPLICATION', {
         name: formData.fullName,
-        membershipType: formData.membershipType
+        membershipType: formData.membershipType,
+        status: membershipStatus
       });
 
-      // Redirect to payment page
-      router.push(`/wahs/payment?membership=${formData.membershipType}`);
+      // Redirect based on membership type
+      if (isFreeMembership) {
+        // Free membership: Go directly to dashboard (auto-approved)
+        router.push('/wahs/dashboard');
+      } else {
+        // Paid membership: Go to payment page
+        router.push(`/wahs/payment?membership=${formData.membershipType}`);
+      }
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit profile');
@@ -75,6 +88,12 @@ export default function WahsProfilePage() {
   };
 
   const membershipTypes = [
+    {
+      value: 'free',
+      label: 'Free Membership',
+      price: 'FREE',
+      description: 'Basic membership for students and enthusiasts. Requires admin approval. Access to member resources and newsletter.'
+    },
     {
       value: 'professional',
       label: 'Professional Membership',
