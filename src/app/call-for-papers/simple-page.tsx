@@ -15,7 +15,7 @@ export default function SimpleCallForPapersPage() {
           </Link>
           <div>
             <Link href="/" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>Home</Link>
-            <Link href="/2026" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>Congress</Link>
+            <Link href="/congress/2026" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>Congress</Link>
             <Link href="/membership" style={{ color: 'white', textDecoration: 'none' }}>Membership</Link>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function SimpleCallForPapersPage() {
                 Submit Abstract
               </Link>
               <Link
-                href="/2026/registration"
+                href="/congress/2026/registration"
                 style={{
                   background: '#CD2E3A',
                   color: 'white',
@@ -242,7 +242,7 @@ export default function SimpleCallForPapersPage() {
                 Submit Abstract Now
               </Link>
               <Link
-                href="/2026/registration"
+                href="/congress/2026/registration"
                 style={{
                   background: '#CD2E3A',
                   color: 'white',

@@ -65,7 +65,7 @@ export default function HomePage() {
           <div className="main-congress-cta-inner">
             <h2>2026 World Congress</h2>
             <p>Jeju Island, May 28-30</p>
-            <Link href="/2026" className="main-congress-cta-button">
+            <Link href="/congress/2026" className="main-congress-cta-button">
               Join Our Congress →
             </Link>
           </div>

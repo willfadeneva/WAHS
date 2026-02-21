@@ -110,7 +110,7 @@ export default function CongressDashboardPage() {
                 <p className="text-xs text-blue-800">
                   <strong>Note:</strong> This dashboard is for abstract submission only. 
                   To register for the Congress event (buy tickets), visit{' '}
-                  <a href="/2026/registration" className="underline font-medium">/2026/registration</a>
+                  <a href="/congress/2026/registration" className="underline font-medium">/congress/2026/registration</a>
                 </p>
               </div>
             </div>
