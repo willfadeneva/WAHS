@@ -23,25 +23,44 @@ export default function ProtectedSubmissionsPage({ params }: { params: { year: s
       return;
     }
 
-    // Check authentication
-    if (!loading && !user) {
-      // Not logged in - redirect to Congress login
-      router.push(`/congress/login?redirect=/2026/submissions`);
-      return;
-    }
-
-    // Check user type
-    if (!loading && user && userType !== 'congress') {
-      // Wrong user type - redirect based on user type
-      if (userType === 'wahs') {
-        router.push('/wahs/dashboard');
-      } else if (userType === 'admin') {
-        router.push('/admin');
-      } else {
-        // No profile yet - redirect to profile completion
-        router.push('/congress/register?completeProfile=true');
+    // Check authentication - try custom auth first, then Supabase Auth
+    const checkAuth = async () => {
+      // Check custom auth (magic link system)
+      const authData = localStorage.getItem('wahs_auth');
+      if (authData) {
+        try {
+          const auth = JSON.parse(authData);
+          if (auth.authenticated && auth.userType === 'congress') {
+            // User is authenticated via custom system
+            return;
+          }
+        } catch (error) {
+          // Invalid auth data
+        }
       }
-    }
+
+      // Check Supabase Auth (for admin users or legacy)
+      if (!loading && !user) {
+        // Not logged in - redirect to Congress login
+        router.push(`/congress/login?redirect=/2026/submissions-new`);
+        return;
+      }
+
+      // Check user type for Supabase Auth users
+      if (!loading && user && userType !== 'congress') {
+        // Wrong user type - redirect based on user type
+        if (userType === 'wahs') {
+          router.push('/wahs/dashboard');
+        } else if (userType === 'admin') {
+          router.push('/admin');
+        } else {
+          // No profile yet - redirect to profile completion
+          router.push('/congress/submit-abstract?completeProfile=true');
+        }
+      }
+    };
+
+    checkAuth();
   }, [user, userType, loading, year, router]);
 
   if (!isValidYear) {
@@ -66,7 +85,25 @@ export default function ProtectedSubmissionsPage({ params }: { params: { year: s
     );
   }
 
-  if (!user || userType !== 'congress') {
+  // Check if user is authenticated (either via custom auth or Supabase Auth)
+  const authData = localStorage.getItem('wahs_auth');
+  let isAuthenticated = false;
+  let isCongressUser = false;
+  
+  if (authData) {
+    try {
+      const auth = JSON.parse(authData);
+      isAuthenticated = auth.authenticated;
+      isCongressUser = auth.userType === 'congress';
+    } catch (error) {
+      // Invalid auth data
+    }
+  }
+
+  // Also check Supabase Auth
+  const isSupabaseAuthenticated = user && userType === 'congress';
+
+  if (!isAuthenticated && !isSupabaseAuthenticated) {
     // Still redirecting or checking
     return (
       <div className="min-h-screen flex items-center justify-center">

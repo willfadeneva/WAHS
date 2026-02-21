@@ -4,50 +4,39 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
-// Check admin auth with custom system
+// Check admin auth with Supabase
 const checkAdminAuth = async () => {
   if (typeof window === 'undefined') return false;
   
-  // Check localStorage for admin session
-  const authData = localStorage.getItem('wahs_auth');
-  const adminAuthenticated = localStorage.getItem('admin_authenticated');
-  const adminTimestamp = localStorage.getItem('admin_timestamp');
+  // Check localStorage first
+  const authenticated = localStorage.getItem('admin_authenticated');
+  const timestamp = localStorage.getItem('admin_timestamp');
   
-  if (!authData || !adminAuthenticated || !adminTimestamp) return false;
+  if (!authenticated || !timestamp) return false;
   
   // Check if session is older than 8 hours
-  const sessionAge = Date.now() - parseInt(adminTimestamp);
+  const sessionAge = Date.now() - parseInt(timestamp);
   const eightHours = 8 * 60 * 60 * 1000;
   
   if (sessionAge > eightHours) {
     localStorage.removeItem('admin_authenticated');
+    localStorage.removeItem('admin_email');
     localStorage.removeItem('admin_timestamp');
     return false;
   }
   
-  try {
-    const auth = JSON.parse(authData);
-    if (!auth.authenticated || !auth.email) return false;
+  // Verify with Supabase Auth
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return false;
+  
+  // Check if user is in admin_users table
+  const { data: adminData } = await supabase
+    .from('admin_users')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .single();
     
-    // Check if user is in admin_users table
-    const { data: userData } = await supabase
-      .from('auth.users')
-      .select('id')
-      .eq('email', auth.email.toLowerCase())
-      .single();
-    
-    if (!userData) return false;
-    
-    const { data: adminData } = await supabase
-      .from('admin_users')
-      .select('*')
-      .eq('user_id', userData.id)
-      .single();
-      
-    return !!adminData;
-  } catch (error) {
-    return false;
-  }
+  return !!adminData;
 };
 
 export default function AdminPage() {
@@ -67,7 +56,17 @@ export default function AdminPage() {
         router.push('/admin/login');
       } else {
         setAuthenticated(true);
-        setAdminEmail(localStorage.getItem('admin_email') || '');
+        // Get email from localStorage or Supabase session
+        const storedEmail = localStorage.getItem('admin_email');
+        if (storedEmail) {
+          setAdminEmail(storedEmail);
+        } else {
+          // Fallback to getting from Supabase session
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user?.email) {
+            setAdminEmail(session.user.email);
+          }
+        }
       }
     };
     
@@ -149,9 +148,10 @@ export default function AdminPage() {
             </div>
             <button
               onClick={async () => {
+                await supabase.auth.signOut();
                 localStorage.removeItem('admin_authenticated');
+                localStorage.removeItem('admin_email');
                 localStorage.removeItem('admin_timestamp');
-                localStorage.removeItem('wahs_auth');
                 router.push('/admin/login');
               }}
               className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700"
