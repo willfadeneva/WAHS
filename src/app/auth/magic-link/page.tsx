@@ -15,6 +15,7 @@ export default function MagicLinkPage() {
     const handleMagicLink = async () => {
       const token = searchParams.get('token');
       const email = searchParams.get('email');
+      const isReset = searchParams.get('reset') === 'true';
 
       if (!token || !email) {
         setStatus('error');
@@ -30,6 +31,14 @@ export default function MagicLinkPage() {
           setStatus('error');
           setMessage(error || 'Invalid or expired magic link.');
           return;
+        }
+
+        // Check if this is a password reset
+        if (isReset) {
+          // For password reset, just log the user in
+          // They can then change their password in dashboard
+          setStatus('success');
+          setMessage('Password reset successful! You are now logged in. You can update your password in your dashboard.');
         }
 
         // Sign in the user with Supabase Auth

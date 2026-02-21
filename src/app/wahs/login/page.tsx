@@ -99,6 +99,15 @@ export default function WahsLoginPage() {
               </Link>
             </div>
             
+            <div className="mt-4 text-center">
+              <Link 
+                href="/auth/reset-password" 
+                className="font-medium text-blue-600 hover:text-blue-500 text-sm"
+              >
+                Forgot your password? Reset it here
+              </Link>
+            </div>
+            
             <div className="mt-4 text-center text-sm text-gray-600">
               <p className="mt-2">
                 <Link href="/" className="text-blue-600 hover:text-blue-500">

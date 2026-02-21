@@ -48,6 +48,28 @@ export default function WahsDashboardPage() {
     alert('Profile updated successfully!');
   };
 
+  const handleSendLoginLink = async () => {
+    if (!user?.email) return;
+    
+    try {
+      const response = await fetch('/api/auth/send-login-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Login link sent to your email! Check your inbox.');
+      } else {
+        alert(`Failed to send login link: ${data.error}`);
+      }
+    } catch (error) {
+      alert('Failed to send login link. Please try again.');
+    }
+  };
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
@@ -301,6 +323,12 @@ export default function WahsDashboardPage() {
             <div className="bg-white shadow rounded-lg p-6">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h2>
               <div className="space-y-3">
+                <button
+                  onClick={handleSendLoginLink}
+                  className="w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+                >
+                  Send Login Link to Email
+                </button>
                 <button
                   onClick={() => window.open('https://paypal.me/wahskorea', '_blank')}
                   className="w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
