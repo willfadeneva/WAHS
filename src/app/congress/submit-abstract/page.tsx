@@ -37,11 +37,18 @@ export default function CongressRegisterPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Congress 2026 Submission Account
+            Abstract Submission Account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Create an account to submit and manage your abstracts
+            Create an account to submit and manage your research abstracts
           </p>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> This is for abstract submission only. 
+              To register for the Congress event (buy tickets), visit{' '}
+              <a href="/2026/registration" className="underline font-medium">/2026/registration</a>
+            </p>
+          </div>
         </div>
         
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">

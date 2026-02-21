@@ -78,7 +78,7 @@ function MagicLinkContent() {
             router.push('/2026/submissions-new');
           } else {
             // No profile yet - redirect to profile completion
-            router.push('/congress/register/profile');
+            router.push('/congress/submit-abstract/profile');
           }
         } else if (userType === 'wahs') {
           // Check if user has a WAHS profile (by email)

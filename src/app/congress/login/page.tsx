@@ -35,11 +35,18 @@ export default function CongressLoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to Congress 2026
+            Sign in to Submit Abstracts
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your email to receive a magic link
+            Enter your email to receive a magic link for abstract submission
           </p>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> This login is for abstract submission only. 
+              To register for the Congress event (buy tickets), visit{' '}
+              <a href="/2026/registration" className="underline font-medium">/2026/registration</a>
+            </p>
+          </div>
         </div>
         
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">

@@ -78,6 +78,13 @@ export default function CongressProfilePage() {
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900">Complete Your Congress Profile</h1>
           <p className="mt-2 text-gray-600">Please provide your basic information. You'll submit your abstract on the next page.</p>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> This profile is for abstract submission only. 
+              To register for the Congress event (buy tickets), visit{' '}
+              <a href="/2026/registration" className="underline font-medium">/2026/registration</a>
+            </p>
+          </div>
         </div>
 
         {error && (
@@ -158,7 +165,7 @@ export default function CongressProfilePage() {
               disabled={loading}
               className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Saving...' : 'Save Profile & Continue to Abstract Submission'}
+              {loading ? 'Saving...' : 'Save Profile & Submit Abstract'}
             </button>
           </div>
 

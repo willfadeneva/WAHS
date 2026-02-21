@@ -66,7 +66,7 @@ export default function MainNav() {
             <ul className="nav-dropdown-menu">
               <li className="nav-dropdown-header">Congress 2026</li>
               <li>
-                <Link href="/congress/register" onClick={() => setIsMenuOpen(false)}>
+                <Link href="/congress/submit-abstract" onClick={() => setIsMenuOpen(false)}>
                   Submit Abstract
                 </Link>
               </li>
