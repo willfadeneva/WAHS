@@ -101,7 +101,7 @@ export default async function RegistrationPage({
                 <li>Conference dinner</li>
               </ul>
               <a 
-                href="YOUR_REGULAR_PAYPAL_LINK_HERE" 
+                href="https://www.paypal.com" 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -179,7 +179,7 @@ export default async function RegistrationPage({
                 <li>Student ID required</li>
               </ul>
               <a 
-                href="YOUR_STUDENT_PAYPAL_LINK_HERE" 
+                href="https://www.paypal.com" 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
@@ -260,7 +260,7 @@ export default async function RegistrationPage({
                 <li>Member-only sessions</li>
               </ul>
               <a 
-                href="YOUR_WAHS_MEMBER_PAYPAL_LINK_HERE" 
+                href="https://www.paypal.com" 
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
