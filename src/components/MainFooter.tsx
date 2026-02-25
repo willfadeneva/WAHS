@@ -39,7 +39,7 @@ export default function MainFooter() {
         <p style={{ margin: '2px 0', color: 'rgba(255,255,255,0.45)', fontSize: '0.82rem' }}>
           designed by{' '}
           <a href="https://wa.me/818042615062" target="_blank" rel="noopener noreferrer"
-            style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'none', borderBottom: 'none' }}>
+            style={{ color: 'rgba(255,255,255,0.85)', textDecoration: 'underline', fontWeight: 700 }}>
             CJ
           </a>
         </p>
