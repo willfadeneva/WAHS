@@ -27,7 +27,7 @@ export default function NotFound() {
         }}>
           Go Home
         </Link>
-        <Link href="/2026" style={{
+        <Link href="/congress/2026" style={{
           padding: '12px 28px', border: '1px solid #0047A0', color: '#0047A0',
           borderRadius: 6, textDecoration: 'none', fontWeight: 600, fontSize: '0.95rem',
         }}>

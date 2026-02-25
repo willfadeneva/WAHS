@@ -43,7 +43,7 @@ export default function HomePage() {
           <p style={{ fontSize: '1.05rem', color: '#555', lineHeight: 1.7, fontStyle: 'italic', marginBottom: '32px', maxWidth: '700px', margin: '0 auto 32px' }}>
             Theme: Cultural Dynamism in the Digital Age—Toward a Universal Theory of Pop Culture Globalization
           </p>
-          <Link href="/2026/submissions" style={{
+          <Link href="/congress/2026/submissions" style={{
             display: 'inline-block',
             padding: '16px 40px',
             background: '#CD2E3A',
@@ -65,7 +65,7 @@ export default function HomePage() {
           <div className="main-congress-cta-inner">
             <h2>2026 World Congress</h2>
             <p>Jeju Island, May 28-30</p>
-            <Link href="/2026" className="main-congress-cta-button">
+            <Link href="/congress/2026" className="main-congress-cta-button">
               Join Our Congress →
             </Link>
           </div>

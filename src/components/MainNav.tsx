@@ -48,8 +48,8 @@ export default function MainNav() {
               About <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${aboutOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><Link href="/2026/history" onClick={close}>History</Link></li>
-              <li><Link href="/2026/board-members" onClick={close}>Board Members</Link></li>
+              <li><Link href="/congress/2026/history" onClick={close}>History</Link></li>
+              <li><Link href="/congress/2026/board-members" onClick={close}>Board Members</Link></li>
             </ul>
           </li>
 
@@ -58,13 +58,13 @@ export default function MainNav() {
               onMouseEnter={() => setCongressOpen(true)}
               onMouseLeave={() => setCongressOpen(false)}>
             <button
-              className={`nav-dropdown-trigger${pathname?.startsWith('/2026') || pathname?.startsWith('/congress') ? ' active' : ''}`}
+              className={`nav-dropdown-trigger${pathname?.startsWith('/congress') ? ' active' : ''}`}
               onClick={() => setCongressOpen(!congressOpen)}
             >
               Congress <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${congressOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><Link href="/2026" onClick={close}>2026 Congress</Link></li>
+              <li><Link href="/congress/2026" onClick={close}>2026 Congress</Link></li>
             </ul>
           </li>
 
