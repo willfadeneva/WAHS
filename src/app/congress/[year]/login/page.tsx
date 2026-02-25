@@ -47,13 +47,13 @@ export default function CongressLoginPage() {
         if (duesPending) {
           // Sign them out and redirect to pay dues
           await supabase.auth.signOut();
-          router.push(`/wahs/login?dues_pending=1&redirect=/${year}/dashboard`);
+          window.location.href = `/wahs/login?dues_pending=1&redirect=/${year}/dashboard`;
           return;
         }
       }
     }
 
-    router.push(`/congress/${year}/dashboard`);
+    window.location.href = `/congress/${year}/dashboard`;
   }
 
   return (

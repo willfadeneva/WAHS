@@ -34,7 +34,7 @@ function WAHSLoginForm() {
       setLoading(false);
       return;
     }
-    router.push(redirect);
+    window.location.href = redirect;
   }
 
   return (
