@@ -127,8 +127,4 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
   );
 }
 
-export const revalidate = 60; // revalidate every 60 seconds
-
-export async function generateStaticParams() {
-  return [{ year: '2026' }, { year: '2022' }];
-}
+export const dynamic = 'force-dynamic';

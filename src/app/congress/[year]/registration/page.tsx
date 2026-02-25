@@ -7,6 +7,9 @@ import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
 import WAHSMemberRegistration from './WAHSMemberRegistration';
 
+export const dynamic = 'force-dynamic';
+
+
 type Congress = {
   year: number;
   pricing: { tier: string; amount: string; early_bird: string; features: string[]; featured: boolean }[];

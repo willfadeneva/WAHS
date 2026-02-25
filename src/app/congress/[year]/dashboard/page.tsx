@@ -4,6 +4,9 @@ import CongressNav from '@/components/CongressNav';
 import MainFooter from '@/components/MainFooter';
 import { createServerClient } from '@/lib/supabase-server';
 
+export const dynamic = 'force-dynamic';
+
+
 type Submission = {
   id: string;
   title: string;

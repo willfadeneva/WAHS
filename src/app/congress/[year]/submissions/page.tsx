@@ -6,6 +6,9 @@ import Submissions from '@/components/Submissions';
 import Footer from '@/components/Footer';
 import ScrollReveal from '@/components/ScrollReveal';
 
+export const dynamic = 'force-dynamic';
+
+
 export default async function SubmissionsPage({ params }: { params: Promise<{ year: string }> }) {
   const { year: yearStr } = await params;
   const year = parseInt(yearStr);
