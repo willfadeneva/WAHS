@@ -100,13 +100,13 @@ function PricingCard({ p, earlyBird, onSelect }: { p: Pricing; earlyBird: boolea
         {p.features.map((f, j) => <li key={j}>{f}</li>)}
       </ul>
 
-      {onSelect && !isFree && !isWahs && (
+      {onSelect && !isFree && (
         <button
           onClick={() => onSelect(p.tier)}
           className="btn-primary"
-          style={{ width: '100%', justifyContent: 'center', marginTop: 16, fontSize: '0.92rem' }}
+          style={{ width: '100%', justifyContent: 'center', marginTop: 16, fontSize: '0.92rem', background: isWahs ? '#059669' : undefined }}
         >
-          Register as {p.tier}
+          {isWahs ? 'Register Free →' : `Register as ${p.tier}`}
         </button>
       )}
     </div>
@@ -115,7 +115,7 @@ function PricingCard({ p, earlyBird, onSelect }: { p: Pricing; earlyBird: boolea
 
 export default function Registration({ pricing }: { pricing: Pricing[] }) {
   const earlyBird = isEarlyBird();
-  const [step, setStep] = useState<'pricing' | 'form' | 'done'>('pricing');
+  const [step, setStep] = useState<'pricing' | 'form' | 'done' | 'wahs-done'>('pricing');
   const [selectedTier, setSelectedTier] = useState('');
   const [regType, setRegType] = useState('');
   const [loading, setLoading] = useState(false);
@@ -132,25 +132,40 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
     setError('');
 
     const form = new FormData(e.currentTarget);
-    const registration_type = form.get('registration_type') as string;
     const body = {
       name: form.get('name') as string,
       email: (form.get('email') as string).toLowerCase(),
       affiliation: form.get('affiliation') as string,
       country: form.get('country') as string,
-      registration_type,
       congress_year: 2026,
     };
 
     try {
-      const res = await fetch('/api/registrations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error('Failed');
-      setRegType(registration_type === 'regular' ? 'Regular' : 'Student');
-      setStep('done');
+      if (selectedTier === 'WAHS Member') {
+        // Verify dues + register free — server-side check
+        const res = await fetch('/api/registrations/wahs-member', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setError(data.error || 'Verification failed. Please contact wahskorea@gmail.com.');
+          setLoading(false);
+          return;
+        }
+        setStep('wahs-done');
+      } else {
+        const registration_type = form.get('registration_type') as string;
+        const res = await fetch('/api/registrations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...body, registration_type, congress_year: 2026 }),
+        });
+        if (!res.ok) throw new Error('Failed');
+        setRegType(registration_type === 'regular' ? 'Regular' : 'Student');
+        setStep('done');
+      }
     } catch {
       setError('Registration failed. Please try again or contact wahskorea@gmail.com.');
     }
@@ -164,7 +179,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
         <h2 className="section-title">Register</h2>
         <p className="section-lead">
           {earlyBird
-            ? <>🎉 <strong>Early bird pricing is active!</strong> Save 20% — ends {EARLY_BIRD_LABEL}.</>
+            ? <>Early bird registration receives a 20% discount. Secure your spot at <strong>12th World Congress for Hallyu Studies 2026</strong>, NOW</>
             : <>Payments are processed securely via PayPal — credit and debit cards accepted.</>}
         </p>
 
@@ -175,7 +190,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
               key={i}
               p={p}
               earlyBird={earlyBird}
-              onSelect={p.tier !== 'WAHS Member' ? handleSelectTier : undefined}
+              onSelect={handleSelectTier}
             />
           ))}
         </div>
@@ -202,15 +217,21 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
                 {selectedTier} Registration
               </h3>
             </div>
-            <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: 24 }}>
-              Price:{' '}
-              <strong>
-                {earlyBird
-                  ? `$${parseAmount(pricing.find(p => p.tier === selectedTier)?.early_bird || '$0')} (early bird)`
-                  : `$${parseAmount(pricing.find(p => p.tier === selectedTier)?.amount || '$0')}`
-                }
-              </strong>
-            </p>
+            {selectedTier === 'WAHS Member' ? (
+              <p style={{ color: '#059669', fontSize: '0.9rem', marginBottom: 16 }}>
+                Price: <strong>Free (WAHS Member)</strong> — your membership will be verified against WAHS records.
+              </p>
+            ) : (
+              <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: 24 }}>
+                Price:{' '}
+                <strong>
+                  {earlyBird
+                    ? `$${parseAmount(pricing.find(p => p.tier === selectedTier)?.early_bird || '$0')} (early bird)`
+                    : `$${parseAmount(pricing.find(p => p.tier === selectedTier)?.amount || '$0')}`
+                  }
+                </strong>
+              </p>
+            )}
             <form onSubmit={handleRegister}>
               <div className="form-group">
                 <label className="form-label">Full Name <span className="required">*</span></label>
@@ -221,22 +242,26 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
                 <input type="email" name="email" className="form-input" required />
               </div>
               <div className="form-group">
-                <label className="form-label">Affiliation</label>
-                <input type="text" name="affiliation" className="form-input" placeholder="University or institution" />
+                <label className="form-label">Affiliation <span className="required">*</span></label>
+                <input type="text" name="affiliation" className="form-input" placeholder="University or institution" required />
               </div>
               <div className="form-group">
-                <label className="form-label">Country</label>
-                <input type="text" name="country" className="form-input" />
+                <label className="form-label">Country <span className="required">*</span></label>
+                <input type="text" name="country" className="form-input" required />
               </div>
-              <input type="hidden" name="registration_type" value={selectedTier.toLowerCase()} />
+              {selectedTier !== 'WAHS Member' && (
+                <input type="hidden" name="registration_type" value={selectedTier.toLowerCase()} />
+              )}
               {error && <p className="form-error" style={{ marginBottom: 16 }}>{error}</p>}
               <button
                 type="submit"
                 className="btn-primary"
                 disabled={loading}
-                style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.6 : 1 }}
+                style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.6 : 1, background: selectedTier === 'WAHS Member' ? '#059669' : undefined }}
               >
-                {loading ? 'Registering...' : 'Continue to Payment →'}
+                {loading
+                  ? (selectedTier === 'WAHS Member' ? 'Verifying...' : 'Registering...')
+                  : (selectedTier === 'WAHS Member' ? 'Verify & Register Free →' : 'Continue to Payment →')}
               </button>
             </form>
           </div>
@@ -262,6 +287,18 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
             <p style={{ marginTop: 12, fontSize: '0.8rem', color: '#777' }}>
               Credit &amp; debit cards accepted. Registration confirmed after payment is verified.
             </p>
+          </div>
+        )}
+
+        {/* WAHS Member free registration confirmed */}
+        {step === 'wahs-done' && (
+          <div style={{ maxWidth: 560, margin: '0 auto 48px', padding: '32px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🎓</div>
+            <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.3rem', marginBottom: 8 }}>You&apos;re Registered!</h3>
+            <p style={{ color: '#444', fontSize: '0.95rem', marginBottom: 8 }}>
+              Your WAHS membership has been verified and your registration for the <strong>12th World Congress for Hallyu Studies 2026</strong> is confirmed.
+            </p>
+            <p style={{ color: '#059669', fontWeight: 600, fontSize: '0.9rem' }}>No payment required — you&apos;re attending free as a WAHS member.</p>
           </div>
         )}
 

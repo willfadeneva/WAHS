@@ -19,7 +19,7 @@ const congresses = [
   { num: 11, year: 2024, location: 'Seoul, South Korea', venue: 'Youngone Hall (Room 210), Building 101 — Seoul National University Asia Center (SNUAC)', flag: '🇰🇷' },
 ];
 
-const upcoming = { num: 12, year: 2026, location: 'Jeju Island, South Korea', venue: 'Cheju Halla University', dates: 'May 28–30, 2026', flag: '🇰🇷', link: '/2026' };
+const upcoming = { num: 12, year: 2026, location: 'Jeju Island, South Korea', venue: 'Cheju Halla University', dates: 'May 28–30, 2026', flag: '🇰🇷', link: '/congress/2026' };
 
 export default async function PastCongressesPage({ params }: { params: Promise<{ year: string }> }) {
   const { year: yearStr } = await params;
