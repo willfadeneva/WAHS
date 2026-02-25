@@ -111,14 +111,14 @@ export default function Nav({ year }: { year: number }) {
               onMouseEnter={() => setAccountOpen(true)}
               onMouseLeave={() => setAccountOpen(false)}>
             <button
-              className={`nav-dropdown-trigger${pathname?.startsWith(`/congress/${year}`) ? ' active' : ''}`}
+              className={`nav-dropdown-trigger${(pathname?.includes(`/${year}/dashboard`) || pathname?.includes(`/${year}/submit`)) ? ' active' : ''}`}
               onClick={() => setAccountOpen(!accountOpen)}
             >
               My Account <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${accountOpen ? ' nav-dropdown-open' : ''}`}>
               <li>
-                <Link href={`/congress/${year}/dashboard`} onClick={close}>My Submissions</Link>
+                <Link href={`/${year}/dashboard`} onClick={close}>My Submissions</Link>
               </li>
               {user ? (
                 <li>
@@ -131,8 +131,8 @@ export default function Nav({ year }: { year: number }) {
                 </li>
               ) : (
                 <>
-                  <li><Link href={`/congress/${year}/login`} onClick={close}>Sign In</Link></li>
-                  <li><Link href={`/congress/${year}/register`} onClick={close}>Create Account</Link></li>
+                  <li><Link href={`/${year}/login`} onClick={close}>Sign In</Link></li>
+                  <li><Link href={`/${year}/register`} onClick={close}>Create Account</Link></li>
                 </>
               )}
             </ul>

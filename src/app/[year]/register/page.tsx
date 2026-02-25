@@ -41,7 +41,7 @@ export default function CongressRegisterPage() {
     };
 
     try {
-      const res = await fetch(`/api/congress/${year}/register`, {
+      const res = await fetch(`/api/${year}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -62,7 +62,7 @@ export default function CongressRegisterPage() {
         setLoading(false);
         return;
       }
-      router.push(`/congress/${year}/dashboard`);
+      router.push(`/${year}/dashboard`);
     } catch {
       setError('Something went wrong. Please try again.');
       setLoading(false);
@@ -88,7 +88,7 @@ export default function CongressRegisterPage() {
               </h2>
               <p style={{ color: 'var(--slate)', marginBottom: 24, fontSize: '0.92rem' }}>
                 Already have an account?{' '}
-                <Link href={`/congress/${year}/login`} style={{ color: 'var(--kr-blue)' }}>
+                <Link href={`/${year}/login`} style={{ color: 'var(--kr-blue)' }}>
                   Sign in →
                 </Link>
               </p>

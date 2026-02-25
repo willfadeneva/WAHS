@@ -33,7 +33,7 @@ export default function CongressNav({ year }: { year: string | number }) {
   async function handleSignOut() {
     await supabase.auth.signOut();
     close();
-    router.push(`/congress/${yr}/login`);
+    router.push(`/${yr}/login`);
   }
 
   return (
@@ -115,14 +115,14 @@ export default function CongressNav({ year }: { year: string | number }) {
               onMouseEnter={() => setAccountOpen(true)}
               onMouseLeave={() => setAccountOpen(false)}>
             <button
-              className={`nav-dropdown-trigger${pathname?.startsWith(`/congress/${yr}`) ? ' active' : ''}`}
+              className={`nav-dropdown-trigger${(pathname?.includes(`/${yr}/dashboard`) || pathname?.includes(`/${yr}/submit`)) ? ' active' : ''}`}
               onClick={() => setAccountOpen(!accountOpen)}
             >
               My Account <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${accountOpen ? ' nav-dropdown-open' : ''}`}>
               <li>
-                <Link href={`/congress/${yr}/dashboard`} onClick={close}>My Submissions</Link>
+                <Link href={`/${yr}/dashboard`} onClick={close}>My Submissions</Link>
               </li>
               {user ? (
                 <li>
@@ -135,8 +135,8 @@ export default function CongressNav({ year }: { year: string | number }) {
                 </li>
               ) : (
                 <>
-                  <li><Link href={`/congress/${yr}/login`} onClick={close}>Sign In</Link></li>
-                  <li><Link href={`/congress/${yr}/register`} onClick={close}>Create Account</Link></li>
+                  <li><Link href={`/${yr}/login`} onClick={close}>Sign In</Link></li>
+                  <li><Link href={`/${yr}/register`} onClick={close}>Create Account</Link></li>
                 </>
               )}
             </ul>

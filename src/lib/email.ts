@@ -15,7 +15,7 @@ export async function sendSubmissionConfirmation(to: string, name: string, title
   await resend.emails.send({
     from: FROM, to,
     subject: `Abstract Submission Received — Congress ${year}`,
-    html: `<p>Dear ${name},</p><p>Your abstract "<strong>${title}</strong>" has been successfully submitted to Congress ${year}.</p><p>You can track its status in your <a href="${process.env.NEXT_PUBLIC_SITE_URL}/congress/${year}/dashboard">submission dashboard</a>.</p><p>Best regards,<br/>WAHS Team</p>`,
+    html: `<p>Dear ${name},</p><p>Your abstract "<strong>${title}</strong>" has been successfully submitted to Congress ${year}.</p><p>You can track its status in your <a href="${process.env.NEXT_PUBLIC_SITE_URL}/${year}/dashboard">submission dashboard</a>.</p><p>Best regards,<br/>WAHS Team</p>`,
   });
 }
 
@@ -29,7 +29,7 @@ export async function sendSubmissionUpdate(to: string, name: string, title: stri
   await resend.emails.send({
     from: FROM, to,
     subject: `Abstract Update — Congress ${year}`,
-    html: `<p>Dear ${name},</p><p>Your abstract "<strong>${title}</strong>" status has been updated to: <strong>${statusLabels[status] || status}</strong>.</p><p><a href="${process.env.NEXT_PUBLIC_SITE_URL}/congress/${year}/dashboard">View your dashboard</a></p><p>Best regards,<br/>WAHS Team</p>`,
+    html: `<p>Dear ${name},</p><p>Your abstract "<strong>${title}</strong>" status has been updated to: <strong>${statusLabels[status] || status}</strong>.</p><p><a href="${process.env.NEXT_PUBLIC_SITE_URL}/${year}/dashboard">View your dashboard</a></p><p>Best regards,<br/>WAHS Team</p>`,
   });
 }
 

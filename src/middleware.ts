@@ -2,8 +2,10 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const WAHS_PROTECTED = ['/wahs/dashboard', '/wahs/profile', '/wahs/members', '/wahs/resources'];
-const CONGRESS_PROTECTED = ['/congress'];
 const ADMIN_PROTECTED = ['/admin'];
+
+// Congress auth-required paths: /{year}/dashboard, /{year}/submit-abstract, /{year}/submissions/{id}/edit
+const CONGRESS_AUTH_RE = /^\/(\d{4})\/(dashboard|submit-abstract|submissions\/.+\/edit)/;
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } });
@@ -31,26 +33,25 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
   const path = request.nextUrl.pathname;
 
-  // Protect WAHS pages
+  // Protect WAHS member pages
   if (WAHS_PROTECTED.some(p => path.startsWith(p))) {
     if (!session) {
       return NextResponse.redirect(new URL('/wahs/login', request.url));
     }
   }
 
-  // Protect Congress dashboard/submit pages (allow login/register pages)
-  if (CONGRESS_PROTECTED.some(p => path.startsWith(p))) {
-    const isAuthPage = path.endsWith('/login') || path.endsWith('/register');
-    if (!session && !isAuthPage) {
-      const year = path.split('/')[2] || '2026';
-      return NextResponse.redirect(new URL(`/congress/${year}/login`, request.url));
+  // Protect congress auth-required pages (dashboard, submit-abstract, submissions edit)
+  const congressMatch = CONGRESS_AUTH_RE.exec(path);
+  if (congressMatch) {
+    if (!session) {
+      const year = congressMatch[1];
+      return NextResponse.redirect(new URL(`/${year}/login`, request.url));
     }
   }
 
-  // Protect Admin (exclude /admin/login itself to avoid redirect loop)
+  // Protect Admin (exclude /admin/login to avoid redirect loop)
   if (ADMIN_PROTECTED.some(p => path.startsWith(p))) {
-    const isAdminLoginPage = path === '/admin/login';
-    if (!session && !isAdminLoginPage) {
+    if (path !== '/admin/login' && !session) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
   }
@@ -59,5 +60,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/wahs/:path*', '/congress/:path*', '/admin/:path*'],
+  matcher: [
+    '/wahs/:path*',
+    '/admin/:path*',
+    '/:year(\\d{4})/dashboard',
+    '/:year(\\d{4})/submit-abstract',
+    '/:year(\\d{4})/submissions/:id/edit',
+  ],
 };

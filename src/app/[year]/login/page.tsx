@@ -47,13 +47,13 @@ export default function CongressLoginPage() {
         if (duesPending) {
           // Sign them out and redirect to pay dues
           await supabase.auth.signOut();
-          router.push(`/wahs/login?dues_pending=1&redirect=/congress/${year}/dashboard`);
+          router.push(`/wahs/login?dues_pending=1&redirect=/${year}/dashboard`);
           return;
         }
       }
     }
 
-    router.push(`/congress/${year}/dashboard`);
+    router.push(`/${year}/dashboard`);
   }
 
   return (
@@ -75,7 +75,7 @@ export default function CongressLoginPage() {
               </h2>
               <p style={{ color: 'var(--slate)', marginBottom: 24, fontSize: '0.92rem' }}>
                 Don&apos;t have an account?{' '}
-                <Link href={`/congress/${year}/register`} style={{ color: 'var(--kr-blue)' }}>
+                <Link href={`/${year}/register`} style={{ color: 'var(--kr-blue)' }}>
                   Create one for free →
                 </Link>
               </p>

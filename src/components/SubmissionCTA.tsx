@@ -41,14 +41,14 @@ export default function SubmissionCTA({ year }: { year: number }) {
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link
-            href={`/congress/${year}/submit-abstract`}
+            href={`/${year}/submit-abstract`}
             className="btn-primary"
             style={{ display: 'inline-flex', fontSize: '1rem', padding: '12px 28px' }}
           >
             Submit Abstract →
           </Link>
           <Link
-            href={`/congress/${year}/dashboard`}
+            href={`/${year}/dashboard`}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -91,14 +91,14 @@ export default function SubmissionCTA({ year }: { year: number }) {
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
         <Link
-          href={`/congress/${year}/login`}
+          href={`/${year}/login`}
           className="btn-primary"
           style={{ display: 'inline-flex', fontSize: '1rem', padding: '12px 28px' }}
         >
           Sign In to Submit →
         </Link>
         <Link
-          href={`/congress/${year}/register`}
+          href={`/${year}/register`}
           style={{
             display: 'inline-flex',
             alignItems: 'center',

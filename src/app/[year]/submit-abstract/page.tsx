@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, FormEvent } from 'react';
+import { useState, useRef, FormEvent, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import CongressNav from '@/components/CongressNav';
@@ -28,62 +28,33 @@ const PRESENTATION_TYPES = [
 
 type CoAuthor = { name: string; email: string; affiliation: string };
 
-type Submission = {
-  id: string;
-  title: string;
-  abstract: string;
-  keywords: string;
-  presentation_type: string;
-  track: string;
-  author_name: string;
-  author_email: string;
-  author_institution: string;
-  author_bio: string;
-  co_authors: CoAuthor[];
-  special_requirements: string;
-  pdf_url: string | null;
-  status: string;
-};
-
-export default function EditSubmissionPage() {
+export default function SubmitAbstractPage() {
   const router = useRouter();
   const params = useParams();
   const year = params.year as string;
-  const id = params.id as string;
-
-  const [submission, setSubmission] = useState<Submission | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [withdrawing, setWithdrawing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [abstractLen, setAbstractLen] = useState(0);
   const [coAuthors, setCoAuthors] = useState<CoAuthor[]>([]);
   const [pdfName, setPdfName] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    async function load() {
+    async function loadUser() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push(`/congress/${year}/login`); return; }
-
-      const { data, error: fetchError } = await supabase
-        .from('submissions')
-        .select('*')
-        .eq('id', id)
+      if (!user) { router.push(`/${year}/login`); return; }
+      setUserEmail(user.email || '');
+      const { data: member } = await supabase
+        .from('wahs_members')
+        .select('full_name, institution')
         .eq('user_id', user.id)
         .single();
-
-      if (fetchError || !data) {
-        router.push(`/congress/${year}/dashboard`);
-        return;
-      }
-      setSubmission(data as Submission);
-      setCoAuthors(data.co_authors || []);
-      setAbstractLen(data.abstract?.length || 0);
-      setLoading(false);
+      if (member) setUserName(member.full_name || '');
     }
-    load();
-  }, [id, year, router]);
+    loadUser();
+  }, [router, year]);
 
   function addCoAuthor() {
     setCoAuthors(prev => [...prev, { name: '', email: '', affiliation: '' }]);
@@ -99,7 +70,7 @@ export default function EditSubmissionPage() {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSaving(true);
+    setLoading(true);
     setError('');
 
     const form = new FormData(e.currentTarget);
@@ -107,18 +78,19 @@ export default function EditSubmissionPage() {
 
     if (abstractText.length < 200) {
       setError('Abstract must be at least 200 characters.');
-      setSaving(false);
+      setLoading(false);
       return;
     }
 
+    // Build multipart form data
     const submitData = new FormData();
-    submitData.append('id', id);
     submitData.append('title', form.get('title') as string);
     submitData.append('abstract', abstractText);
     submitData.append('keywords', form.get('keywords') as string);
     submitData.append('presentation_type', form.get('presentation_type') as string);
     submitData.append('track', form.get('track') as string);
     submitData.append('author_name', form.get('author_name') as string);
+    submitData.append('author_email', form.get('author_email') as string);
     submitData.append('author_institution', form.get('author_institution') as string);
     submitData.append('author_bio', form.get('author_bio') as string);
     submitData.append('special_requirements', form.get('special_requirements') as string || '');
@@ -128,66 +100,29 @@ export default function EditSubmissionPage() {
     if (pdfFile) {
       if (pdfFile.size > 5 * 1024 * 1024) {
         setError('PDF must be under 5MB.');
-        setSaving(false);
+        setLoading(false);
         return;
       }
       submitData.append('pdf', pdfFile);
     }
 
     try {
-      const res = await fetch(`/api/congress/${year}/submissions`, {
-        method: 'PATCH',
+      const res = await fetch(`/api/${year}/submissions`, {
+        method: 'POST',
         body: submitData,
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || 'Update failed. Please try again.');
-        setSaving(false);
+        setError(data.error || 'Submission failed. Please try again.');
+        setLoading(false);
         return;
       }
-      router.push(`/congress/${year}/dashboard`);
+      router.push(`/${year}/dashboard`);
     } catch {
       setError('Something went wrong. Please try again.');
-      setSaving(false);
+      setLoading(false);
     }
   }
-
-  async function handleWithdraw() {
-    if (!confirm('Are you sure you want to withdraw this submission? This cannot be undone.')) return;
-    setWithdrawing(true);
-    try {
-      const res = await fetch(`/api/congress/${year}/submissions`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      });
-      if (res.ok) {
-        router.push(`/congress/${year}/dashboard`);
-      } else {
-        const data = await res.json();
-        setError(data.error || 'Withdrawal failed.');
-      }
-    } catch {
-      setError('Something went wrong.');
-    }
-    setWithdrawing(false);
-  }
-
-  if (loading) {
-    return (
-      <div className="main-page">
-        <CongressNav year={year} />
-        <main className="main-content">
-          <section className="main-content-section">
-            <div style={{ textAlign: 'center', padding: '60px 0' }}><p>Loading submission…</p></div>
-          </section>
-        </main>
-        <MainFooter />
-      </div>
-    );
-  }
-
-  if (!submission) return null;
 
   return (
     <div className="main-page">
@@ -195,72 +130,63 @@ export default function EditSubmissionPage() {
       <main className="main-content">
         <section className="main-page-header">
           <div className="main-page-header-inner">
-            <h1 className="main-page-title">Edit Submission</h1>
-            <p className="main-page-subtitle">Congress {year}</p>
+            <h1 className="main-page-title">Submit Abstract</h1>
+            <p className="main-page-subtitle">Congress {year} — Deadline: May 15, 2026</p>
           </div>
         </section>
 
         <section className="main-content-section">
           <div className="main-content-inner" style={{ maxWidth: 760, margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-              <Link href={`/congress/${year}/dashboard`} style={{ color: 'var(--kr-blue)', fontSize: '0.9rem' }}>
+            <div style={{ marginBottom: 16 }}>
+              <Link href={`/${year}/dashboard`} style={{ color: 'var(--kr-blue)', fontSize: '0.9rem' }}>
                 ← Back to Dashboard
               </Link>
-              <button
-                type="button"
-                onClick={handleWithdraw}
-                disabled={withdrawing || submission.status === 'withdrawn'}
-                style={{
-                  padding: '8px 20px', background: '#ef4444', color: '#fff', border: 'none',
-                  borderRadius: 4, fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer',
-                  opacity: withdrawing || submission.status === 'withdrawn' ? 0.5 : 1,
-                }}
-              >
-                {withdrawing ? 'Withdrawing…' : 'Withdraw Submission'}
-              </button>
             </div>
-
-            {submission.status === 'withdrawn' && (
-              <div style={{ padding: 16, background: '#fee2e2', borderRadius: 4, marginBottom: 16, color: '#991b1b', fontSize: '0.9rem' }}>
-                This submission has been withdrawn and cannot be edited.
-              </div>
-            )}
 
             <div className="submission-form-container">
               <div className="submission-form-header">
-                <h2 className="submission-form-title">Edit Abstract</h2>
-                <p className="submission-form-desc">Update your submission details below.</p>
+                <h2 className="submission-form-title">Abstract Submission Form</h2>
+                <p className="submission-form-desc">
+                  All fields marked with <span style={{ color: 'var(--coral)' }}>*</span> are required.
+                  Abstract minimum: 200 characters.
+                </p>
               </div>
               <div className="submission-form-body">
                 <form onSubmit={handleSubmit}>
+                  {/* Author Info */}
                   <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.2rem', color: 'var(--navy)', marginBottom: 16 }}>
                     Author Information
                   </h3>
                   <div className="form-row">
                     <div className="form-group">
                       <label className="form-label">Full Name <span className="required">*</span></label>
-                      <input type="text" name="author_name" className="form-input" defaultValue={submission.author_name} required />
+                      <input type="text" name="author_name" className="form-input" defaultValue={userName} required />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Email</label>
-                      <input type="email" className="form-input" value={submission.author_email} disabled
-                        style={{ background: '#f5f5f5', cursor: 'not-allowed', color: 'var(--mist)' }} />
+                      <label className="form-label">Email <span className="required">*</span></label>
+                      <input type="email" name="author_email" className="form-input" defaultValue={userEmail} required />
                     </div>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Institution <span className="required">*</span></label>
-                    <input type="text" name="author_institution" className="form-input" defaultValue={submission.author_institution} required />
+                    <label className="form-label">Institution / Affiliation <span className="required">*</span></label>
+                    <input type="text" name="author_institution" className="form-input" required />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Short Bio</label>
-                    <textarea name="author_bio" className="form-textarea" rows={3} defaultValue={submission.author_bio} />
+                    <label className="form-label">Short Bio <span className="required">*</span></label>
+                    <textarea name="author_bio" className="form-textarea" rows={3} required
+                      placeholder="Brief professional biography (50–150 words)" />
                   </div>
 
                   <hr style={{ border: 'none', borderTop: '1px solid var(--pearl)', margin: '24px 0' }} />
 
+                  {/* Submission Details */}
+                  <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.2rem', color: 'var(--navy)', marginBottom: 16 }}>
+                    Submission Details
+                  </h3>
                   <div className="form-group">
                     <label className="form-label">Title <span className="required">*</span></label>
-                    <input type="text" name="title" className="form-input" defaultValue={submission.title} required />
+                    <input type="text" name="title" className="form-input" required
+                      placeholder="Full title of your paper/panel" />
                   </div>
                   <div className="form-group">
                     <label className="form-label">
@@ -274,18 +200,20 @@ export default function EditSubmissionPage() {
                       className="form-textarea"
                       rows={8}
                       required
-                      defaultValue={submission.abstract}
+                      placeholder="Minimum 200 characters. Summarize your research, methodology, and findings."
                       onChange={e => setAbstractLen(e.target.value.length)}
                     />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Keywords <span className="required">*</span></label>
-                    <input type="text" name="keywords" className="form-input" defaultValue={submission.keywords} required />
+                    <input type="text" name="keywords" className="form-input" required
+                      placeholder="e.g. K-pop, diaspora, cultural identity (comma-separated)" />
                   </div>
                   <div className="form-row">
                     <div className="form-group">
                       <label className="form-label">Presentation Type <span className="required">*</span></label>
-                      <select name="presentation_type" className="form-select" defaultValue={submission.presentation_type} required>
+                      <select name="presentation_type" className="form-select" required>
+                        <option value="">Select type…</option>
                         {PRESENTATION_TYPES.map(pt => (
                           <option key={pt.value} value={pt.value}>{pt.label}</option>
                         ))}
@@ -293,20 +221,22 @@ export default function EditSubmissionPage() {
                     </div>
                     <div className="form-group">
                       <label className="form-label">Track <span className="required">*</span></label>
-                      <select name="track" className="form-select" defaultValue={submission.track} required>
+                      <select name="track" className="form-select" required>
+                        <option value="">Select track…</option>
                         {TRACKS.map(t => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
                   </div>
 
+                  {/* Co-Authors */}
                   <hr style={{ border: 'none', borderTop: '1px solid var(--pearl)', margin: '24px 0' }} />
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <h3 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.2rem', color: 'var(--navy)', margin: 0 }}>
-                      Co-Authors
+                      Co-Authors (Optional)
                     </h3>
                     <button type="button" onClick={addCoAuthor}
                       style={{ padding: '6px 14px', background: 'var(--kr-blue)', color: '#fff', border: 'none', borderRadius: 4, fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' }}>
-                      + Add
+                      + Add Co-Author
                     </button>
                   </div>
                   {coAuthors.map((ca, idx) => (
@@ -314,33 +244,34 @@ export default function EditSubmissionPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                         <strong style={{ fontSize: '0.9rem' }}>Co-Author {idx + 1}</strong>
                         <button type="button" onClick={() => removeCoAuthor(idx)}
-                          style={{ background: 'none', border: 'none', color: 'var(--coral)', cursor: 'pointer', fontSize: '0.85rem' }}>Remove</button>
+                          style={{ background: 'none', border: 'none', color: 'var(--coral)', cursor: 'pointer', fontSize: '0.85rem' }}>
+                          Remove
+                        </button>
                       </div>
                       <div className="form-row">
                         <div className="form-group">
                           <label className="form-label">Name</label>
-                          <input type="text" className="form-input" value={ca.name} onChange={e => updateCoAuthor(idx, 'name', e.target.value)} />
+                          <input type="text" className="form-input" value={ca.name}
+                            onChange={e => updateCoAuthor(idx, 'name', e.target.value)} />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Email</label>
-                          <input type="email" className="form-input" value={ca.email} onChange={e => updateCoAuthor(idx, 'email', e.target.value)} />
+                          <input type="email" className="form-input" value={ca.email}
+                            onChange={e => updateCoAuthor(idx, 'email', e.target.value)} />
                         </div>
                       </div>
                       <div className="form-group">
                         <label className="form-label">Affiliation</label>
-                        <input type="text" className="form-input" value={ca.affiliation} onChange={e => updateCoAuthor(idx, 'affiliation', e.target.value)} />
+                        <input type="text" className="form-input" value={ca.affiliation}
+                          onChange={e => updateCoAuthor(idx, 'affiliation', e.target.value)} />
                       </div>
                     </div>
                   ))}
 
+                  {/* PDF Upload */}
                   <hr style={{ border: 'none', borderTop: '1px solid var(--pearl)', margin: '24px 0' }} />
                   <div className="form-group">
-                    <label className="form-label">Replace PDF (Optional)</label>
-                    {submission.pdf_url && (
-                      <p style={{ fontSize: '0.85rem', color: 'var(--teal)', marginBottom: 8 }}>
-                        Current PDF: <a href={submission.pdf_url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--kr-blue)' }}>View file</a>
-                      </p>
-                    )}
+                    <label className="form-label">PDF Upload (Optional)</label>
                     <input
                       ref={fileRef}
                       type="file"
@@ -349,23 +280,25 @@ export default function EditSubmissionPage() {
                       style={{ padding: '8px 12px' }}
                       onChange={e => setPdfName(e.target.files?.[0]?.name || '')}
                     />
-                    <p className="form-help">Upload a new PDF to replace the existing one. Max 5MB.</p>
-                    {pdfName && <p style={{ fontSize: '0.85rem', color: 'var(--teal)', marginTop: 4 }}>New file: {pdfName}</p>}
+                    <p className="form-help">Maximum 5MB. Full paper or extended abstract in PDF format.</p>
+                    {pdfName && <p style={{ fontSize: '0.85rem', color: 'var(--teal)', marginTop: 4 }}>Selected: {pdfName}</p>}
                   </div>
 
+                  {/* Special Requirements */}
                   <div className="form-group">
-                    <label className="form-label">Special Requirements</label>
-                    <textarea name="special_requirements" className="form-textarea" rows={3} defaultValue={submission.special_requirements} />
+                    <label className="form-label">Special Requirements (Optional)</label>
+                    <textarea name="special_requirements" className="form-textarea" rows={3}
+                      placeholder="AV equipment, accessibility needs, scheduling constraints, etc." />
                   </div>
 
                   {error && <p className="form-error" style={{ marginBottom: 16 }}>{error}</p>}
                   <button
                     type="submit"
                     className="btn-primary"
-                    disabled={saving || submission.status === 'withdrawn'}
-                    style={{ width: '100%', justifyContent: 'center', opacity: saving || submission.status === 'withdrawn' ? 0.6 : 1 }}
+                    disabled={loading}
+                    style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.6 : 1, marginTop: 8 }}
                   >
-                    {saving ? 'Saving…' : 'Save Changes'}
+                    {loading ? 'Submitting…' : 'Submit Abstract →'}
                   </button>
                 </form>
               </div>

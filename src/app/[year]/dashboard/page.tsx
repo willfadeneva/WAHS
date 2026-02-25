@@ -53,7 +53,7 @@ export default async function CongressDashboardPage({ params }: { params: Promis
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/congress/${year}/login`);
+    redirect(`/${year}/login`);
   }
 
   // Fetch submissions for this user and year
@@ -135,7 +135,7 @@ export default async function CongressDashboardPage({ params }: { params: Promis
               <h2 style={{ fontFamily: "'DM Serif Display', serif", fontSize: '1.5rem', color: 'var(--navy)', margin: 0 }}>
                 My Submissions ({submissions?.length || 0})
               </h2>
-              <Link href={`/congress/${year}/submit-abstract`} className="btn-primary" style={{ display: 'inline-flex', fontSize: '0.9rem' }}>
+              <Link href={`/${year}/submit-abstract`} className="btn-primary" style={{ display: 'inline-flex', fontSize: '0.9rem' }}>
                 + Submit New Abstract
               </Link>
             </div>
@@ -147,7 +147,7 @@ export default async function CongressDashboardPage({ params }: { params: Promis
                 <p style={{ color: 'var(--slate)', marginBottom: 24, maxWidth: 400, margin: '0 auto 24px' }}>
                   Submit your abstract for Congress {year}. The deadline is May 15, 2026.
                 </p>
-                <Link href={`/congress/${year}/submit-abstract`} className="btn-primary" style={{ display: 'inline-flex' }}>
+                <Link href={`/${year}/submit-abstract`} className="btn-primary" style={{ display: 'inline-flex' }}>
                   Submit Your Abstract →
                 </Link>
               </div>
@@ -171,7 +171,7 @@ export default async function CongressDashboardPage({ params }: { params: Promis
                       <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                         {sub.status !== 'withdrawn' && sub.status !== 'accepted' && (
                           <Link
-                            href={`/congress/${year}/submissions/${sub.id}/edit`}
+                            href={`/${year}/submissions/${sub.id}/edit`}
                             style={{
                               padding: '6px 16px',
                               background: 'var(--kr-blue)',
