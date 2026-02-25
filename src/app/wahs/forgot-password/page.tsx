@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState('');
   const [error, setError] = useState('');
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -18,13 +19,14 @@ export default function ForgotPasswordPage() {
     const email = form.get('email') as string;
 
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${window.location.origin}/auth/callback?next=/wahs/reset-password`,
     });
     if (resetError) {
       setError(resetError.message);
       setLoading(false);
       return;
     }
+    setSentEmail(email);
     setSent(true);
     setLoading(false);
   }
@@ -46,10 +48,12 @@ export default function ForgotPasswordPage() {
               {sent ? (
                 <div className="form-success">
                   <div className="form-success-icon">✉️</div>
-                  <h3>Check Your Email</h3>
+                  <h3>Reset Link Sent</h3>
                   <p>
-                    If an account exists with that email, you&apos;ll receive a password reset link shortly.
-                    Please check your spam folder if you don&apos;t see it.
+                    Reset link sent to <strong>{sentEmail}</strong>. Check your inbox.
+                  </p>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--mist)', marginTop: 8 }}>
+                    If you don&apos;t see it, check your spam folder.
                   </p>
                   <div style={{ marginTop: 24 }}>
                     <Link href="/wahs/login" style={{ color: 'var(--kr-blue)' }}>← Back to Login</Link>
