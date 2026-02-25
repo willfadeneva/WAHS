@@ -163,7 +163,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
           body: JSON.stringify({ ...body, ticket_type, congress_year: 2026 }),
         });
         if (!res.ok) throw new Error('Failed');
-        setRegType(registration_type === 'regular' ? 'Regular' : 'Student');
+        setRegType(ticket_type === 'regular' ? 'Regular' : 'Student');
         setStep('done');
       }
     } catch {
