@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase';
+import { sendRegistrationConfirmation } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,6 +65,8 @@ export async function POST(request: NextRequest) {
       .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    // Send confirmation email (non-blocking)
+    sendRegistrationConfirmation(email.toLowerCase(), full_name, 'wahs_member', congress_year).catch(console.error);
     return NextResponse.json({ success: true, data });
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase-server';
+import { sendRegistrationConfirmation } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,8 @@ export async function POST(request: NextRequest) {
       full_name, email, institution, country, ticket_type, congress_year,
     }]).select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    // Send confirmation email (non-blocking)
+    sendRegistrationConfirmation(email, full_name, ticket_type, congress_year).catch(console.error);
     return NextResponse.json({ success: true, data });
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
