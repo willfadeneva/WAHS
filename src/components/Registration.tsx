@@ -177,7 +177,7 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
       <div className="section-inner reveal">
         <span className="section-label">Registration</span>
         <h2 className="section-title">Register</h2>
-        <p className="section-lead">
+        <p className="section-lead" style={{ textAlign: 'center' }}>
           {earlyBird
             ? <>Early bird registration receives a 20% discount. Secure your spot at <strong>12th World Congress for Hallyu Studies 2026</strong>, NOW</>
             : <>Payments are processed securely via PayPal — credit and debit cards accepted.</>}
