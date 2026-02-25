@@ -7,6 +7,7 @@ const sections = [
     title: 'Advisors',
     members: [
       { title: 'Provost Prof.', name: 'Henry Jenkins', lines: ['Anneberg School for Communication', 'School of Cinematic Arts', 'University of Southern California'] },
+      { title: 'Prof.', name: 'Ingyu Oh', lines: ['Kansai Gaidai University, Japan'] },
       { title: 'Prof.', name: 'Paul Lopes', lines: ['Sociology and Anthropology', 'Africana and Latin American Studies', 'Colgate University'] },
     ],
   },
