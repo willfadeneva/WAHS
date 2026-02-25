@@ -133,9 +133,9 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
 
     const form = new FormData(e.currentTarget);
     const body = {
-      name: form.get('name') as string,
+      full_name: form.get('name') as string,
       email: (form.get('email') as string).toLowerCase(),
-      affiliation: form.get('affiliation') as string,
+      institution: form.get('affiliation') as string,
       country: form.get('country') as string,
       congress_year: 2026,
     };
@@ -156,11 +156,11 @@ export default function Registration({ pricing }: { pricing: Pricing[] }) {
         }
         setStep('wahs-done');
       } else {
-        const registration_type = form.get('registration_type') as string;
+        const ticket_type = form.get('registration_type') as string;
         const res = await fetch('/api/registrations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...body, registration_type, congress_year: 2026 }),
+          body: JSON.stringify({ ...body, ticket_type, congress_year: 2026 }),
         });
         if (!res.ok) throw new Error('Failed');
         setRegType(registration_type === 'regular' ? 'Regular' : 'Student');
