@@ -1,23 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, affiliation, country, congress_year } = body;
+    const { full_name, email, institution, country, congress_year } = body;
 
-    if (!name || !email || !affiliation || !country || !congress_year) {
+    if (!full_name || !email || !institution || !country || !congress_year) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
-    const supabase = await createServerClient();
+    const supabase = createAdminClient();
 
-    // Verify WAHS membership by email
+    // Verify active WAHS membership by email
     const { data: member, error: memberError } = await supabase
       .from('wahs_members')
       .select('membership_status, expires_at')
       .eq('email', email.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (memberError || !member) {
       return NextResponse.json({
@@ -31,13 +31,10 @@ export async function POST(request: NextRequest) {
       }, { status: 403 });
     }
 
-    if (member.expires_at) {
-      const dueDate = new Date(member.expires_at);
-      if (dueDate < new Date()) {
-        return NextResponse.json({
-          error: 'Your WAHS dues are overdue. Please pay your dues at iwahs.org/wahs/login before registering for free.',
-        }, { status: 403 });
-      }
+    if (member.expires_at && new Date(member.expires_at) < new Date()) {
+      return NextResponse.json({
+        error: 'Your WAHS dues are overdue. Please pay your dues at iwahs.org/wahs/login before registering for free.',
+      }, { status: 403 });
     }
 
     // Check for duplicate registration
@@ -49,18 +46,15 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json({
-        error: 'You are already registered for this congress.',
-      }, { status: 409 });
+      return NextResponse.json({ error: 'You are already registered for this congress.' }, { status: 409 });
     }
 
-    // Register as free WAHS member
     const { data, error } = await supabase
       .from('congress_registrations')
       .insert([{
-        full_name: name,
+        full_name,
         email: email.toLowerCase(),
-        institution: affiliation,
+        institution,
         country,
         ticket_type: 'wahs_member',
         congress_year,
@@ -70,7 +64,6 @@ export async function POST(request: NextRequest) {
       .select();
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-
     return NextResponse.json({ success: true, data });
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });

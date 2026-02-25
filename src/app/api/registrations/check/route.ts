@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     if (!email || !year) {
       return NextResponse.json({ error: 'Missing email or year' }, { status: 400 });
     }
-    const supabase = await createServerClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase
       .from('congress_registrations')
       .select('id, ticket_type, is_wahs_member')
