@@ -45,23 +45,18 @@ type Speaker = {
 };
 
 async function getCongress(year: number): Promise<{ congress: Congress; speakers: Speaker[] } | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  console.log('[getCongress] url:', url?.slice(0, 40), 'key:', key?.slice(0, 20));
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 
-  const supabase = createClient(url!, key!);
-
-  const { data: congress, error } = await supabase
+  const { data: congress } = await supabase
     .from('congresses')
     .select('*')
     .eq('year', year)
     .single();
 
-  if (error || !congress) {
-    console.error('[getCongress] error:', error?.message, 'code:', error?.code, 'url:', url?.slice(0,40));
-    // Temporarily surface error instead of 404
-    throw new Error(`Supabase: ${error?.message || 'no data'} | url: ${url?.slice(0,40)} | key: ${key?.slice(0,15)}`);
-  }
+  if (!congress) return null;
 
   const { data: speakers } = await supabase
     .from('speakers')
