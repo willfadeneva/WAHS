@@ -44,6 +44,7 @@ type Registration = {
   country: string | null;
   ticket_type: string;
   amount_paid: number;
+  paypal_transaction_id: string | null;
   registered_at: string;
 };
 
@@ -54,6 +55,9 @@ type Speaker = {
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, { bg: string; color: string }> = {
     pending: { bg: '#fef3c7', color: '#92400e' },
+    pending_payment: { bg: '#fee2e2', color: '#991b1b' },
+    paid: { bg: '#d1fae5', color: '#065f46' },
+    free: { bg: '#d1fae5', color: '#065f46' },
     active: { bg: '#d1fae5', color: '#065f46' },
     accepted: { bg: '#d1fae5', color: '#065f46' },
     under_review: { bg: '#dbeafe', color: '#1e40af' },
@@ -64,9 +68,19 @@ function StatusBadge({ status }: { status: string }) {
   const s = colors[status] || { bg: '#f3f4f6', color: '#374151' };
   return (
     <span style={{ padding: '2px 10px', borderRadius: 12, fontSize: '0.78rem', fontWeight: 700, background: s.bg, color: s.color, textTransform: 'uppercase', letterSpacing: '0.3px' }}>
-      {status.replace('_', ' ')}
+      {status.replace(/_/g, ' ')}
     </span>
   );
+}
+
+function PaymentBadge({ reg }: { reg: Registration }) {
+  if (reg.ticket_type === 'wahs_member') {
+    return <StatusBadge status="free" />;
+  }
+  if (reg.amount_paid > 0) {
+    return <StatusBadge status="paid" />;
+  }
+  return <StatusBadge status="pending_payment" />;
 }
 
 export default function AdminDashboard() {
@@ -115,8 +129,8 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => { fetchSubmissions(); }, [fetchSubmissions]);
-  useEffect(() => { if (tab === 'members') fetchMembers(); }, [tab, fetchMembers]);
-  useEffect(() => { if (tab === 'registrations') fetchRegistrations(); }, [tab, fetchRegistrations]);
+  useEffect(() => { fetchMembers(); }, [fetchMembers]);
+  useEffect(() => { fetchRegistrations(); }, [fetchRegistrations]);
   useEffect(() => { if (tab === 'speakers') fetchSpeakers(); }, [tab]);
 
   const logout = async () => { await supabase.auth.signOut(); window.location.href = '/admin/login'; };
@@ -141,6 +155,25 @@ export default function AdminDashboard() {
       body: JSON.stringify({ id, membership_status }),
     });
     await fetchMembers();
+    setLoadingAction('');
+  };
+
+  const confirmRegPayment = async (id: string, ticket_type: string) => {
+    // Determine expected amount based on ticket type (early bird still active)
+    const earlyBird = new Date() <= new Date('2026-05-15T23:59:59+09:00');
+    const amounts: Record<string, number> = {
+      regular: earlyBird ? 240 : 300,
+      student: earlyBird ? 120 : 150,
+      wahs_member: 0,
+    };
+    const amount = amounts[ticket_type] ?? 0;
+    setLoadingAction(id + 'pay');
+    await fetch('/api/admin/registrations', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, amount_paid: amount, paypal_transaction_id: 'MANUAL' }),
+    });
+    await fetchRegistrations();
     setLoadingAction('');
   };
 
@@ -195,6 +228,10 @@ export default function AdminDashboard() {
     acceptanceRate: submissions.length > 0
       ? Math.round((submissions.filter(s => s.status === 'accepted').length / submissions.filter(s => ['accepted', 'rejected'].includes(s.status)).length) * 100) || 0
       : 0,
+    pendingMembers: members.filter(m => m.membership_status === 'pending').length,
+    activeMembers: members.filter(m => m.membership_status === 'active').length,
+    pendingRegPayments: registrations.filter(r => r.amount_paid === 0 && r.ticket_type !== 'wahs_member').length,
+    paidRegs: registrations.filter(r => r.amount_paid > 0 || r.ticket_type === 'wahs_member').length,
   };
 
   return (
@@ -219,12 +256,31 @@ export default function AdminDashboard() {
         {/* Dashboard */}
         {tab === 'dashboard' && (
           <>
-            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#666' }}>Submissions Overview</h3>
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#666' }}>Submissions</h3>
             <div className="admin-stats">
               <div className="admin-stat-card"><div className="admin-stat-label">Total Submissions</div><div className="admin-stat-value">{stats.totalSubs}</div></div>
               <div className="admin-stat-card"><div className="admin-stat-label">Pending Review</div><div className="admin-stat-value">{stats.pendingSubs}</div></div>
               <div className="admin-stat-card"><div className="admin-stat-label">Accepted</div><div className="admin-stat-value">{stats.acceptedSubs}</div></div>
               <div className="admin-stat-card"><div className="admin-stat-label">Acceptance Rate</div><div className="admin-stat-value">{stats.acceptanceRate}%</div></div>
+            </div>
+            <h3 style={{ margin: '24px 0 12px', fontSize: '1rem', color: '#666' }}>Memberships &amp; Registrations</h3>
+            <div className="admin-stats">
+              <div className="admin-stat-card" style={{ borderLeft: '3px solid #f59e0b' }}>
+                <div className="admin-stat-label">⏳ Pending Member Payment</div>
+                <div className="admin-stat-value" style={{ color: stats.pendingMembers > 0 ? '#92400e' : '#065f46' }}>{stats.pendingMembers}</div>
+              </div>
+              <div className="admin-stat-card" style={{ borderLeft: '3px solid #10b981' }}>
+                <div className="admin-stat-label">✅ Active Members</div>
+                <div className="admin-stat-value">{stats.activeMembers}</div>
+              </div>
+              <div className="admin-stat-card" style={{ borderLeft: '3px solid #ef4444' }}>
+                <div className="admin-stat-label">⏳ Pending Reg. Payment</div>
+                <div className="admin-stat-value" style={{ color: stats.pendingRegPayments > 0 ? '#991b1b' : '#065f46' }}>{stats.pendingRegPayments}</div>
+              </div>
+              <div className="admin-stat-card" style={{ borderLeft: '3px solid #10b981' }}>
+                <div className="admin-stat-label">✅ Paid / Free Regs</div>
+                <div className="admin-stat-value">{stats.paidRegs}</div>
+              </div>
             </div>
           </>
         )}
@@ -393,21 +449,36 @@ export default function AdminDashboard() {
             </div>
             <table className="admin-table">
               <thead>
-                <tr><th>Name</th><th>Email</th><th>Year</th><th>Ticket</th><th>Amount</th><th>Country</th><th>Registered</th></tr>
+                <tr><th>Name</th><th>Email</th><th>Year</th><th>Ticket</th><th>Payment</th><th>Country</th><th>Registered</th><th>Actions</th></tr>
               </thead>
               <tbody>
                 {registrations.map((r: Registration) => (
-                  <tr key={r.id}>
+                  <tr key={r.id} style={{ background: r.amount_paid === 0 && r.ticket_type !== 'wahs_member' ? '#fff8f8' : undefined }}>
                     <td>{r.full_name}</td>
                     <td>{r.email}</td>
                     <td>{r.congress_year}</td>
                     <td>{typeLabel(r.ticket_type)}</td>
-                    <td>{r.amount_paid > 0 ? `$${r.amount_paid}` : 'Free'}</td>
+                    <td>
+                      <PaymentBadge reg={r} />
+                      {r.amount_paid > 0 && <div style={{ fontSize: '0.72rem', color: '#666', marginTop: 2 }}>${r.amount_paid}</div>}
+                    </td>
                     <td>{r.country || '—'}</td>
                     <td>{new Date(r.registered_at).toLocaleDateString()}</td>
+                    <td>
+                      {r.amount_paid === 0 && r.ticket_type !== 'wahs_member' && (
+                        <button
+                          className="admin-btn admin-btn-teal"
+                          style={{ fontSize: '0.72rem', padding: '3px 8px', whiteSpace: 'nowrap' }}
+                          disabled={loadingAction === r.id + 'pay'}
+                          onClick={() => confirmRegPayment(r.id, r.ticket_type)}
+                        >
+                          ✓ Confirm Paid
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
-                {registrations.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40 }}>No registrations found.</td></tr>}
+                {registrations.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40 }}>No registrations found.</td></tr>}
               </tbody>
             </table>
           </div>
