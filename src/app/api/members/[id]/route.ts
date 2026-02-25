@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase';
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const supabase = await createServerClient();
+    const supabase = createAdminClient();
     const update: Record<string, unknown> = {};
-    if (body.payment_status) update.payment_status = body.payment_status;
-    if (body.payment_status === 'confirmed') update.payment_date = new Date().toISOString();
-    if (body.notes !== undefined) update.notes = body.notes;
-    const { data, error } = await supabase.from('members').update(update).eq('id', id).select();
+    if (body.membership_status) update.membership_status = body.membership_status;
+    if (body.expires_at) update.expires_at = body.expires_at;
+    if (body.paypal_transaction_id) update.paypal_transaction_id = body.paypal_transaction_id;
+    const { data, error } = await supabase.from('wahs_members').update(update).eq('id', id).select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ success: true, data });
   } catch {

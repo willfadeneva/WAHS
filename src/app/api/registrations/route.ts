@@ -4,14 +4,13 @@ import { createServerClient } from '@/lib/supabase-server';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, affiliation, country, registration_type, congress_year } = body;
-    if (!name || !email || !registration_type || !congress_year) {
+    const { full_name, email, institution, country, ticket_type, congress_year } = body;
+    if (!full_name || !email || !ticket_type || !congress_year) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     const supabase = await createServerClient();
     const { data, error } = await supabase.from('congress_registrations').insert([{
-      full_name: name, email, institution: affiliation, country,
-      ticket_type: registration_type, congress_year,
+      full_name, email, institution, country, ticket_type, congress_year,
     }]).select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ success: true, data });
