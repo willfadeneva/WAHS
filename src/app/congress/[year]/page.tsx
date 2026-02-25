@@ -58,8 +58,9 @@ async function getCongress(year: number): Promise<{ congress: Congress; speakers
     .single();
 
   if (error || !congress) {
-    console.error('[getCongress] error:', error?.message, 'data:', congress);
-    return null;
+    console.error('[getCongress] error:', error?.message, 'code:', error?.code, 'url:', url?.slice(0,40));
+    // Temporarily surface error instead of 404
+    throw new Error(`Supabase: ${error?.message || 'no data'} | url: ${url?.slice(0,40)} | key: ${key?.slice(0,15)}`);
   }
 
   const { data: speakers } = await supabase
