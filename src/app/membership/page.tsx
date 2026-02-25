@@ -22,12 +22,11 @@ export default function MembershipPage() {
     const form = new FormData(e.currentTarget);
     const membership_type = form.get('membership_type') as string;
     const body = {
-      name: form.get('name') as string,
+      full_name: form.get('name') as string,
       email: (form.get('email') as string).toLowerCase(),
-      affiliation: form.get('affiliation') as string,
+      institution: form.get('affiliation') as string,
       country: form.get('country') as string,
       membership_type,
-      year: new Date().getFullYear(),
     };
 
     try {
