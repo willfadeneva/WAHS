@@ -33,7 +33,7 @@ export default function CongressLoginPage() {
     if (authData.user) {
       const { data: member } = await supabase
         .from('wahs_members')
-        .select('membership_status, dues_paid_until')
+        .select('membership_status, expires_at')
         .eq('user_id', authData.user.id)
         .single();
 
@@ -42,7 +42,7 @@ export default function CongressLoginPage() {
         const duesPending =
           member.membership_status === 'pending_payment' ||
           member.membership_status === 'suspended' ||
-          (member.dues_paid_until && new Date(member.dues_paid_until) < new Date());
+          (member.expires_at && new Date(member.expires_at) < new Date());
 
         if (duesPending) {
           // Sign them out and redirect to pay dues

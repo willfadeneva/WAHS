@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     // Verify WAHS membership by email
     const { data: member, error: memberError } = await supabase
       .from('wahs_members')
-      .select('membership_status, dues_paid_until')
+      .select('membership_status, expires_at')
       .eq('email', email.toLowerCase())
       .single();
 
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
       }, { status: 403 });
     }
 
-    if (member.dues_paid_until) {
-      const dueDate = new Date(member.dues_paid_until);
+    if (member.expires_at) {
+      const dueDate = new Date(member.expires_at);
       if (dueDate < new Date()) {
         return NextResponse.json({
           error: 'Your WAHS dues are overdue. Please pay your dues at iwahs.org/wahs/login before registering for free.',
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('email', email.toLowerCase())
       .eq('congress_year', congress_year)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       return NextResponse.json({
@@ -58,13 +58,14 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('congress_registrations')
       .insert([{
-        name,
+        full_name: name,
         email: email.toLowerCase(),
-        affiliation,
+        institution: affiliation,
         country,
-        registration_type: 'wahs_member',
+        ticket_type: 'wahs_member',
         congress_year,
-        payment_status: 'free',
+        is_wahs_member: true,
+        amount_paid: 0,
       }])
       .select();
 

@@ -11,8 +11,8 @@ export async function GET(request: NextRequest) {
     }
     const supabase = await createServerClient();
     const { data, error } = await supabase
-      .from('registrations')
-      .select('id, payment_status')
+      .from('congress_registrations')
+      .select('id, ticket_type, is_wahs_member')
       .eq('email', email.toLowerCase())
       .eq('congress_year', parseInt(year))
       .order('created_at', { ascending: false })
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     if (!data || data.length === 0) {
       return NextResponse.json({ registered: false });
     }
-    return NextResponse.json({ registered: true, payment_status: data[0].payment_status });
+    return NextResponse.json({ registered: true, ticket_type: data[0].ticket_type, is_wahs_member: data[0].is_wahs_member });
   } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }

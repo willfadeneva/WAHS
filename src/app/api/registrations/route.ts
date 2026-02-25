@@ -9,8 +9,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
     const supabase = await createServerClient();
-    const { data, error } = await supabase.from('registrations').insert([{
-      name, email, affiliation, country, registration_type, congress_year, payment_status: 'pending',
+    const { data, error } = await supabase.from('congress_registrations').insert([{
+      full_name: name, email, institution: affiliation, country,
+      ticket_type: registration_type, congress_year,
     }]).select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ success: true, data });
@@ -25,9 +26,9 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const year = url.searchParams.get('year');
     const status = url.searchParams.get('status');
-    let query = supabase.from('registrations').select('*').order('created_at', { ascending: false });
+    let query = supabase.from('congress_registrations').select('*').order('created_at', { ascending: false });
     if (year) query = query.eq('congress_year', parseInt(year));
-    if (status) query = query.eq('payment_status', status);
+    if (status) query = query.eq('ticket_type', status);
     const { data, error } = await query;
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json(data);
