@@ -12,8 +12,11 @@ export default function Submissions({ year }: { year: number }) {
     <section className="submissions" id="submissions">
       <div className="section-inner reveal">
         {/* Header */}
-        <span className="section-label">Call for Papers and Panels</span>
-        <h2 className="section-title">World Congress for Hallyu Studies {year}</h2>
+        <span className="section-label">Call for Papers</span>
+        <h2 className="section-title">Submit Your Abstract</h2>
+        <p className="section-lead" style={{ textAlign: 'center' }}>
+          We welcome individual papers, full panels, roundtables, and workshops. Submit your proposal for WAHS {year}.
+        </p>
         <p style={{ textAlign: 'center', fontSize: '1.05rem', color: '#333', marginBottom: '4px' }}>Cheju Halla University, Jeju Island, South Korea</p>
         <p style={{ textAlign: 'center', fontSize: '1.05rem', color: '#333', fontWeight: 600, marginBottom: '20px' }}>May 28–30, {year}</p>
         <p style={{ textAlign: 'center', fontSize: '1rem', color: '#555', fontStyle: 'italic', maxWidth: '700px', margin: '0 auto 48px' }}>
