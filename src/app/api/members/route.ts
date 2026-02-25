@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
     const { data, error } = await supabase.from('wahs_members').insert([{
       full_name, email, institution, country, membership_type,
-      membership_status: 'pending_payment',
+      membership_status: 'pending',
     }]).select();
     if (error) return NextResponse.json({ error: error.message }, { status: 400 });
     return NextResponse.json({ success: true, data });

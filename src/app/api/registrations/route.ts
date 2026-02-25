@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase';
 import { sendRegistrationConfirmation } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!full_name || !email || !ticket_type || !congress_year) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
-    const supabase = await createServerClient();
+    const supabase = createAdminClient();
     const { data, error } = await supabase.from('congress_registrations').insert([{
       full_name, email, institution, country, ticket_type, congress_year,
     }]).select();
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerClient();
+    const supabase = createAdminClient();
     const url = new URL(request.url);
     const year = url.searchParams.get('year');
     const status = url.searchParams.get('status');
