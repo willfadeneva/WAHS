@@ -31,7 +31,7 @@ export default function Nav({ year }: { year: number }) {
   return (
     <nav className="sticky-nav">
       <div className="sticky-nav-inner">
-        <Link href={`/${year}`} className="sticky-nav-brand" onClick={close}>
+        <Link href={`/congress/${year}`} className="sticky-nav-brand" onClick={close}>
           <img src="/wahs-logo.png" alt="WAHS" style={{ height: '80px', width: 'auto' }} />
         </Link>
 
@@ -50,7 +50,7 @@ export default function Nav({ year }: { year: number }) {
 
           {/* Overview */}
           <li>
-            <a href={`/${year}#overview`} onClick={close}>Overview</a>
+            <a href={`/congress/${year}#overview`} onClick={close}>Overview</a>
           </li>
 
           {/* Speakers → Keynote Speakers | Plenary Panel */}
@@ -58,20 +58,20 @@ export default function Nav({ year }: { year: number }) {
               onMouseEnter={() => setSpeakersOpen(true)}
               onMouseLeave={() => setSpeakersOpen(false)}>
             <button
-              className={`nav-dropdown-trigger${pathname === `/${year}` ? ' active' : ''}`}
+              className={`nav-dropdown-trigger${pathname === `/congress/${year}` ? ' active' : ''}`}
               onClick={() => setSpeakersOpen(!speakersOpen)}
             >
               Speakers <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${speakersOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><a href={`/${year}#speakers`} onClick={close}>Keynote Speakers</a></li>
-              <li><a href={`/${year}#plenary`} onClick={close}>Plenary Panel</a></li>
+              <li><a href={`/congress/${year}#speakers`} onClick={close}>Keynote Speakers</a></li>
+              <li><a href={`/congress/${year}#plenary`} onClick={close}>Plenary Panel</a></li>
             </ul>
           </li>
 
           {/* Tracks */}
           <li>
-            <a href={`/${year}#tracks`} onClick={close}>Tracks</a>
+            <a href={`/congress/${year}#tracks`} onClick={close}>Tracks</a>
           </li>
 
           {/* Venue & Dates → Venue | Key Dates */}
@@ -85,15 +85,15 @@ export default function Nav({ year }: { year: number }) {
               Venue &amp; Dates <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${venueOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><a href={`/${year}#venue`} onClick={close}>Venue</a></li>
-              <li><a href={`/${year}#dates`} onClick={close}>Key Dates</a></li>
+              <li><a href={`/congress/${year}#venue`} onClick={close}>Venue</a></li>
+              <li><a href={`/congress/${year}#dates`} onClick={close}>Key Dates</a></li>
             </ul>
           </li>
 
           {/* Register & Pay → Register */}
           <li>
             <Link
-              href={`/${year}/registration`}
+              href={`/congress/${year}/registration`}
               className={pathname?.includes('/registration') ? 'active' : ''}
               onClick={close}
             >
@@ -103,7 +103,7 @@ export default function Nav({ year }: { year: number }) {
 
           {/* Past Congresses */}
           <li>
-            <Link href={`/${year}/past-congresses`} onClick={close}>Past Congresses</Link>
+            <Link href={`/congress/${year}/past-congresses`} onClick={close}>Past Congresses</Link>
           </li>
 
           {/* My Account → My Submissions | Sign In / Create Account (or Sign Out) */}
@@ -111,14 +111,14 @@ export default function Nav({ year }: { year: number }) {
               onMouseEnter={() => setAccountOpen(true)}
               onMouseLeave={() => setAccountOpen(false)}>
             <button
-              className={`nav-dropdown-trigger${(pathname?.includes(`/${year}/dashboard`) || pathname?.includes(`/${year}/submit`)) ? ' active' : ''}`}
+              className={`nav-dropdown-trigger${(pathname?.includes(`/congress/${year}/dashboard`) || pathname?.includes(`/congress/${year}/submit`)) ? ' active' : ''}`}
               onClick={() => setAccountOpen(!accountOpen)}
             >
               My Account <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${accountOpen ? ' nav-dropdown-open' : ''}`}>
               <li>
-                <Link href={`/${year}/dashboard`} onClick={close}>My Submissions</Link>
+                <Link href={`/congress/${year}/dashboard`} onClick={close}>My Submissions</Link>
               </li>
               {user ? (
                 <li>
@@ -131,8 +131,8 @@ export default function Nav({ year }: { year: number }) {
                 </li>
               ) : (
                 <>
-                  <li><Link href={`/${year}/login`} onClick={close}>Sign In</Link></li>
-                  <li><Link href={`/${year}/register`} onClick={close}>Create Account</Link></li>
+                  <li><Link href={`/congress/${year}/login`} onClick={close}>Sign In</Link></li>
+                  <li><Link href={`/congress/${year}/register`} onClick={close}>Create Account</Link></li>
                 </>
               )}
             </ul>

@@ -106,7 +106,7 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
           <span className="section-label">Call for Papers</span>
           <h2 className="section-title">Submit Your Abstract</h2>
           <p className="section-lead">We welcome individual papers, full panels, roundtables, and workshops. Submit your proposal for WAHS {year}.</p>
-          <Link href={`/${year}/submissions`} className="btn-primary">Submit Abstract →</Link>
+          <Link href={`/congress/${year}/submissions`} className="btn-primary">Submit Abstract →</Link>
         </div>
       </section>
       <Timeline congress={congress} />
@@ -116,7 +116,7 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
           <span className="section-label">Registration</span>
           <h2 className="section-title">Register</h2>
           <p className="section-lead">Early bird registration receives a 20% discount. Secure your spot at WAHS {year}.</p>
-          <Link href={`/${year}/registration`} className="btn-primary">Register Now →</Link>
+          <Link href={`/congress/${year}/registration`} className="btn-primary">Register Now →</Link>
         </div>
       </section>
       <Publications publications={congress.publications} />

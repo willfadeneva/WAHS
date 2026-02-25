@@ -53,7 +53,7 @@ export default function CongressLoginPage() {
       }
     }
 
-    router.push(`/${year}/dashboard`);
+    router.push(`/congress/${year}/dashboard`);
   }
 
   return (
@@ -75,7 +75,7 @@ export default function CongressLoginPage() {
               </h2>
               <p style={{ color: 'var(--slate)', marginBottom: 24, fontSize: '0.92rem' }}>
                 Don&apos;t have an account?{' '}
-                <Link href={`/${year}/register`} style={{ color: 'var(--kr-blue)' }}>
+                <Link href={`/congress/${year}/register`} style={{ color: 'var(--kr-blue)' }}>
                   Create one for free →
                 </Link>
               </p>

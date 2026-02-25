@@ -4,8 +4,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 const WAHS_PROTECTED = ['/wahs/dashboard', '/wahs/profile', '/wahs/members', '/wahs/resources'];
 const ADMIN_PROTECTED = ['/admin'];
 
-// Congress auth-required paths: /{year}/dashboard, /{year}/submit-abstract, /{year}/submissions/{id}/edit
-const CONGRESS_AUTH_RE = /^\/(\d{4})\/(dashboard|submit-abstract|submissions\/.+\/edit)/;
+// Congress auth-required paths under /congress/{year}/
+const CONGRESS_AUTH_RE = /^\/congress\/(\d{4})\/(dashboard|submit-abstract|submissions\/.+\/edit)/;
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } });
@@ -40,12 +40,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect congress auth-required pages (dashboard, submit-abstract, submissions edit)
+  // Protect congress auth-required pages
   const congressMatch = CONGRESS_AUTH_RE.exec(path);
   if (congressMatch) {
     if (!session) {
       const year = congressMatch[1];
-      return NextResponse.redirect(new URL(`/${year}/login`, request.url));
+      return NextResponse.redirect(new URL(`/congress/${year}/login`, request.url));
     }
   }
 
@@ -63,8 +63,8 @@ export const config = {
   matcher: [
     '/wahs/:path*',
     '/admin/:path*',
-    '/:year(\\d{4})/dashboard',
-    '/:year(\\d{4})/submit-abstract',
-    '/:year(\\d{4})/submissions/:id/edit',
+    '/congress/:year(\\d{4})/dashboard',
+    '/congress/:year(\\d{4})/submit-abstract',
+    '/congress/:year(\\d{4})/submissions/:id/edit',
   ],
 };

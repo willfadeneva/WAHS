@@ -157,14 +157,14 @@ export default async function WAHSDashboardPage() {
                   </div>
                 </Link>
               )}
-              <Link href="/2026/registration" style={{ textDecoration: 'none' }}>
+              <Link href="/congress/2026/registration" style={{ textDecoration: 'none' }}>
                 <div className="main-content-box" style={{ textAlign: 'center', padding: '24px 16px', cursor: 'pointer' }}>
                   <div style={{ fontSize: '2rem', marginBottom: 8 }}>🎟️</div>
                   <div style={{ fontWeight: 600, color: 'var(--navy)' }}>Congress 2026</div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--mist)', marginTop: 4 }}>Register for the congress</div>
                 </div>
               </Link>
-              <Link href="/2026/submit-abstract" style={{ textDecoration: 'none' }}>
+              <Link href="/congress/2026/submit-abstract" style={{ textDecoration: 'none' }}>
                 <div className="main-content-box" style={{ textAlign: 'center', padding: '24px 16px', cursor: 'pointer' }}>
                   <div style={{ fontSize: '2rem', marginBottom: 8 }}>📝</div>
                   <div style={{ fontWeight: 600, color: 'var(--navy)' }}>Submit Abstract</div>
@@ -181,7 +181,7 @@ export default async function WAHSDashboardPage() {
                   As a WAHS {member.membership_type} member, you qualify for free congress registration.
                   Log in to the congress portal to register.
                 </p>
-                <Link href="/2026/dashboard" className="btn-primary" style={{ display: 'inline-flex' }}>
+                <Link href="/congress/2026/dashboard" className="btn-primary" style={{ display: 'inline-flex' }}>
                   Go to Congress Portal →
                 </Link>
               </div>

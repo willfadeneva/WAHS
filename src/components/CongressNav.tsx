@@ -33,13 +33,13 @@ export default function CongressNav({ year }: { year: string | number }) {
   async function handleSignOut() {
     await supabase.auth.signOut();
     close();
-    router.push(`/${yr}/login`);
+    router.push(`/congress/${yr}/login`);
   }
 
   return (
     <nav className="main-nav">
       <div className="main-nav-inner">
-        <Link href={`/${yr}`} className="main-nav-brand" onClick={close}>
+        <Link href={`/congress/${yr}`} className="main-nav-brand" onClick={close}>
           <img src="/wahs-logo.png" alt="WAHS" style={{ height: '80px', width: 'auto' }} />
         </Link>
 
@@ -60,7 +60,7 @@ export default function CongressNav({ year }: { year: string | number }) {
 
           {/* Overview */}
           <li>
-            <a href={`/${yr}#overview`} onClick={close}>Overview</a>
+            <a href={`/congress/${yr}#overview`} onClick={close}>Overview</a>
           </li>
 
           {/* Speakers → Keynote Speakers | Plenary Panel */}
@@ -74,14 +74,14 @@ export default function CongressNav({ year }: { year: string | number }) {
               Speakers <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${speakersOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><a href={`/${yr}#speakers`} onClick={close}>Keynote Speakers</a></li>
-              <li><a href={`/${yr}#plenary`} onClick={close}>Plenary Panel</a></li>
+              <li><a href={`/congress/${yr}#speakers`} onClick={close}>Keynote Speakers</a></li>
+              <li><a href={`/congress/${yr}#plenary`} onClick={close}>Plenary Panel</a></li>
             </ul>
           </li>
 
           {/* Tracks */}
           <li>
-            <a href={`/${yr}#tracks`} onClick={close}>Tracks</a>
+            <a href={`/congress/${yr}#tracks`} onClick={close}>Tracks</a>
           </li>
 
           {/* Venue & Dates → Venue | Key Dates */}
@@ -95,19 +95,19 @@ export default function CongressNav({ year }: { year: string | number }) {
               Venue &amp; Dates <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${venueOpen ? ' nav-dropdown-open' : ''}`}>
-              <li><a href={`/${yr}#venue`} onClick={close}>Venue</a></li>
-              <li><a href={`/${yr}#dates`} onClick={close}>Key Dates</a></li>
+              <li><a href={`/congress/${yr}#venue`} onClick={close}>Venue</a></li>
+              <li><a href={`/congress/${yr}#dates`} onClick={close}>Key Dates</a></li>
             </ul>
           </li>
 
           {/* Register & Pay */}
           <li>
-            <Link href={`/${yr}/registration`} onClick={close}>Register</Link>
+            <Link href={`/congress/${yr}/registration`} onClick={close}>Register</Link>
           </li>
 
           {/* Past Congresses */}
           <li>
-            <Link href={`/${yr}/past-congresses`} onClick={close}>Past Congresses</Link>
+            <Link href={`/congress/${yr}/past-congresses`} onClick={close}>Past Congresses</Link>
           </li>
 
           {/* My Account */}
@@ -115,14 +115,14 @@ export default function CongressNav({ year }: { year: string | number }) {
               onMouseEnter={() => setAccountOpen(true)}
               onMouseLeave={() => setAccountOpen(false)}>
             <button
-              className={`nav-dropdown-trigger${(pathname?.includes(`/${yr}/dashboard`) || pathname?.includes(`/${yr}/submit`)) ? ' active' : ''}`}
+              className={`nav-dropdown-trigger${(pathname?.includes(`/congress/${yr}/dashboard`) || pathname?.includes(`/congress/${yr}/submit`)) ? ' active' : ''}`}
               onClick={() => setAccountOpen(!accountOpen)}
             >
               My Account <span className="nav-dropdown-arrow">▾</span>
             </button>
             <ul className={`nav-dropdown${accountOpen ? ' nav-dropdown-open' : ''}`}>
               <li>
-                <Link href={`/${yr}/dashboard`} onClick={close}>My Submissions</Link>
+                <Link href={`/congress/${yr}/dashboard`} onClick={close}>My Submissions</Link>
               </li>
               {user ? (
                 <li>
@@ -135,8 +135,8 @@ export default function CongressNav({ year }: { year: string | number }) {
                 </li>
               ) : (
                 <>
-                  <li><Link href={`/${yr}/login`} onClick={close}>Sign In</Link></li>
-                  <li><Link href={`/${yr}/register`} onClick={close}>Create Account</Link></li>
+                  <li><Link href={`/congress/${yr}/login`} onClick={close}>Sign In</Link></li>
+                  <li><Link href={`/congress/${yr}/register`} onClick={close}>Create Account</Link></li>
                 </>
               )}
             </ul>
