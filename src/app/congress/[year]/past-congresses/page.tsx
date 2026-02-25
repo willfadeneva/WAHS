@@ -71,8 +71,8 @@ export default async function PastCongressesPage({ params }: { params: Promise<{
                     }}>
                       {(c as any).cancelled ? (
                         <span style={{ color: '#999' }}>{c.year} — Cancelled</span>
-                      ) : c.link ? (
-                        <Link href={c.link} style={{ color: '#0047A0', textDecoration: 'none' }}>
+                      ) : (c as any).link ? (
+                        <Link href={(c as any).link} style={{ color: '#0047A0', textDecoration: 'none' }}>
                           {c.year} — {getOrdinal(c.num)} World Congress
                         </Link>
                       ) : (
