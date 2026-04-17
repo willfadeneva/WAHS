@@ -145,7 +145,7 @@ export default async function CongressPage({ params }: { params: Promise<{ year:
               lineHeight: 1.7,
             }}>
               A new Call for Papers will be announced in <strong style={{ color: '#fff' }}>May 2026</strong>.<br />
-              We appreciate your patience and continued support for Hallyu scholarship.
+              We appreciate your patience and continued support for Hallyu Studies.
             </p>
             <a href="/" style={{
               display: 'inline-block',
