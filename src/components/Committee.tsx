@@ -38,6 +38,7 @@ const AUDITORS: Member[] = [
 ];
 
 const BOARD: Member[] = [
+  { name: 'Jo Elfving-Hwang', role: 'Board Member', title: 'Prof.', affiliation: 'Curtin University', department: 'School of Media, Creative Arts and Social Inquiry', country: 'Australia', photo: '/members/jo-elfving-hwang.jpg' },
   { name: 'Jieun Kiaer', role: 'Board Member', title: 'Prof.', affiliation: 'University of Oxford', department: 'Editor, Hallyu', country: 'UK', photo: '/members/jieun-kiaer.jpeg' },
   { name: 'Rebecca Chiyoko King-O\'Riain', role: 'Board Member', title: 'Prof.', affiliation: 'Maynooth University', country: 'Ireland', photo: '/members/rebecca-king-oriain.jpg' },
   { name: 'Roald Maliangkay', role: 'Board Member', title: 'Prof.', affiliation: 'The Australian National University', country: 'Australia', photo: '/members/roald-maliangkay.jpeg' },
@@ -47,7 +48,6 @@ const BOARD: Member[] = [
   { name: 'Fabio La Rocca', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'Université Paul-Valéry Montpellier', department: 'Editor, Sociétés', country: 'France', photo: '/members/fabio-la-rocca.jpeg' },
   { name: 'Hye-Sook Wang', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'Brown University', country: 'USA', photo: '/members/hye-sook-wang.jpeg' },
   { name: 'Tom Baudinette', role: 'Board Member', title: 'Dr.', affiliation: 'Macquarie University', country: 'Australia', photo: '/members/tom-baudinette.jpg' },
-  { name: 'Jo Elfving-Hwang', role: 'Board Member', title: 'Prof.', affiliation: 'Curtin University', department: 'School of Media, Creative Arts and Social Inquiry', country: 'Australia', photo: '/members/jo-elfving-hwang.jpg' },
   { name: 'Gamin Kang', role: 'Board Member', title: 'Dr.', affiliation: 'University of California, Los Angeles', country: 'USA', photo: '/members/gamin-kang.jpeg' },
   { name: 'Sarah Keith', role: 'Board Member', title: 'Dr.', affiliation: 'Macquarie University', country: 'Australia', photo: '/members/sarah-keith.jpg' },
   { name: 'Do Own (Donna) Kim', role: 'Board Member', title: 'Dr.', affiliation: 'University of Illinois, Chicago', country: 'USA', photo: '/members/do-own-kim.jpg' },
@@ -62,7 +62,11 @@ function MemberCard({ member, detailed = false }: { member: Member; detailed?: b
   return (
     <div className="committee-card">
       <div className="committee-photo-wrap">
-        <img src={member.photo} alt={member.name} style={member.name === 'Yun Jung Im Park' ? { objectPosition: 'center 20%' } : undefined} />
+        <img src={member.photo} alt={member.name} style={
+          member.name === 'Yun Jung Im Park' ? { objectPosition: 'center 20%' } :
+          member.name === 'Jo Elfving-Hwang' ? { objectPosition: 'center 30%' } :
+          undefined
+        } />
       </div>
       <div className="committee-card-body">
         <div className="committee-role">{member.role}</div>
