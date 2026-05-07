@@ -45,6 +45,7 @@ const sections = [
   {
     title: 'International Board Members',
     members: [
+      { title: 'Prof.', name: 'Jo Elfving-Hwang', lines: ['School of Media, Creative Arts and Social Inquiry', 'Curtin University, Australia'] },
       { title: 'Prof.', name: 'Jieun Kiaer', lines: ['University of Oxford (Editor, Hallyu), UK'] },
       { title: 'Professor', name: 'Rebecca Chiyoko King-O\'Riain', lines: ['Maynooth University, Ireland'] },
       { title: 'Prof.', name: 'Roald Maliangkay', lines: ['The Australian National University, Australia'] },
@@ -54,7 +55,6 @@ const sections = [
       { title: 'Assoc. Prof.', name: 'Fabio La Rocca', lines: ['Université Paul-Valéry Montpellier (Editor, Sociétés), France'] },
       { title: 'Assoc. Prof.', name: 'Hye-Sook Wang', lines: ['Brown University, USA'] },
       { title: 'Dr.', name: 'Tom Baudinette', lines: ['Macquarie University, Australia'] },
-      { title: 'Prof.', name: 'Jo Elfving-Hwang', lines: ['School of Media, Creative Arts and Social Inquiry', 'Curtin University, Australia'] },
       { title: 'Dr.', name: 'Gamin Kang', lines: ['University of California, Los Angeles, USA'] },
       { title: 'Dr.', name: 'Sarah Keith', lines: ['Macquarie University, Australia'] },
       { title: 'Dr.', name: 'Do Own (Donna) Kim', lines: ['University of Illinois, Chicago, USA'] },
