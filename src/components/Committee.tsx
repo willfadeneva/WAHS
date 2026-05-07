@@ -47,6 +47,7 @@ const BOARD: Member[] = [
   { name: 'Fabio La Rocca', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'Université Paul-Valéry Montpellier', department: 'Editor, Sociétés', country: 'France', photo: '/members/fabio-la-rocca.jpeg' },
   { name: 'Hye-Sook Wang', role: 'Board Member', title: 'Assoc. Prof.', affiliation: 'Brown University', country: 'USA', photo: '/members/hye-sook-wang.jpeg' },
   { name: 'Tom Baudinette', role: 'Board Member', title: 'Dr.', affiliation: 'Macquarie University', country: 'Australia', photo: '/members/tom-baudinette.jpg' },
+  { name: 'Jo Elfving-Hwang', role: 'Board Member', title: 'Prof.', affiliation: 'Curtin University', department: 'School of Media, Creative Arts and Social Inquiry', country: 'Australia', photo: '/members/jo-elfving-hwang.jpg' },
   { name: 'Gamin Kang', role: 'Board Member', title: 'Dr.', affiliation: 'University of California, Los Angeles', country: 'USA', photo: '/members/gamin-kang.jpeg' },
   { name: 'Sarah Keith', role: 'Board Member', title: 'Dr.', affiliation: 'Macquarie University', country: 'Australia', photo: '/members/sarah-keith.jpg' },
   { name: 'Do Own (Donna) Kim', role: 'Board Member', title: 'Dr.', affiliation: 'University of Illinois, Chicago', country: 'USA', photo: '/members/do-own-kim.jpg' },
@@ -55,7 +56,6 @@ const BOARD: Member[] = [
   { name: 'Yun Jung Im Park', role: 'Board Member', title: 'Dr.', affiliation: 'University of São Paulo', country: 'Brazil', photo: '/members/yun-jung-im-park.jpg' },
   { name: 'Meicheng Sun', role: 'Board Member', title: 'Dr.', affiliation: 'Beijing Language and Culture University', country: 'China', photo: '/members/meicheng-sun.png' },
   { name: 'Haekyung Um', role: 'Board Member', title: 'Dr.', affiliation: 'University of Liverpool', country: 'UK', photo: '/members/haekyung-um.jpg' },
-  { name: 'Jo Elfving-Hwang', role: 'Board Member', title: 'Prof.', affiliation: 'Curtin University', department: 'School of Media, Creative Arts and Social Inquiry', country: 'Australia', photo: '/members/jo-elfving-hwang.jpg' },
 ];
 
 function MemberCard({ member, detailed = false }: { member: Member; detailed?: boolean }) {
