@@ -62,6 +62,7 @@ const sections = [
       { title: 'Dr.', name: 'Yun Jung Im Park', lines: ['University of São Paulo, Brazil'] },
       { title: 'Dr.', name: 'Meicheng Sun', lines: ['Beijing Language and Culture University, China'] },
       { title: 'Dr.', name: 'Haekyung Um', lines: ['University of Liverpool, UK'] },
+      { title: 'Prof.', name: 'Jo Elfving-Hwang', lines: ['School of Media, Creative Arts and Social Inquiry', 'Curtin University, Australia'] },
     ],
   },
 ];
