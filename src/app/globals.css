@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;600;700&family=Noto+Serif+KR:wght@400;700&display=swap');
 
 :root {
   /* 🇰🇷 Taegukgi — South Korean Flag */
@@ -261,7 +261,7 @@ body {
   right: -40px;
   top: 50%;
   transform: translateY(-50%);
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: clamp(12rem, 25vw, 22rem);
   font-weight: 700;
   color: rgba(255,255,255,0.025);
@@ -2061,7 +2061,7 @@ footer a:hover { color: #fff; }
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 20rem;
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'Noto Sans KR', sans-serif;
   color: rgba(255, 255, 255, 0.03);
   z-index: 1;
   font-weight: 700;
@@ -2075,7 +2075,7 @@ footer a:hover { color: #fff; }
 }
 
 .main-hero-korean {
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 1.2rem;
   opacity: 0.8;
   margin-bottom: 16px;

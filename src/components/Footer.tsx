@@ -35,7 +35,7 @@ export default function Footer() {
 
       {/* Divider */}
       <div style={{ maxWidth: 900, margin: '0 auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 24, textAlign: 'center' }}>
-        <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', fontSize: '1.2rem', fontWeight: 600 }}>WAHS | 세계한류학회</p>
+        <p style={{ margin: 0, color: 'rgba(255,255,255,0.8)', fontSize: '1.2rem', fontWeight: 600, fontFamily: "'Noto Sans KR', sans-serif" }}>WAHS | 세계한류학회</p>
         <p style={{ margin: '2px 0', color: 'rgba(255,255,255,0.45)', fontSize: '0.82rem' }}>
           designed by{' '}
           <a href="https://wa.me/818042615062" target="_blank" rel="noopener noreferrer"
