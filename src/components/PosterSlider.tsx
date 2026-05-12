@@ -4,12 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 
 const slides = [
   {
-    src: '/brill-cfp-2026.jpg',
-    alt: 'Call for Papers — Hallyu: The Korean Wave, Vol. 1 No. 2 (2026), Published by Brill',
-  },
-  {
     src: '/female-universalism-poster.jpg',
     alt: 'Female Universalism — Book Launch Seminar Poster',
+  },
+  {
+    src: '/brill-cfp-2026.jpg',
+    alt: 'Call for Papers — Hallyu: The Korean Wave, Vol. 1 No. 2 (2026), Published by Brill',
   },
 ];
 
