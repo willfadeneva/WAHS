@@ -2,6 +2,7 @@ import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
 import Committee from '@/components/Committee';
 import ScrollReveal from '@/components/ScrollReveal';
+import HeroSlider from '@/components/HeroSlider';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -9,45 +10,8 @@ export default function HomePage() {
     <div className="main-page">
       <MainNav />
       
-      {/* Hero Section */}
-      <section className="main-hero">
-        <div className="main-hero-content">
-          <div className="main-hero-korean">세계한류학회</div>
-          <h1 className="main-hero-title">
-            World Association for<br />
-            <em>Hallyu Studies</em>
-          </h1>
-          <p className="main-hero-subtitle">
-            Advancing the academic study of the Korean Wave through international collaboration, 
-            research excellence, and scholarly discourse across diverse disciplines.
-          </p>
-        </div>
-      </section>
-
-      {/* Brill Journal — Hallyu: The Korean Wave */}
-      <section style={{ background: '#fff', padding: '80px 24px' }}>
-        <div style={{ maxWidth: '700px', margin: '0 auto', textAlign: 'center' }}>
-          <a
-            href="https://brill.com/view/journals/hlyu/hlyu-overview.xml?tab_body=container-135910-item-135916&contents=ArtSub"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'inline-block' }}
-          >
-            <img
-              src="/brill-cfp-2026.jpg"
-              alt="Call for Papers — Hallyu: The Korean Wave, Vol. 1 No. 2 (2026), Published by Brill"
-              style={{
-                width: '100%',
-                maxWidth: '620px',
-                height: 'auto',
-                borderRadius: '8px',
-                boxShadow: '0 8px 40px rgba(0,0,0,0.12)',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-              }}
-            />
-          </a>
-        </div>
-      </section>
+      {/* Hero Slider — Brill CFP / Female Universalism */}
+      <HeroSlider />
 
       {/* Our Team — Full Committee with Photos */}
       <Committee detailed />

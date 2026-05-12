@@ -2100,6 +2100,90 @@ footer a:hover { color: #fff; }
   line-height: 1.6;
 }
 
+/* ====================== */
+/* Hero Image Slider      */
+/* ====================== */
+.hero-slider {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-slide-bg {
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.8s ease;
+}
+
+.hero-slide-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Dark overlay so text remains readable */
+.hero-slider::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.hero-slider .main-hero-content {
+  z-index: 3;
+  position: relative;
+}
+
+/* Dots navigation */
+.hero-slider-dots {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 4;
+}
+
+.hero-slider-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.hero-slider-dot.active {
+  background: var(--coral);
+  border-color: var(--coral);
+}
+
+.hero-slider-dot:hover {
+  border-color: white;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .hero-slider {
+    min-height: 60vh;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hero-slider {
+    min-height: 50vh;
+  }
+}
+
 /* Congress CTA */
 .main-congress-cta {
   padding: 60px 40px;
