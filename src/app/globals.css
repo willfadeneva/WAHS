@@ -2101,88 +2101,63 @@ footer a:hover { color: #fff; }
 }
 
 /* ====================== */
-/* Hero Image Slider      */
+/* Poster Slider          */
 /* ====================== */
-.hero-slider {
+.poster-slider {
+  padding: 60px 24px;
+  background: #fff;
+}
+
+.poster-slider-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.poster-slide {
   position: relative;
-  min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
 }
 
-.hero-slide-bg {
-  position: absolute;
-  inset: 0;
-  transition: opacity 0.8s ease;
-}
-
-.hero-slide-bg img {
+.poster-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  max-width: 620px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: block;
+  margin: 0 auto;
+  cursor: default;
 }
 
-/* Dark overlay so text remains readable */
-.hero-slider::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2;
-}
-
-.hero-slider .main-hero-content {
-  z-index: 3;
-  position: relative;
-}
-
-/* Dots navigation */
-.hero-slider-dots {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+.poster-slider-dots {
   display: flex;
+  justify-content: center;
   gap: 10px;
-  z-index: 4;
+  margin-top: 20px;
 }
 
-.hero-slider-dot {
+.poster-slider-dot {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 2px solid rgba(0, 0, 0, 0.25);
   background: transparent;
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
 }
 
-.hero-slider-dot.active {
+.poster-slider-dot.active {
   background: var(--coral);
   border-color: var(--coral);
 }
 
-.hero-slider-dot:hover {
-  border-color: white;
+.poster-slider-dot:hover {
+  border-color: var(--coral);
 }
 
-/* Tablet */
-@media (max-width: 900px) {
-  .hero-slider {
-    min-height: 60vh;
-  }
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .hero-slider {
-    min-height: 50vh;
-  }
-}
+/* Congress CTA */
 
 /* Congress CTA */
 .main-congress-cta {

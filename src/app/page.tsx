@@ -2,7 +2,7 @@ import MainNav from '@/components/MainNav';
 import MainFooter from '@/components/MainFooter';
 import Committee from '@/components/Committee';
 import ScrollReveal from '@/components/ScrollReveal';
-import HeroSlider from '@/components/HeroSlider';
+import PosterSlider from '@/components/PosterSlider';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -10,8 +10,23 @@ export default function HomePage() {
     <div className="main-page">
       <MainNav />
       
-      {/* Hero Slider — Brill CFP / Female Universalism */}
-      <HeroSlider />
+      {/* Hero Section */}
+      <section className="main-hero">
+        <div className="main-hero-content">
+          <div className="main-hero-korean">세계한류학회</div>
+          <h1 className="main-hero-title">
+            World Association for<br />
+            <em>Hallyu Studies</em>
+          </h1>
+          <p className="main-hero-subtitle">
+            Advancing the academic study of the Korean Wave through international collaboration, 
+            research excellence, and scholarly discourse across diverse disciplines.
+          </p>
+        </div>
+      </section>
+
+      {/* Poster Slider — Brill CFP / Female Universalism */}
+      <PosterSlider />
 
       {/* Our Team — Full Committee with Photos */}
       <Committee detailed />
