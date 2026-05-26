@@ -2719,3 +2719,350 @@ footer a:hover { color: #fff; }
     grid-template-columns: 1fr;
   }
 }
+
+/* ═══ CALL FOR PAPERS ═══ */
+.cfp-section {
+  background: #fff;
+  padding: 100px 40px;
+}
+
+.cfp-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.cfp-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+.cfp-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 20px;
+}
+
+.cfp-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.15;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+.cfp-accent {
+  color: var(--coral);
+}
+
+.cfp-subtitle {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  color: var(--slate);
+  max-width: 700px;
+  margin: 0 auto 20px;
+  line-height: 1.5;
+}
+
+.cfp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  font-size: 0.95rem;
+  color: var(--mist);
+}
+
+.cfp-meta-item strong {
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.cfp-meta-sep {
+  color: var(--pearl);
+}
+
+.cfp-block {
+  margin-bottom: 64px;
+}
+
+.cfp-block-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--coral);
+  display: inline-block;
+}
+
+.cfp-block-body p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--slate);
+  margin-bottom: 16px;
+}
+
+.cfp-conceptualize {
+  margin-top: 20px;
+}
+
+.cfp-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cfp-list li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--slate);
+  margin-bottom: 8px;
+}
+
+.cfp-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  background: var(--coral);
+  border-radius: 50%;
+}
+
+/* Speakers */
+.cfp-speakers {
+  background: var(--navy);
+  margin: 0 -40px 64px;
+  padding: 64px 40px;
+}
+
+.cfp-speakers .cfp-block-title {
+  color: #fff;
+  border-bottom-color: var(--coral);
+}
+
+.cfp-speaker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.cfp-speaker-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 28px;
+  transition: all 0.3s ease;
+}
+
+.cfp-speaker-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.cfp-speaker-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.cfp-speaker-title {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.55);
+}
+
+/* Research Tracks */
+.cfp-track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.cfp-track-card {
+  background: #fff;
+  border: 1px solid var(--pearl);
+  padding: 32px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.cfp-track-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(10,22,40,0.06);
+  border-color: var(--teal);
+}
+
+.cfp-track-number {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 12px;
+}
+
+.cfp-track-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.cfp-track-desc {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--slate);
+  margin-bottom: 16px;
+}
+
+.cfp-track-list li {
+  font-size: 0.9rem;
+}
+
+/* Submission Types */
+.cfp-types-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.cfp-type-card {
+  background: #fff;
+  border: 1px solid var(--pearl);
+  padding: 28px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.cfp-type-card:hover {
+  border-color: var(--teal);
+  box-shadow: 0 8px 30px rgba(10,22,40,0.05);
+}
+
+.cfp-type-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.05rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.cfp-type-detail {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--coral);
+  margin-bottom: 6px;
+}
+
+.cfp-type-note {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--mist);
+}
+
+/* Requirements */
+.cfp-req-list li {
+  font-size: 0.95rem;
+}
+
+/* Dates */
+.cfp-dates {
+  background: var(--sand);
+  margin: 0 -40px 64px;
+  padding: 64px 40px;
+}
+
+.cfp-dates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.cfp-date-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cfp-date-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.cfp-date-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.1rem;
+  color: var(--navy);
+}
+
+/* CTA */
+.cfp-cta-row {
+  text-align: center;
+  margin: 48px 0 64px;
+}
+
+.cfp-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 44px;
+  background: var(--coral);
+  color: #fff;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.cfp-cta-btn:hover {
+  background: var(--warm-coral);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(205,46,58,0.3);
+}
+
+/* Publication */
+.cfp-pub {
+  margin-bottom: 0;
+}
+
+.cfp-pub-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cfp-pub-list li {
+  background: var(--sand);
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--slate);
+  border-left: 3px solid var(--teal);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cfp-section { padding: 60px 24px; }
+  .cfp-speakers,
+  .cfp-dates { margin: 0 -24px 48px; padding: 48px 24px; }
+  .cfp-track-grid { grid-template-columns: 1fr; }
+  .cfp-types-grid { grid-template-columns: 1fr; }
+  .cfp-dates-grid { grid-template-columns: 1fr; }
+  .cfp-speaker-grid { grid-template-columns: 1fr; }
+}

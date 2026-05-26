@@ -3,6 +3,7 @@ import MainFooter from '@/components/MainFooter';
 import Committee from '@/components/Committee';
 import ScrollReveal from '@/components/ScrollReveal';
 import PosterSlider from '@/components/PosterSlider';
+import CallForPapers from '@/components/CallForPapers';
 import Link from 'next/link';
 
 export default function HomePage() {
@@ -27,6 +28,9 @@ export default function HomePage() {
 
       {/* Poster Slider — Brill CFP / Female Universalism */}
       <PosterSlider />
+
+      {/* Call for Papers — WAHS 2026 Seoul */}
+      <CallForPapers />
 
       {/* Our Team — Full Committee with Photos */}
       <Committee detailed />
