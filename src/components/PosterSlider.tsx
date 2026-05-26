@@ -9,7 +9,7 @@ const slides = [
   },
   {
     src: '/brill-cfp-2026.jpg',
-    alt: 'Call for Papers — Hallyu: The Korean Wave, Vol. 1 No. 2 (2026), Published by Brill',
+    alt: 'Call for Papers — 12th World Congress for Hallyu Studies (WAHS 2026), Sungkyunkwan University (SKKU), Seoul, South Korea — November 5–6, 2026',
   },
 ];
 
