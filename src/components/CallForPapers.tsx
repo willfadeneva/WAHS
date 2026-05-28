@@ -11,7 +11,7 @@ const keynotes = [
     title: 'Professor, Kansai Gaidai University\nFormer President, World Association for Hallyu Studies',
   },
   {
-    name: 'Joann Elfving-Hwang',
+    name: 'Joanna Elfving-Hwang',
     title: 'Professor of Korean Society and Culture, Curtin University\nDirector, Korea Research & Engagement Centre (KRC)',
   },
 ];
