@@ -37,6 +37,13 @@ export default function MainNav() {
             </Link>
           </li>
 
+          {/* Archives */}
+          <li>
+            <Link href="/archives" className={pathname === '/archives' ? 'active' : ''} onClick={close}>
+              Archives
+            </Link>
+          </li>
+
           {/* About */}
           <li className="nav-dropdown-parent"
               onMouseEnter={() => setAboutOpen(true)}
