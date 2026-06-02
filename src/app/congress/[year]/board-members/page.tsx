@@ -63,6 +63,7 @@ const sections = [
       { title: 'Dr.', name: 'Yun Jung Im Park', lines: ['University of São Paulo, Brazil'] },
       { title: 'Dr.', name: 'Meicheng Sun', lines: ['Beijing Language and Culture University, China'] },
       { title: 'Dr.', name: 'Haekyung Um', lines: ['University of Liverpool, UK'] },
+      { title: 'Dr.', name: 'Sang-Keun Yoo', lines: ['Faculty of Asian and Middle Eastern Studies, University of Cambridge, UK'] },
     ],
   },
 ];

@@ -56,6 +56,7 @@ const BOARD: Member[] = [
   { name: 'Yun Jung Im Park', role: 'Board Member', title: 'Dr.', affiliation: 'University of São Paulo', country: 'Brazil', photo: '/members/yun-jung-im-park.jpg' },
   { name: 'Meicheng Sun', role: 'Board Member', title: 'Dr.', affiliation: 'Beijing Language and Culture University', country: 'China', photo: '/members/meicheng-sun.png' },
   { name: 'Haekyung Um', role: 'Board Member', title: 'Dr.', affiliation: 'University of Liverpool', country: 'UK', photo: '/members/haekyung-um.jpg' },
+  { name: 'Sang-Keun Yoo', role: 'Board Member', title: 'Dr.', affiliation: 'Faculty of Asian and Middle Eastern Studies', country: 'UK', photo: '/members/sang-keun-yoo.jpg' },
 ];
 
 function MemberCard({ member, detailed = false }: { member: Member; detailed?: boolean }) {
