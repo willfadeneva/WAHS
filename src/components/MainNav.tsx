@@ -44,6 +44,19 @@ export default function MainNav() {
             </Link>
           </li>
 
+          {/* Flagship Journal */}
+          <li>
+            <Link
+              href="https://brill.com/view/journals/hlyu/hlyu-overview.xml"
+              className=""
+              onClick={close}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Flagship Journal
+            </Link>
+          </li>
+
           {/* About */}
           <li className="nav-dropdown-parent"
               onMouseEnter={() => setAboutOpen(true)}
