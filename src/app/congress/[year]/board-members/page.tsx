@@ -55,6 +55,7 @@ const sections = [
       { title: 'Assoc. Prof.', name: 'Fabio La Rocca', lines: ['Université Paul-Valéry Montpellier (Editor, Sociétés), France'] },
       { title: 'Assoc. Prof.', name: 'Hye-Sook Wang', lines: ['Brown University, USA'] },
       { title: 'Dr.', name: 'Tom Baudinette', lines: ['Macquarie University, Australia'] },
+      { title: 'Dr.', name: 'Dharshani Lakmali Jayasinghe', lines: ['Department of English, Central Connecticut State University, USA'] },
       { title: 'Dr.', name: 'Gamin Kang', lines: ['University of California, Los Angeles, USA'] },
       { title: 'Dr.', name: 'Sarah Keith', lines: ['Macquarie University, Australia'] },
       { title: 'Dr.', name: 'Do Own (Donna) Kim', lines: ['University of Illinois, Chicago, USA'] },
